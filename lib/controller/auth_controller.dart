@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl_phone_field/phone_number.dart';
 
-import '../core/services/send_sms_twilio.dart';
-
 class AuthController extends ChangeNotifier {
   static int? globalUserId;
   bool obscurePassword = true;
@@ -467,11 +465,6 @@ class AuthController extends ChangeNotifier {
       setLoginSubmitError(networkMessage);
       return networkMessage;
     }
-  }
-
-  Future<bool> sendOtpExample(String phoneNumber) async {
-    final sent = await TwilioService.sendOtp(to: phoneNumber, otp: '123456');
-    return sent;
   }
 
   bool get canContinue => phoneNumber.isNotEmpty;
