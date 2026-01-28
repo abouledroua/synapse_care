@@ -1,0 +1,510 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_ar.dart';
+import 'app_localizations_en.dart';
+import 'app_localizations_fr.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
+    Locale('en'),
+    Locale('fr'),
+  ];
+
+  /// No description provided for @appTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Synapse Care'**
+  String get appTitle;
+
+  /// No description provided for @brandTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Intelligent platform for care management and patient follow-up.'**
+  String get brandTagline;
+
+  /// No description provided for @welcomeHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Synapse Care'**
+  String get welcomeHeadline;
+
+  /// No description provided for @welcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The intelligent platform for care management and patient follow-up.'**
+  String get welcomeBody;
+
+  /// No description provided for @accessSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Access the application space'**
+  String get accessSpace;
+
+  /// No description provided for @chooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose language'**
+  String get chooseLanguage;
+
+  /// No description provided for @notFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found'**
+  String get notFoundTitle;
+
+  /// No description provided for @notFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested URL does not exist.'**
+  String get notFoundBody;
+
+  /// No description provided for @backHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get backHome;
+
+  /// No description provided for @accessDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access denied'**
+  String get accessDeniedTitle;
+
+  /// No description provided for @accessDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to access this page.'**
+  String get accessDeniedBody;
+
+  /// No description provided for @backHomeCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get backHomeCta;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get login;
+
+  /// No description provided for @signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signup;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get emailHint;
+
+  /// No description provided for @nameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get nameHint;
+
+  /// No description provided for @specialtyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialty'**
+  String get specialtyHint;
+
+  /// No description provided for @nameEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your full name'**
+  String get nameEmptyError;
+
+  /// No description provided for @emailEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email address'**
+  String get emailEmptyError;
+
+  /// No description provided for @emailInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get emailInvalidError;
+
+  /// No description provided for @specialtyEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your specialty'**
+  String get specialtyEmptyError;
+
+  /// No description provided for @passwordEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get passwordEmptyError;
+
+  /// No description provided for @loginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful'**
+  String get loginSuccess;
+
+  /// No description provided for @loginInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or password are wrong'**
+  String get loginInvalid;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get loginFailed;
+
+  /// No description provided for @loginNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot connect to the server. Please check your internet connection.'**
+  String get loginNetworkError;
+
+  /// No description provided for @timeoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired'**
+  String get timeoutTitle;
+
+  /// No description provided for @timeoutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be redirected to the login page in 5 seconds.'**
+  String get timeoutBody;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordHint;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get passwordTooShort;
+
+  /// No description provided for @passwordNeedSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include . , + * or ?'**
+  String get passwordNeedSpecial;
+
+  /// No description provided for @passwordNeedUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must include one capital letter'**
+  String get passwordNeedUpper;
+
+  /// No description provided for @passwordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordMismatch;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @continueCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueCta;
+
+  /// No description provided for @quickSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast and secure SMS login'**
+  String get quickSms;
+
+  /// No description provided for @newHere.
+  ///
+  /// In en, this message translates to:
+  /// **'New to Synapse Care? '**
+  String get newHere;
+
+  /// No description provided for @haveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? '**
+  String get haveAccount;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account'**
+  String get createAccount;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get signIn;
+
+  /// No description provided for @patient.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient'**
+  String get patient;
+
+  /// No description provided for @doctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor'**
+  String get doctor;
+
+  /// No description provided for @cabinetSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your medical clinic'**
+  String get cabinetSearchTitle;
+
+  /// No description provided for @cabinetSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search your medical clinic'**
+  String get cabinetSearchHint;
+
+  /// No description provided for @cabinetSearchHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, city, or specialty.'**
+  String get cabinetSearchHelper;
+
+  /// No description provided for @cabinetSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No clinics found.'**
+  String get cabinetSearchEmpty;
+
+  /// No description provided for @cabinetAddSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic added successfully.'**
+  String get cabinetAddSuccess;
+
+  /// No description provided for @cabinetAddExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic already added.'**
+  String get cabinetAddExists;
+
+  /// No description provided for @cabinetAddFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not add clinic.'**
+  String get cabinetAddFailed;
+
+  /// No description provided for @cabinetSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your clinic'**
+  String get cabinetSelectTitle;
+
+  /// No description provided for @cabinetSelectBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the medical clinic you are affiliated with.'**
+  String get cabinetSelectBody;
+
+  /// No description provided for @cabinetSelectSampleSpecialty.
+  ///
+  /// In en, this message translates to:
+  /// **'General medicine'**
+  String get cabinetSelectSampleSpecialty;
+
+  /// No description provided for @cabinetSelectEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No affiliated clinics found.'**
+  String get cabinetSelectEmpty;
+
+  /// No description provided for @cabinetSelectUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed clinic'**
+  String get cabinetSelectUnnamed;
+
+  /// No description provided for @cabinetSelectAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a clinic'**
+  String get cabinetSelectAdd;
+
+  /// No description provided for @cabinetSelectFind.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a clinic'**
+  String get cabinetSelectFind;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phoneHint;
+
+  /// No description provided for @phoneEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a phone number'**
+  String get phoneEmptyError;
+
+  /// No description provided for @phoneInvalidPrefixError.
+  ///
+  /// In en, this message translates to:
+  /// **'Number must start with 5, 6, or 7'**
+  String get phoneInvalidPrefixError;
+
+  /// No description provided for @otpSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending OTP code to {phone}'**
+  String otpSend(Object phone);
+
+  /// No description provided for @otpValidDemo.
+  ///
+  /// In en, this message translates to:
+  /// **'This {phone} is valid for the demo.'**
+  String otpValidDemo(Object phone);
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['ar', 'en', 'fr'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'en':
+      return AppLocalizationsEn();
+    case 'fr':
+      return AppLocalizationsFr();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
+}

@@ -1,0 +1,58 @@
+name: synapse_care
+description: "A Health Care Application built with Flutter."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: any
+  flutter_riverpod: any
+  go_router: any
+  http: any
+  intl_phone_field: any
+  font_awesome_flutter: any
+  image_picker: any
+  shared_preferences: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+  rename: any
+  flutter_launcher_icons: any
+
+# The following section is specific to Flutter packages.
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/images/
+  fonts: 
+    - family : Segoe
+      fonts:
+        - asset: assets/fonts/segoeprb.ttf
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
+    background_color: "#D8FFE9"
+    theme_color: "#D8FFE9"
+  windows:
+    generate: true
+    image_path: "assets/images/logo.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/images/logo.png"
