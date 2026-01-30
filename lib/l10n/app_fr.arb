@@ -57,6 +57,15 @@
   "cabinetSelectAdd": "Ajouter un cabinet",
   "cabinetSelectFind": "Trouver un cabinet",
   "homeSearchHint": "Rechercher...",
+  "homeDashboardTitle": "Tableau de bord",
+  "homeDashAppointments": "Rendez-vous",
+  "homeDashConsultationsToday": "Consultations aujourd'hui",
+  "homeDashPatients": "Patients",
+  "homeDashRevenue": "Revenus",
+  "homeDashAlerts": "Alertes",
+  "homeDashConsultationsMonth": "Consultations ce mois",
+  "homeDashNextTitle": "Prochain rendez-vous",
+  "homeDashNextSubtitle": "09:30 • Amina B. • Consultation",
   "homeMenuConsultation": "Consultation",
   "homeMenuHistory": "Historique",
   "homeMenuCaisse": "Caisse",
@@ -69,7 +78,13 @@
   "homeMenuProfile": "Mon profil",
   "homeMenuChangeClinic": "Changer de cabinet",
   "homeMenuLogout": "Se déconnecter",
+  "homeGreeting": "Dr. {name}",
   "phoneHint": "Numéro de téléphone",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "phoneEmptyError": "Veuillez entrer un numéro de téléphone",
   "phoneInvalidPrefixError": "Le numéro doit commencer par 5, 6 ou 7",
   "otpSend": "Envoi du code OTP à {phone}",

@@ -57,6 +57,15 @@
   "cabinetSelectAdd": "إضافة عيادة",
   "cabinetSelectFind": "البحث عن عيادة",
   "homeSearchHint": "ابحث...",
+  "homeDashboardTitle": "لوحة التحكم",
+  "homeDashAppointments": "المواعيد",
+  "homeDashConsultationsToday": "استشارات اليوم",
+  "homeDashPatients": "المرضى",
+  "homeDashRevenue": "الإيرادات",
+  "homeDashAlerts": "التنبيهات",
+  "homeDashConsultationsMonth": "استشارات هذا الشهر",
+  "homeDashNextTitle": "الموعد القادم",
+  "homeDashNextSubtitle": "09:30 • أمينة ب. • استشارة",
   "homeMenuConsultation": "استشارة",
   "homeMenuHistory": "السجل",
   "homeMenuCaisse": "الصندوق",
@@ -69,7 +78,13 @@
   "homeMenuProfile": "ملفي الشخصي",
   "homeMenuChangeClinic": "تغيير العيادة",
   "homeMenuLogout": "تسجيل الخروج",
+  "homeGreeting": "دكتور {name}",
   "phoneHint": "رقم الهاتف",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "phoneEmptyError": "يرجى إدخال رقم الهاتف",
   "phoneInvalidPrefixError": "يجب أن يبدأ الرقم بـ 5 أو 6 أو 7",
   "otpSend": "يتم إرسال رمز OTP إلى {phone}",

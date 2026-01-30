@@ -1,15 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl_phone_field/phone_number.dart';
 
+import '../core/config/api_config.dart';
+import '../services/session_storage.dart';
+
 class AuthController extends ChangeNotifier {
   static int? globalUserId;
   static Map<String, dynamic>? globalUser;
+  static Map<String, dynamic>? globalClinic;
+  static DateTime? _globalLastActivity;
+  static Timer? _globalTimer;
+  static const Duration sessionTimeoutDuration = Duration(minutes: 20);
   bool obscurePassword = true;
   bool isDoctor = false;
   String? phoneError;
@@ -30,7 +35,7 @@ class AuthController extends ChangeNotifier {
   int? currentUserId;
   DateTime? _lastActivity;
   Timer? _sessionTimer;
-  final Duration sessionTimeout = const Duration(minutes: 20);
+  final Duration sessionTimeout = sessionTimeoutDuration;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -38,19 +43,12 @@ class AuthController extends ChangeNotifier {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmController = TextEditingController();
 
-  String apiBaseUrl = _resolveApiBaseUrl();
-
   static String resolveApiBaseUrl() {
-    if (kIsWeb) {
-      return 'http://localhost:3001';
-    }
-    if (Platform.isAndroid) {
-      return 'http://amor-pc.local:3001';
-    }
-    return 'http://localhost:3001';
+    return ApiConfig.resolveBaseUrl();
   }
 
   static String _resolveApiBaseUrl() => resolveApiBaseUrl();
+  String apiBaseUrl = _resolveApiBaseUrl();
 
   @override
   void dispose() {
@@ -125,15 +123,20 @@ class AuthController extends ChangeNotifier {
   void _setGlobalUser(Map<String, dynamic>? data) {
     if (data == null) {
       globalUser = null;
+      persistGlobals();
       return;
     }
     globalUser = Map<String, dynamic>.from(data);
+    persistGlobals();
   }
 
   void _touchSession() {
     _lastActivity = DateTime.now();
+    _globalLastActivity = _lastActivity;
     _sessionTimer?.cancel();
     _sessionTimer = Timer(sessionTimeout, _expireSessionIfIdle);
+    _scheduleGlobalTimeout();
+    persistGlobals();
     notifyListeners();
   }
 
@@ -153,14 +156,19 @@ class AuthController extends ChangeNotifier {
     currentUserId = null;
     globalUserId = null;
     globalUser = null;
+    globalClinic = null;
     _lastActivity = null;
+    _globalLastActivity = null;
     _sessionTimer?.cancel();
     _sessionTimer = null;
+    _globalTimer?.cancel();
+    _globalTimer = null;
+    SessionStorage.clear();
     notifyListeners();
   }
 
   void markActivity() {
-    if (currentUserId == null) return;
+    if (globalUserId == null) return;
     _touchSession();
   }
 
@@ -447,8 +455,7 @@ class AuthController extends ChangeNotifier {
           if (decoded is Map) {
             userData = Map<String, dynamic>.from(decoded);
             if (decoded['id_user'] != null) {
-              userId =
-                  decoded['id_user'] is int ? decoded['id_user'] as int : int.tryParse('${decoded['id_user']}');
+              userId = decoded['id_user'] is int ? decoded['id_user'] as int : int.tryParse('${decoded['id_user']}');
             }
           }
         } catch (_) {}
@@ -486,4 +493,52 @@ class AuthController extends ChangeNotifier {
   }
 
   bool get canContinue => phoneNumber.isNotEmpty;
+
+  static Future<void> restoreGlobals() async {
+    final data = await SessionStorage.load();
+    if (data == null || data.user == null) return;
+    final lastActivity = data.lastActivity;
+    if (lastActivity != null && DateTime.now().difference(lastActivity) > sessionTimeoutDuration) {
+      await SessionStorage.clear();
+      return;
+    }
+    globalUserId = data.userId;
+    globalUser = data.user;
+    globalClinic = data.clinic;
+    _globalLastActivity = lastActivity ?? DateTime.now();
+    _scheduleGlobalTimeout();
+  }
+
+  static Future<void> persistGlobals() async {
+    await SessionStorage.save(
+      userId: globalUserId,
+      user: globalUser,
+      clinic: globalClinic,
+      lastActivity: _globalLastActivity,
+    );
+  }
+
+  static void _scheduleGlobalTimeout() {
+    if (_globalLastActivity == null) return;
+    final idleFor = DateTime.now().difference(_globalLastActivity!);
+    if (idleFor >= sessionTimeoutDuration) {
+      _globalTimer?.cancel();
+      _globalTimer = null;
+      SessionStorage.clear();
+      globalUserId = null;
+      globalUser = null;
+      globalClinic = null;
+      _globalLastActivity = null;
+      return;
+    }
+    final remaining = sessionTimeoutDuration - idleFor;
+    _globalTimer?.cancel();
+    _globalTimer = Timer(remaining, () {
+      SessionStorage.clear();
+      globalUserId = null;
+      globalUser = null;
+      globalClinic = null;
+      _globalLastActivity = null;
+    });
+  }
 }

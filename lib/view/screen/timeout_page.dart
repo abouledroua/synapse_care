@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../controller/timeout_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../widget/brand_header.dart';
 import '../widget/synapse_background.dart';
@@ -15,21 +14,24 @@ class TimeoutPage extends StatefulWidget {
 }
 
 class _TimeoutPageState extends State<TimeoutPage> {
-  Timer? _timer;
+  final TimeoutController _controller = TimeoutController();
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer(const Duration(seconds: 5), () {
-      if (mounted) {
-        context.go('/auth/login');
-      }
-    });
+    _controller.start(
+      duration: const Duration(seconds: 5),
+      onTimeout: () {
+        if (mounted) {
+          context.go('/auth/login');
+        }
+      },
+    );
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 

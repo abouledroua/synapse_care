@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../controller/auth_controller.dart';
+import '../../controller/photo_picker_controller.dart';
 import '../../l10n/app_localizations.dart';
 import 'input_card.dart';
 import 'primary_button.dart';
@@ -34,8 +34,7 @@ class _AuthSignupFormState extends State<AuthSignupForm> {
   final _passwordFocus = FocusNode();
   final _confirmFocus = FocusNode();
   final _phoneFocus = FocusNode();
-  final _picker = ImagePicker();
-  XFile? _photo;
+  final PhotoPickerController _photoController = PhotoPickerController();
 
   @override
   void dispose() {
@@ -45,60 +44,53 @@ class _AuthSignupFormState extends State<AuthSignupForm> {
     _passwordFocus.dispose();
     _confirmFocus.dispose();
     _phoneFocus.dispose();
+    _photoController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickPhoto() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
-    if (!mounted) return;
-    setState(() {
-      _photo = picked;
-    });
-    if (picked != null) {
-      final bytes = await picked.readAsBytes();
-      final path = picked.path;
-      final parts = path.split('.');
-      final ext = parts.length > 1 ? parts.last.toLowerCase() : 'jpg';
-      widget.controller.setPhoto(bytes, ext);
-    }
   }
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
       if (widget.controller.isDoctor) ...[
-        Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            GestureDetector(
-              onTap: _pickPhoto,
-              child: CircleAvatar(
-                radius: 45,
-                backgroundColor: widget.scheme.primary.withValues(alpha: 0.15),
-                backgroundImage: _photo != null ? FileImage(File(_photo!.path)) : null,
-                child: _photo == null
-                    ? Icon(Icons.photo_camera_outlined, size: 30, color: widget.scheme.primary.withValues(alpha: 0.8))
-                    : null,
-              ),
-            ),
-            if (_photo != null)
-              GestureDetector(
-                onTap: () {
-                  setState(() => _photo = null);
-                  widget.controller.clearPhoto();
-                },
-                child: Container(
-                  height: 22,
-                  width: 22,
-                  decoration: BoxDecoration(
-                    color: widget.scheme.surface,
-                    shape: BoxShape.circle,
-                    boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
+        AnimatedBuilder(
+          animation: _photoController,
+          builder: (context, child) {
+            final photo = _photoController.photo;
+            return Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                GestureDetector(
+                  onTap: () => _photoController.pickFromGallery(widget.controller),
+                  child: CircleAvatar(
+                    radius: 45,
+                    backgroundColor: widget.scheme.primary.withValues(alpha: 0.15),
+                    backgroundImage: photo != null ? FileImage(File(photo.path)) : null,
+                    child: photo == null
+                        ? Icon(
+                            Icons.photo_camera_outlined,
+                            size: 30,
+                            color: widget.scheme.primary.withValues(alpha: 0.8),
+                          )
+                        : null,
                   ),
-                  child: Icon(Icons.close, size: 14, color: widget.scheme.primary),
                 ),
-              ),
-          ],
+                if (photo != null)
+                  GestureDetector(
+                    onTap: () => _photoController.clear(widget.controller),
+                    child: Container(
+                      height: 22,
+                      width: 22,
+                      decoration: BoxDecoration(
+                        color: widget.scheme.surface,
+                        shape: BoxShape.circle,
+                        boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
+                      ),
+                      child: Icon(Icons.close, size: 14, color: widget.scheme.primary),
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 16),
       ],

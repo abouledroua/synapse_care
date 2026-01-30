@@ -189,6 +189,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeSearchHint => 'Rechercher...';
 
   @override
+  String get homeDashboardTitle => 'Dashboard';
+
+  @override
+  String get homeDashAppointments => 'Appointments';
+
+  @override
+  String get homeDashConsultationsToday => 'Consultations today';
+
+  @override
+  String get homeDashPatients => 'Patients';
+
+  @override
+  String get homeDashRevenue => 'Revenue';
+
+  @override
+  String get homeDashAlerts => 'Alerts';
+
+  @override
+  String get homeDashConsultationsMonth => 'Consultations this month';
+
+  @override
+  String get homeDashNextTitle => 'Next appointment';
+
+  @override
+  String get homeDashNextSubtitle => '09:30 • Amina B. • Consultation';
+
+  @override
   String get homeMenuConsultation => 'Consultation';
 
   @override
@@ -223,6 +250,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeMenuLogout => 'Log out';
+
+  @override
+  String homeGreeting(Object name) {
+    return 'Dr. $name';
+  }
 
   @override
   String get phoneHint => 'Phone number';

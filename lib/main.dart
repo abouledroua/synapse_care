@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/constant/app_router.dart';
 import 'controller/locale_controller.dart';
 import 'controller/theme_controller.dart';
+import 'controller/auth_controller.dart';
 import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
@@ -16,6 +17,7 @@ Future<void> main() async {
   ]);
   await ThemeController.instance.load();
   await LocaleController.instance.load();
+  await AuthController.restoreGlobals();
   runApp(const ProviderScope(child: MyApp()));
 }
 

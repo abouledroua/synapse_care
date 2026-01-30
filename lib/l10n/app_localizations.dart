@@ -448,6 +448,60 @@ abstract class AppLocalizations {
   /// **'Rechercher...'**
   String get homeSearchHint;
 
+  /// No description provided for @homeDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get homeDashboardTitle;
+
+  /// No description provided for @homeDashAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointments'**
+  String get homeDashAppointments;
+
+  /// No description provided for @homeDashConsultationsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultations today'**
+  String get homeDashConsultationsToday;
+
+  /// No description provided for @homeDashPatients.
+  ///
+  /// In en, this message translates to:
+  /// **'Patients'**
+  String get homeDashPatients;
+
+  /// No description provided for @homeDashRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get homeDashRevenue;
+
+  /// No description provided for @homeDashAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get homeDashAlerts;
+
+  /// No description provided for @homeDashConsultationsMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultations this month'**
+  String get homeDashConsultationsMonth;
+
+  /// No description provided for @homeDashNextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next appointment'**
+  String get homeDashNextTitle;
+
+  /// No description provided for @homeDashNextSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'09:30 • Amina B. • Consultation'**
+  String get homeDashNextSubtitle;
+
   /// No description provided for @homeMenuConsultation.
   ///
   /// In en, this message translates to:
@@ -519,6 +573,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log out'**
   String get homeMenuLogout;
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. {name}'**
+  String homeGreeting(Object name);
 
   /// No description provided for @phoneHint.
   ///

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../controller/auth_controller.dart';
 import '../../controller/locale_controller.dart';
 import '../../view/screen/auth_login_page.dart';
 import '../../view/screen/auth_signup_page.dart';
@@ -22,6 +23,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final isOnLanguage = state.matchedLocation == '/language';
       if (!hasSelection && !isOnLanguage) return '/language';
       if (hasSelection && isOnLanguage) return '/';
+
+      final isAuthed = AuthController.globalUserId != null;
+      final isAuthRoute = state.matchedLocation.startsWith('/auth');
+      final isProtected =
+          state.matchedLocation.startsWith('/home') || state.matchedLocation.startsWith('/cabinet');
+      if (!isAuthed && isProtected) return '/auth/login';
+      if (isAuthed && isAuthRoute) return '/home';
       return null;
     },
     routes: [

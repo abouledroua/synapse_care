@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 
-import '../../controller/auth_controller.dart';
+import '../../controller/cabinet_select_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../widget/synapse_background.dart';
 
@@ -16,26 +13,18 @@ class CabinetSelectPage extends StatefulWidget {
 }
 
 class _CabinetSelectPageState extends State<CabinetSelectPage> {
-  late final Future<List<Map<String, dynamic>>> _cabinetFuture;
+  final CabinetSelectController _controller = CabinetSelectController();
 
   @override
   void initState() {
     super.initState();
-    _cabinetFuture = _fetchCabinets();
+    _controller.load();
   }
 
-  Future<List<Map<String, dynamic>>> _fetchCabinets() async {
-    final userId = AuthController.globalUserId;
-    if (userId == null) return [];
-    final baseUrl = AuthController.resolveApiBaseUrl();
-    final uri = Uri.parse('$baseUrl/cabinet/by-user/$userId');
-    final response = await http.get(uri);
-    if (response.statusCode != 200) {
-      throw Exception('Failed to load cabinets');
-    }
-    final decoded = jsonDecode(response.body);
-    if (decoded is! List) return [];
-    return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,119 +34,111 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {},
-      child: Scaffold(
-        body: Stack(
-          children: [
-            const SynapseBackground(),
-            SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 560),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                      Text(
-                        l10n.cabinetSelectTitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: isWide ? 26 : 22,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        l10n.cabinetSelectBody,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: () => context.push('/cabinet/search'),
-                          icon: const Icon(Icons.search_rounded),
-                          label: Text(l10n.cabinetSelectFind),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            side: BorderSide(color: scheme.primary.withValues(alpha: 0.6)),
-                            foregroundColor: scheme.primary,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) => PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {},
+        child: Scaffold(
+          body: Stack(
+            children: [
+              const SynapseBackground(),
+              SafeArea(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 560),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            l10n.cabinetSelectTitle,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: isWide ? 26 : 22,
+                              fontWeight: FontWeight.w600,
+                              color: scheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Divider(color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
-                      const SizedBox(height: 10),
-                      FutureBuilder<List<Map<String, dynamic>>>(
-                        future: _cabinetFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Padding(
+                          const SizedBox(height: 10),
+                          Text(
+                            l10n.cabinetSelectBody,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () => context.push('/cabinet/search'),
+                              icon: const Icon(Icons.search_rounded),
+                              label: Text(l10n.cabinetSelectFind),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                side: BorderSide(color: scheme.primary.withValues(alpha: 0.6)),
+                                foregroundColor: scheme.primary,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Divider(color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
+                          const SizedBox(height: 10),
+                          if (_controller.isLoading)
+                            const Padding(
                               padding: EdgeInsets.symmetric(vertical: 24),
                               child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (snapshot.hasError) {
-                            return Padding(
+                            )
+                          else if (_controller.errorCode != null)
+                            Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: Text(
                                 l10n.loginNetworkError,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(color: scheme.error),
                               ),
-                            );
-                          }
-
-                          final cabinets = snapshot.data ?? [];
-                          if (cabinets.isEmpty) {
-                            return Padding(
+                            )
+                          else if (_controller.cabinets.isEmpty)
+                            Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: Text(
                                 l10n.cabinetSelectEmpty,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
                               ),
-                            );
-                          }
-
-                          return ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: cabinets.length,
-                            separatorBuilder: (_, _) => const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final item = cabinets[index];
-                              final name = (item['nom_cabinet'] ?? '').toString();
-                              final specialty = (item['specialite_cabinet'] ?? '').toString();
-                              final photoFile = (item['photo_url'] ?? '').toString();
-                              final baseUrl = AuthController.resolveApiBaseUrl();
-                              final imageUrl = photoFile.isEmpty
-                                  ? null
-                                  : '$baseUrl/IMAGES/Cabinets/$photoFile';
-                              return _CabinetCard(
-                                name: name.isEmpty ? l10n.cabinetSelectUnnamed : name,
-                                specialty: specialty.isEmpty ? l10n.cabinetSelectSampleSpecialty : specialty,
-                                imageUrl: imageUrl,
-                                onTap: () => context.push('/home'),
-                              );
-                            },
-                          );
-                        },
+                            )
+                          else
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _controller.cabinets.length,
+                              separatorBuilder: (_, _) => const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final item = _controller.cabinets[index];
+                                final name = (item['nom_cabinet'] ?? '').toString();
+                                final specialty = (item['specialite_cabinet'] ?? '').toString();
+                                final photoFile = (item['photo_url'] ?? '').toString();
+                                final imageUrl = _controller.cabinetImageUrl(photoFile);
+                                return _CabinetCard(
+                                  name: name.isEmpty ? l10n.cabinetSelectUnnamed : name,
+                                  specialty: specialty.isEmpty ? l10n.cabinetSelectSampleSpecialty : specialty,
+                                  imageUrl: imageUrl,
+                                  onTap: () {
+                                    _controller.selectCabinet(item);
+                                    context.go('/home');
+                                  },
+                                );
+                              },
+                            ),
+                        ],
                       ),
-                      ],
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

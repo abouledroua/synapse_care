@@ -191,6 +191,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeSearchHint => 'Rechercher...';
 
   @override
+  String get homeDashboardTitle => 'Tableau de bord';
+
+  @override
+  String get homeDashAppointments => 'Rendez-vous';
+
+  @override
+  String get homeDashConsultationsToday => 'Consultations aujourd\'hui';
+
+  @override
+  String get homeDashPatients => 'Patients';
+
+  @override
+  String get homeDashRevenue => 'Revenus';
+
+  @override
+  String get homeDashAlerts => 'Alertes';
+
+  @override
+  String get homeDashConsultationsMonth => 'Consultations ce mois';
+
+  @override
+  String get homeDashNextTitle => 'Prochain rendez-vous';
+
+  @override
+  String get homeDashNextSubtitle => '09:30 • Amina B. • Consultation';
+
+  @override
   String get homeMenuConsultation => 'Consultation';
 
   @override
@@ -225,6 +252,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeMenuLogout => 'Se déconnecter';
+
+  @override
+  String homeGreeting(Object name) {
+    return 'Dr. $name';
+  }
 
   @override
   String get phoneHint => 'Numéro de téléphone';

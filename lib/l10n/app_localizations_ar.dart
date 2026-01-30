@@ -185,6 +185,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeSearchHint => 'ابحث...';
 
   @override
+  String get homeDashboardTitle => 'لوحة التحكم';
+
+  @override
+  String get homeDashAppointments => 'المواعيد';
+
+  @override
+  String get homeDashConsultationsToday => 'استشارات اليوم';
+
+  @override
+  String get homeDashPatients => 'المرضى';
+
+  @override
+  String get homeDashRevenue => 'الإيرادات';
+
+  @override
+  String get homeDashAlerts => 'التنبيهات';
+
+  @override
+  String get homeDashConsultationsMonth => 'استشارات هذا الشهر';
+
+  @override
+  String get homeDashNextTitle => 'الموعد القادم';
+
+  @override
+  String get homeDashNextSubtitle => '09:30 • أمينة ب. • استشارة';
+
+  @override
   String get homeMenuConsultation => 'استشارة';
 
   @override
@@ -219,6 +246,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeMenuLogout => 'تسجيل الخروج';
+
+  @override
+  String homeGreeting(Object name) {
+    return 'دكتور $name';
+  }
 
   @override
   String get phoneHint => 'رقم الهاتف';
