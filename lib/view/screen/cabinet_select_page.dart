@@ -45,19 +45,22 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          const SynapseBackground(),
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {},
+      child: Scaffold(
+        body: Stack(
+          children: [
+            const SynapseBackground(),
+            SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 560),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
                       Text(
                         l10n.cabinetSelectTitle,
                         textAlign: TextAlign.center,
@@ -142,19 +145,20 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                                 name: name.isEmpty ? l10n.cabinetSelectUnnamed : name,
                                 specialty: specialty.isEmpty ? l10n.cabinetSelectSampleSpecialty : specialty,
                                 imageUrl: imageUrl,
-                                onTap: () => context.push('/cabinet/search'),
+                                onTap: () => context.push('/home'),
                               );
                             },
                           );
                         },
                       ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

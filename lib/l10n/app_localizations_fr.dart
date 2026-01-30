@@ -188,6 +188,45 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cabinetSelectFind => 'Trouver un cabinet';
 
   @override
+  String get homeSearchHint => 'Rechercher...';
+
+  @override
+  String get homeMenuConsultation => 'Consultation';
+
+  @override
+  String get homeMenuHistory => 'Historique';
+
+  @override
+  String get homeMenuCaisse => 'Caisse';
+
+  @override
+  String get homeMenuSettings => 'Paramètres';
+
+  @override
+  String get homeMenuData => 'Données';
+
+  @override
+  String get homeMenuAbout => 'À propos';
+
+  @override
+  String get homeMenuToday => 'Aujourd\'hui';
+
+  @override
+  String get homeMenuRdvTake => 'Prise RDV';
+
+  @override
+  String get homeMenuRdvList => 'Liste RDV';
+
+  @override
+  String get homeMenuProfile => 'Mon profil';
+
+  @override
+  String get homeMenuChangeClinic => 'Changer de cabinet';
+
+  @override
+  String get homeMenuLogout => 'Se déconnecter';
+
+  @override
   String get phoneHint => 'Numéro de téléphone';
 
   @override

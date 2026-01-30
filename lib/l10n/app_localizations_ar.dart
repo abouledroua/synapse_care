@@ -182,6 +182,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cabinetSelectFind => 'البحث عن عيادة';
 
   @override
+  String get homeSearchHint => 'ابحث...';
+
+  @override
+  String get homeMenuConsultation => 'استشارة';
+
+  @override
+  String get homeMenuHistory => 'السجل';
+
+  @override
+  String get homeMenuCaisse => 'الصندوق';
+
+  @override
+  String get homeMenuSettings => 'الإعدادات';
+
+  @override
+  String get homeMenuData => 'البيانات';
+
+  @override
+  String get homeMenuAbout => 'حول';
+
+  @override
+  String get homeMenuToday => 'اليوم';
+
+  @override
+  String get homeMenuRdvTake => 'أخذ موعد';
+
+  @override
+  String get homeMenuRdvList => 'قائمة المواعيد';
+
+  @override
+  String get homeMenuProfile => 'ملفي الشخصي';
+
+  @override
+  String get homeMenuChangeClinic => 'تغيير العيادة';
+
+  @override
+  String get homeMenuLogout => 'تسجيل الخروج';
+
+  @override
   String get phoneHint => 'رقم الهاتف';
 
   @override

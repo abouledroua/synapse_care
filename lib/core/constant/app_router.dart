@@ -7,6 +7,7 @@ import '../../view/screen/auth_signup_page.dart';
 import '../../view/screen/access_denied_page.dart';
 import '../../view/screen/cabinet_search_page.dart';
 import '../../view/screen/cabinet_select_page.dart';
+import '../../view/screen/home_page.dart';
 import '../../view/screen/landing_page.dart';
 import '../../view/screen/language_picker_page.dart';
 import '../../view/screen/not_found_page.dart';
@@ -52,6 +53,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/cabinet/select',
         pageBuilder: (context, state) => const NoTransitionPage(child: CabinetSelectPage()),
+      ),
+      GoRoute(
+        path: '/home',
+        pageBuilder: (context, state) => const NoTransitionPage(child: HomePage()),
       ),
       GoRoute(
         path: '/timeout',

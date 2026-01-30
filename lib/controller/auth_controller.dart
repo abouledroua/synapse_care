@@ -9,6 +9,7 @@ import 'package:intl_phone_field/phone_number.dart';
 
 class AuthController extends ChangeNotifier {
   static int? globalUserId;
+  static Map<String, dynamic>? globalUser;
   bool obscurePassword = true;
   bool isDoctor = false;
   String? phoneError;
@@ -121,6 +122,14 @@ class AuthController extends ChangeNotifier {
     _touchSession();
   }
 
+  void _setGlobalUser(Map<String, dynamic>? data) {
+    if (data == null) {
+      globalUser = null;
+      return;
+    }
+    globalUser = Map<String, dynamic>.from(data);
+  }
+
   void _touchSession() {
     _lastActivity = DateTime.now();
     _sessionTimer?.cancel();
@@ -143,6 +152,7 @@ class AuthController extends ChangeNotifier {
   void logout() {
     currentUserId = null;
     globalUserId = null;
+    globalUser = null;
     _lastActivity = null;
     _sessionTimer?.cancel();
     _sessionTimer = null;
@@ -431,15 +441,23 @@ class AuthController extends ChangeNotifier {
       final response = await http.post(uri, headers: {'Content-Type': 'application/json'}, body: jsonEncode(payload));
       if (response.statusCode == 200) {
         int? userId;
+        Map<String, dynamic>? userData;
         try {
           final decoded = jsonDecode(response.body);
-          if (decoded is Map && decoded['id_user'] != null) {
-            userId = decoded['id_user'] is int ? decoded['id_user'] as int : int.tryParse('${decoded['id_user']}');
+          if (decoded is Map) {
+            userData = Map<String, dynamic>.from(decoded);
+            if (decoded['id_user'] != null) {
+              userId =
+                  decoded['id_user'] is int ? decoded['id_user'] as int : int.tryParse('${decoded['id_user']}');
+            }
           }
         } catch (_) {}
 
         if (userId != null) {
           _startSession(userId);
+        }
+        if (userData != null) {
+          _setGlobalUser(userData);
         }
         setLoginSubmitError(null);
         return null;

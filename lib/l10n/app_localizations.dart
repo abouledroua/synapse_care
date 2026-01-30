@@ -442,6 +442,84 @@ abstract class AppLocalizations {
   /// **'Find a clinic'**
   String get cabinetSelectFind;
 
+  /// No description provided for @homeSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rechercher...'**
+  String get homeSearchHint;
+
+  /// No description provided for @homeMenuConsultation.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultation'**
+  String get homeMenuConsultation;
+
+  /// No description provided for @homeMenuHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get homeMenuHistory;
+
+  /// No description provided for @homeMenuCaisse.
+  ///
+  /// In en, this message translates to:
+  /// **'Caisse'**
+  String get homeMenuCaisse;
+
+  /// No description provided for @homeMenuSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get homeMenuSettings;
+
+  /// No description provided for @homeMenuData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get homeMenuData;
+
+  /// No description provided for @homeMenuAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get homeMenuAbout;
+
+  /// No description provided for @homeMenuToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get homeMenuToday;
+
+  /// No description provided for @homeMenuRdvTake.
+  ///
+  /// In en, this message translates to:
+  /// **'Take appointment'**
+  String get homeMenuRdvTake;
+
+  /// No description provided for @homeMenuRdvList.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointments list'**
+  String get homeMenuRdvList;
+
+  /// No description provided for @homeMenuProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'My profile'**
+  String get homeMenuProfile;
+
+  /// No description provided for @homeMenuChangeClinic.
+  ///
+  /// In en, this message translates to:
+  /// **'Change clinic'**
+  String get homeMenuChangeClinic;
+
+  /// No description provided for @homeMenuLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get homeMenuLogout;
+
   /// No description provided for @phoneHint.
   ///
   /// In en, this message translates to:

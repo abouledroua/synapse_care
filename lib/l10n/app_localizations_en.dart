@@ -186,6 +186,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cabinetSelectFind => 'Find a clinic';
 
   @override
+  String get homeSearchHint => 'Rechercher...';
+
+  @override
+  String get homeMenuConsultation => 'Consultation';
+
+  @override
+  String get homeMenuHistory => 'History';
+
+  @override
+  String get homeMenuCaisse => 'Caisse';
+
+  @override
+  String get homeMenuSettings => 'Settings';
+
+  @override
+  String get homeMenuData => 'Data';
+
+  @override
+  String get homeMenuAbout => 'About';
+
+  @override
+  String get homeMenuToday => 'Today';
+
+  @override
+  String get homeMenuRdvTake => 'Take appointment';
+
+  @override
+  String get homeMenuRdvList => 'Appointments list';
+
+  @override
+  String get homeMenuProfile => 'My profile';
+
+  @override
+  String get homeMenuChangeClinic => 'Change clinic';
+
+  @override
+  String get homeMenuLogout => 'Log out';
+
+  @override
   String get phoneHint => 'Phone number';
 
   @override
