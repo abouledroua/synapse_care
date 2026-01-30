@@ -502,6 +502,18 @@ abstract class AppLocalizations {
   /// **'09:30 • Amina B. • Consultation'**
   String get homeDashNextSubtitle;
 
+  /// No description provided for @homePatientSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No patients found.'**
+  String get homePatientSearchEmpty;
+
+  /// No description provided for @homePatientSearchUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed patient'**
+  String get homePatientSearchUnnamed;
+
   /// No description provided for @homeMenuConsultation.
   ///
   /// In en, this message translates to:

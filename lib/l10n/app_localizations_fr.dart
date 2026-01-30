@@ -218,6 +218,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeDashNextSubtitle => '09:30 • Amina B. • Consultation';
 
   @override
+  String get homePatientSearchEmpty => 'Aucun patient trouvé.';
+
+  @override
+  String get homePatientSearchUnnamed => 'Patient sans nom';
+
+  @override
   String get homeMenuConsultation => 'Consultation';
 
   @override

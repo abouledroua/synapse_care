@@ -1,0 +1,60 @@
+WITH seed AS (
+  SELECT
+    gs AS idx,
+    (CURRENT_DATE - (floor(random() * 20000)::int))::date AS dob
+  FROM generate_series(1, 10) AS gs
+)
+INSERT INTO patients (
+  code_barre,
+  nom,
+  prenom,
+  date_naissance,
+  email,
+  age,
+  tel1,
+  wilaya,
+  apc,
+  adresse,
+  dette,
+  presume,
+  sexe,
+  type_age,
+  conventionne,
+  pourc_conv,
+  lieu_naissance,
+  gs,
+  profession,
+  diagnostique,
+  tel2,
+  nin,
+  nss,
+  nb_impression,
+  code_malade
+)
+SELECT
+  'CB-' || idx || '-' || substring(md5(random()::text), 1, 6),
+  'Nom' || idx,
+  'Prenom' || idx,
+  dob,
+  'patient' || idx || '@example.com',
+  date_part('year', age(CURRENT_DATE, dob))::int,
+  '0550' || lpad((floor(random() * 1000000))::int::text, 6, '0'),
+  (1 + floor(random() * 58))::int,
+  (1 + floor(random() * 200))::int,
+  'Adresse ' || idx,
+  round((random() * 5000)::numeric, 2),
+  (random() * 1)::int,
+  (random() * 1)::int,
+  (random() * 3)::int,
+  (random() * 1)::int,
+  round((random() * 100)::numeric, 2),
+  'Lieu ' || idx,
+  (1 + floor(random() * 3))::int,
+  'Profession ' || idx,
+  'Diagnostic ' || idx,
+  '077' || lpad((floor(random() * 1000000))::int::text, 6, '0'),
+  'NIN' || idx || substring(md5(random()::text), 1, 5),
+  'NSS' || idx || substring(md5(random()::text), 1, 5),
+  (1 + floor(random() * 20))::int,
+  'CM' || idx || substring(md5(random()::text), 1, 4)
+FROM seed;

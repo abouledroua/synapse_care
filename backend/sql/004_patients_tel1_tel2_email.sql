@@ -1,0 +1,5 @@
+ALTER TABLE patients
+  RENAME COLUMN tel TO tel1;
+
+ALTER TABLE patients
+  ALTER COLUMN email TYPE TEXT;

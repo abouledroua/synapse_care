@@ -66,6 +66,8 @@
   "homeDashConsultationsMonth": "استشارات هذا الشهر",
   "homeDashNextTitle": "الموعد القادم",
   "homeDashNextSubtitle": "09:30 • أمينة ب. • استشارة",
+  "homePatientSearchEmpty": "لم يتم العثور على مرضى.",
+  "homePatientSearchUnnamed": "مريض بدون اسم",
   "homeMenuConsultation": "استشارة",
   "homeMenuHistory": "السجل",
   "homeMenuCaisse": "الصندوق",

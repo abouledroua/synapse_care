@@ -212,6 +212,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeDashNextSubtitle => '09:30 • أمينة ب. • استشارة';
 
   @override
+  String get homePatientSearchEmpty => 'لم يتم العثور على مرضى.';
+
+  @override
+  String get homePatientSearchUnnamed => 'مريض بدون اسم';
+
+  @override
   String get homeMenuConsultation => 'استشارة';
 
   @override

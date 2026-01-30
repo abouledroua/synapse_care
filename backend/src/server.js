@@ -239,6 +239,32 @@ app.get("/patients", async (req, res) => {
   }
 });
 
+app.get("/patients/search", async (req, res) => {
+  try {
+    const q = String(req.query.q || "").trim();
+    if (!q) return res.json([]);
+    const like = `%${q}%`;
+    const result = await pool.query(
+      `SELECT *
+       FROM patients
+       WHERE nom ILIKE $1
+          OR prenom ILIKE $1
+          OR code_barre ILIKE $1
+          OR tel1 ILIKE $1
+          OR tel2 ILIKE $1
+          OR email ILIKE $1
+          OR nin ILIKE $1
+          OR nss ILIKE $1
+       ORDER BY nom ASC
+       LIMIT 20`,
+      [like],
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`API listening on http://localhost:${port}`);

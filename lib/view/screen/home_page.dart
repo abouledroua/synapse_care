@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
@@ -17,6 +19,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final HomeController _controller = HomeController();
+  final GlobalKey _searchBarKey = GlobalKey();
+  final GlobalKey _dashboardStackKey = GlobalKey();
+  Rect? _searchBarRect;
 
   @override
   void initState() {
@@ -44,6 +49,7 @@ class _HomePageState extends State<HomePage> {
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateSearchBarRect());
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) => PopScope(
@@ -74,10 +80,34 @@ class _HomePageState extends State<HomePage> {
                               doctorName: _controller.doctorName(),
                               clinicName: _controller.clinicName(),
                               userPhotoUrl: _controller.userPhotoUrl(),
+                              searchController: _controller.searchController,
+                              onSearchChanged: _controller.searchPatients,
+                              isSearching: _controller.isSearching,
+                              searchBarKey: _searchBarKey,
                             ),
                             const SizedBox(height: 18),
                             Expanded(
-                              child: _Dashboard(scheme: scheme, isWide: isWide, l10n: l10n),
+                              child: Stack(
+                                key: _dashboardStackKey,
+                                children: [
+                                  _Dashboard(scheme: scheme, isWide: isWide, l10n: l10n),
+                                  if (_controller.searchController.text.trim().isNotEmpty)
+                                    Positioned(
+                                      left: _panelLeft(size.width, min(size.width, 600)),
+                                      top: 0,
+                                      width: min(size.width, 600),
+                                      child: _PatientSearchPanel(
+                                        scheme: scheme,
+                                        l10n: l10n,
+                                        isSearching: _controller.isSearching,
+                                        error: _controller.searchError,
+                                        results: _controller.searchResults,
+                                        maxHeight: size.height * 0.32,
+                                        scrollController: _controller.searchScrollController,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -91,6 +121,27 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void _updateSearchBarRect() {
+    final searchContext = _searchBarKey.currentContext;
+    final stackContext = _dashboardStackKey.currentContext;
+    if (searchContext == null || stackContext == null) return;
+    final searchBox = searchContext.findRenderObject() as RenderBox?;
+    final stackBox = stackContext.findRenderObject() as RenderBox?;
+    if (searchBox == null || stackBox == null || !searchBox.hasSize || !stackBox.hasSize) return;
+    final searchTopLeft = searchBox.localToGlobal(Offset.zero);
+    final localTopLeft = stackBox.globalToLocal(searchTopLeft);
+    final rect = Rect.fromLTWH(localTopLeft.dx, localTopLeft.dy, searchBox.size.width, searchBox.size.height);
+    if (_searchBarRect == rect) return;
+    setState(() => _searchBarRect = rect);
+  }
+
+  double _panelLeft(double screenWidth, double panelWidth) {
+    final rect = _searchBarRect;
+    if (rect == null) return 0;
+    final desired = rect.center.dx - panelWidth / 2;
+    return desired.clamp(0.0, screenWidth - panelWidth);
   }
 }
 
@@ -106,6 +157,10 @@ class _TopBar extends StatelessWidget {
     required this.doctorName,
     required this.clinicName,
     required this.userPhotoUrl,
+    required this.searchController,
+    required this.onSearchChanged,
+    required this.isSearching,
+    required this.searchBarKey,
   });
 
   final String dateText;
@@ -118,160 +173,195 @@ class _TopBar extends StatelessWidget {
   final String? doctorName;
   final String? clinicName;
   final String? userPhotoUrl;
+  final TextEditingController searchController;
+  final ValueChanged<String> onSearchChanged;
+  final bool isSearching;
+  final GlobalKey searchBarKey;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 900;
+        final searchHeight = isCompact ? 50.0 : 58.0;
+        final searchPadding = isCompact ? 12.0 : 18.0;
+        final hintSize = isCompact ? 14.0 : 16.0;
+
+        return Row(
           children: [
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.calendar_today, size: 16, color: scheme.primary.withValues(alpha: 0.8)),
-                const SizedBox(width: 6),
-                Text(
-                  dateText,
-                  style: TextStyle(
-                    color: scheme.onSurfaceVariant,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(Icons.access_time, size: 14, color: scheme.primary.withValues(alpha: 0.7)),
-                const SizedBox(width: 6),
-                Text(
-                  timeText,
-                  style: TextStyle(
-                    color: scheme.onSurfaceVariant.withValues(alpha: 0.75),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(width: 12),
-        IconButton(onPressed: onToggleMenu, icon: Icon(menuOpen ? Icons.menu_open : Icons.menu), color: scheme.primary),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Container(
-            height: 58,
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            decoration: BoxDecoration(
-              color: scheme.surface.withValues(alpha: 0.7),
-              borderRadius: BorderRadius.circular(26),
-              boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.search),
-                const SizedBox(width: 12),
-                Text(
-                  l10n.homeSearchHint,
-                  style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.6), fontSize: 16),
-                ),
-                const Spacer(),
-                Container(width: 1, height: 28, color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
-                const SizedBox(width: 12),
-                Icon(Icons.search, color: scheme.primary),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 18),
-        const SizedBox(width: 16),
-        PopupMenuButton<_ProfileAction>(
-          position: PopupMenuPosition.under,
-          offset: const Offset(0, 8),
-          color: Colors.white.withValues(alpha: 0.96),
-          elevation: 10,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          onSelected: (value) {
-            switch (value) {
-              case _ProfileAction.profile:
-                // TODO: navigate to profile page when available.
-                break;
-              case _ProfileAction.changeClinic:
-                context.push('/cabinet/select');
-                break;
-              case _ProfileAction.logout:
-                final controller = AuthController();
-                controller.logout();
-                context.go('/auth/login');
-                break;
-            }
-          },
-          itemBuilder: (_) => [
-            PopupMenuItem(
-              value: _ProfileAction.profile,
-              child: Row(
-                children: [
-                  Icon(Icons.person_outline, color: scheme.primary),
-                  const SizedBox(width: 10),
-                  Text(l10n.homeMenuProfile, style: _menuTextStyle(scheme)),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: _ProfileAction.changeClinic,
-              child: Row(
-                children: [
-                  Icon(Icons.local_hospital_outlined, color: scheme.primary),
-                  const SizedBox(width: 10),
-                  Text(l10n.homeMenuChangeClinic, style: _menuTextStyle(scheme)),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: _ProfileAction.logout,
-              child: Row(
-                children: [
-                  Icon(Icons.logout, color: scheme.error),
-                  const SizedBox(width: 10),
-                  Text(l10n.homeMenuLogout, style: _menuTextStyle(scheme).copyWith(color: scheme.error)),
-                ],
-              ),
-            ),
-          ],
-          child: Row(
-            children: [
-              if (doctorName != null && doctorName!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        l10n.homeGreeting(doctorName!),
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: scheme.onSurfaceVariant),
+                Row(
+                  children: [
+                    Icon(Icons.calendar_today, size: 16, color: scheme.primary.withValues(alpha: 0.8)),
+                    const SizedBox(width: 6),
+                    Text(
+                      dateText,
+                      style: TextStyle(
+                        color: scheme.onSurfaceVariant,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
                       ),
-                      if (clinicName != null && clinicName!.isNotEmpty)
-                        Text(
-                          clinicName!,
-                          style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant.withValues(alpha: 0.65)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.access_time, size: 14, color: scheme.primary.withValues(alpha: 0.7)),
+                    const SizedBox(width: 6),
+                    Text(
+                      timeText,
+                      style: TextStyle(
+                        color: scheme.onSurfaceVariant.withValues(alpha: 0.75),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(width: 10),
+            IconButton(
+              onPressed: onToggleMenu,
+              icon: Icon(menuOpen ? Icons.menu_open : Icons.menu),
+              color: scheme.primary,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Container(
+                key: searchBarKey,
+                height: searchHeight,
+                padding: EdgeInsets.symmetric(horizontal: searchPadding),
+                decoration: BoxDecoration(
+                  color: scheme.surface.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(26),
+                  boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: onSearchChanged,
+                        style: TextStyle(color: scheme.onSurfaceVariant, fontSize: hintSize),
+                        decoration: InputDecoration(
+                          isDense: true,
+                          border: InputBorder.none,
+                          hintText: l10n.homeSearchHint,
+                          hintStyle: TextStyle(
+                            color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
+                            fontSize: hintSize,
+                          ),
                         ),
+                      ),
+                    ),
+                    Container(width: 1, height: 24, color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
+                    const SizedBox(width: 10),
+                    if (isSearching)
+                      SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: scheme.primary),
+                      )
+                    else
+                      Icon(Icons.search, color: scheme.primary),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            PopupMenuButton<_ProfileAction>(
+              position: PopupMenuPosition.under,
+              offset: const Offset(0, 8),
+              color: Colors.white.withValues(alpha: 0.96),
+              elevation: 10,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              onSelected: (value) {
+                switch (value) {
+                  case _ProfileAction.profile:
+                    // TODO: navigate to profile page when available.
+                    break;
+                  case _ProfileAction.changeClinic:
+                    context.push('/cabinet/select');
+                    break;
+                  case _ProfileAction.logout:
+                    final controller = AuthController();
+                    controller.logout();
+                    context.go('/auth/login');
+                    break;
+                }
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: _ProfileAction.profile,
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_outline, color: scheme.primary),
+                      const SizedBox(width: 10),
+                      Text(l10n.homeMenuProfile, style: _menuTextStyle(scheme)),
                     ],
                   ),
                 ),
-              CircleAvatar(
-                radius: isWide ? 26 : 22,
-                backgroundColor: scheme.primary.withValues(alpha: 0.2),
-                backgroundImage: userPhotoUrl != null ? NetworkImage(userPhotoUrl!) : null,
-                child: userPhotoUrl == null ? Icon(Icons.person, color: scheme.primary) : null,
+                PopupMenuItem(
+                  value: _ProfileAction.changeClinic,
+                  child: Row(
+                    children: [
+                      Icon(Icons.local_hospital_outlined, color: scheme.primary),
+                      const SizedBox(width: 10),
+                      Text(l10n.homeMenuChangeClinic, style: _menuTextStyle(scheme)),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: _ProfileAction.logout,
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: scheme.error),
+                      const SizedBox(width: 10),
+                      Text(l10n.homeMenuLogout, style: _menuTextStyle(scheme).copyWith(color: scheme.error)),
+                    ],
+                  ),
+                ),
+              ],
+              child: Row(
+                children: [
+                  if (!isCompact && doctorName != null && doctorName!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            l10n.homeGreeting(doctorName!),
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: scheme.onSurfaceVariant),
+                          ),
+                          if (clinicName != null && clinicName!.isNotEmpty)
+                            Text(
+                              clinicName!,
+                              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant.withValues(alpha: 0.65)),
+                            ),
+                        ],
+                      ),
+                    ),
+                  CircleAvatar(
+                    radius: isWide ? 26 : 22,
+                    backgroundColor: scheme.primary.withValues(alpha: 0.2),
+                    backgroundImage: userPhotoUrl != null ? NetworkImage(userPhotoUrl!) : null,
+                    child: userPhotoUrl == null ? Icon(Icons.person, color: scheme.primary) : null,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -286,56 +376,60 @@ class _Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: isWide ? 1180 : 900),
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10),
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [scheme.surface.withValues(alpha: 0.55), scheme.primaryContainer.withValues(alpha: 0.18)],
-            ),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
-            boxShadow: const [BoxShadow(color: Color(0x20000000), blurRadius: 26, offset: Offset(0, 14))],
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -60,
-                top: -40,
-                child: Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(colors: [scheme.primary.withValues(alpha: 0.18), Colors.transparent]),
-                  ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(12),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            const dashboardPadding = 16.0;
+            const spacing = 10.0;
+            const minCardWidth = 260.0;
+            final available = max(0.0, constraints.maxWidth - (dashboardPadding * 2));
+            final rawColumns = ((available + spacing) / (minCardWidth + spacing)).floor();
+            final columns = max(1, min(3, rawColumns));
+            var cardWidth = (available - spacing * (columns - 1)) / columns;
+            cardWidth -= dashboardPadding / 2;
+            return Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(dashboardPadding),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(26),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [scheme.surface.withValues(alpha: 0.55), scheme.primaryContainer.withValues(alpha: 0.18)],
                 ),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+                boxShadow: const [BoxShadow(color: Color(0x20000000), blurRadius: 26, offset: Offset(0, 14))],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Stack(
                 children: [
-                  Text(
-                    l10n.homeDashboardTitle,
-                    style: TextStyle(
-                      color: scheme.onSurfaceVariant,
-                      fontSize: isWide ? 26 : 22,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.3,
+                  Positioned(
+                    right: -60,
+                    top: -40,
+                    child: Container(
+                      width: 180,
+                      height: 180,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(colors: [scheme.primary.withValues(alpha: 0.18), Colors.transparent]),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      const spacing = 16.0;
-                      final maxWidth = constraints.maxWidth;
-                      final columns = isWide ? 3 : 2;
-                      final cardWidth = (maxWidth - spacing * (columns - 1)) / columns;
-
-                      return Wrap(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.homeDashboardTitle,
+                        style: TextStyle(
+                          color: scheme.onSurfaceVariant,
+                          fontSize: isWide ? 26 : 22,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Wrap(
                         spacing: spacing,
                         runSpacing: spacing,
                         children: [
@@ -388,19 +482,120 @@ class _Dashboard extends StatelessWidget {
                             accent: scheme.secondary,
                           ),
                           _DashWideCard(
-                            width: maxWidth,
+                            width: available,
                             scheme: scheme,
                             title: l10n.homeDashNextTitle,
                             subtitle: l10n.homeDashNextSubtitle,
                             icon: Icons.schedule_outlined,
                           ),
                         ],
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _PatientSearchPanel extends StatelessWidget {
+  const _PatientSearchPanel({
+    required this.scheme,
+    required this.l10n,
+    required this.isSearching,
+    required this.error,
+    required this.results,
+    required this.maxHeight,
+    required this.scrollController,
+  });
+
+  final ColorScheme scheme;
+  final AppLocalizations l10n;
+  final bool isSearching;
+  final String? error;
+  final List<Map<String, dynamic>> results;
+  final double maxHeight;
+  final ScrollController scrollController;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isSearching) {
+      return const SizedBox(height: 8);
+    }
+    if (error != null) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Text(l10n.loginNetworkError, style: TextStyle(color: scheme.error)),
+      );
+    }
+    if (results.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Text(
+          l10n.homePatientSearchEmpty,
+          style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
+        ),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: scheme.surface.withValues(alpha: 0.85),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+        boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: Scrollbar(
+          controller: scrollController,
+          thumbVisibility: true,
+          child: ListView.separated(
+            controller: scrollController,
+            primary: false,
+            itemCount: results.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final item = results[index];
+              final nom = (item['nom'] ?? '').toString();
+              final prenom = (item['prenom'] ?? '').toString();
+              final tel = (item['tel1'] ?? '').toString();
+              final email = (item['email'] ?? '').toString();
+              final displayName = '${prenom.isEmpty ? '' : '$prenom '}$nom'.trim();
+              return Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: scheme.primary.withValues(alpha: 0.12),
+                    child: Icon(Icons.person_outline, color: scheme.primary),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          displayName.isEmpty ? l10n.homePatientSearchUnnamed : displayName,
+                          style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          tel.isNotEmpty ? tel : email,
+                          style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.65), fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.chevron_right, color: scheme.primary.withValues(alpha: 0.6)),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -577,26 +772,25 @@ class _MenuScrollBehavior extends MaterialScrollBehavior {
 }
 
 class _MenuItem extends StatelessWidget {
-  const _MenuItem({required this.icon, required this.label, required this.scheme, this.isPrimary = false});
+  const _MenuItem({required this.icon, required this.label, required this.scheme});
 
   final IconData icon;
   final String label;
   final ColorScheme scheme;
-  final bool isPrimary;
 
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: 14),
     child: Row(
       children: [
-        Icon(icon, color: scheme.primary.withValues(alpha: isPrimary ? 0.95 : 0.7)),
+        Icon(icon, color: scheme.primary.withValues(alpha: 0.7)),
         const SizedBox(width: 12),
         Text(
           label,
           style: TextStyle(
-            color: scheme.onSurfaceVariant.withValues(alpha: isPrimary ? 0.95 : 0.85),
-            fontSize: isPrimary ? 17 : 16,
-            fontWeight: isPrimary ? FontWeight.w600 : FontWeight.w500,
+            color: scheme.onSurfaceVariant.withValues(alpha: 0.85),
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
             letterSpacing: 0.1,
           ),
         ),

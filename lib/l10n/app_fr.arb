@@ -66,6 +66,8 @@
   "homeDashConsultationsMonth": "Consultations ce mois",
   "homeDashNextTitle": "Prochain rendez-vous",
   "homeDashNextSubtitle": "09:30 • Amina B. • Consultation",
+  "homePatientSearchEmpty": "Aucun patient trouvé.",
+  "homePatientSearchUnnamed": "Patient sans nom",
   "homeMenuConsultation": "Consultation",
   "homeMenuHistory": "Historique",
   "homeMenuCaisse": "Caisse",

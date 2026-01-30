@@ -1,0 +1,6 @@
+ALTER TABLE patients
+  RENAME COLUMN id_adresse TO wilaya;
+
+ALTER TABLE patients
+  ADD COLUMN apc INTEGER NOT NULL,
+  ADD COLUMN adresse TEXT NOT NULL;
