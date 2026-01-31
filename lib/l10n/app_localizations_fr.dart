@@ -29,6 +29,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get chooseLanguage => 'Choisir la langue';
 
   @override
+  String get languageEnglish => 'Anglais';
+
+  @override
+  String get languageFrench => 'Français';
+
+  @override
+  String get languageArabic => 'Arabe';
+
+  @override
   String get notFoundTitle => 'Page introuvable';
 
   @override
@@ -157,6 +166,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cabinetSearchEmpty => 'Aucun cabinet trouvé.';
 
   @override
+  String get cabinetSearchAddNew => 'Ajouter un nouveau cabinet';
+
+  @override
+  String get cabinetSearchAddNewComingSoon => 'Bientôt disponible';
+
+  @override
+  String get cabinetCreateTitle => 'Créer un nouveau cabinet';
+
+  @override
+  String get cabinetCreateSubmit => 'Créer un cabinet';
+
+  @override
+  String get cabinetNameHint => 'Nom du cabinet';
+
+  @override
+  String get cabinetNameEmptyError => 'Veuillez saisir le nom du cabinet';
+
+  @override
+  String get cabinetAddressHint => 'Adresse du cabinet';
+
+  @override
+  String get cabinetAddressEmptyError =>
+      'Veuillez saisir l\'adresse du cabinet';
+
+  @override
   String get cabinetAddSuccess => 'Cabinet ajouté avec succès.';
 
   @override
@@ -164,6 +198,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get cabinetAddFailed => 'Impossible d\'ajouter le cabinet.';
+
+  @override
+  String get cabinetRemoveAction => 'Retirer';
+
+  @override
+  String get cabinetRemoveConfirmTitle => 'Retirer le cabinet ?';
+
+  @override
+  String get cabinetRemoveConfirmBody =>
+      'Cela supprimera votre affiliation à ce cabinet.';
+
+  @override
+  String get cabinetRemoveConfirm => 'Retirer';
+
+  @override
+  String get cabinetRemoveCancel => 'Annuler';
+
+  @override
+  String get cabinetRemoveSuccess => 'Cabinet retiré.';
+
+  @override
+  String get cabinetRemoveFailed => 'Impossible de retirer le cabinet.';
 
   @override
   String get cabinetSelectTitle => 'Choisissez votre cabinet';
@@ -227,6 +283,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeMenuConsultation => 'Consultation';
 
   @override
+  String get homeMenuPatientsList => 'Patients';
+
+  @override
   String get homeMenuHistory => 'Historique';
 
   @override
@@ -248,7 +307,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeMenuRdvTake => 'Prise RDV';
 
   @override
-  String get homeMenuRdvList => 'Liste RDV';
+  String get homeMenuRdvList => 'Rendez-vous';
 
   @override
   String get homeMenuProfile => 'Mon profil';
@@ -258,6 +317,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeMenuLogout => 'Se déconnecter';
+
+  @override
+  String get homeMenuOpenTooltip => 'Ouvrir le menu';
+
+  @override
+  String get homeLogoutConfirmMessage =>
+      'Êtes-vous sûr de vouloir vous déconnecter ?';
 
   @override
   String homeGreeting(Object name) {

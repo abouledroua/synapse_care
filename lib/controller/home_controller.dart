@@ -11,7 +11,7 @@ class HomeController extends ChangeNotifier {
       : _patientService = patientService ?? PatientService();
 
   final PatientService _patientService;
-  bool menuOpen = true;
+  bool menuOpen = false;
   Timer? _clockTimer;
   DateTime _now = DateTime.now();
   final TextEditingController searchController = TextEditingController();

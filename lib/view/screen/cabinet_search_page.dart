@@ -61,6 +61,12 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
                           ),
                         ),
                         const SizedBox(height: 18),
+                        FilledButton.icon(
+                          onPressed: () => context.push('/cabinet/create'),
+                          icon: const Icon(Icons.add),
+                          label: Text(l10n.cabinetSearchAddNew),
+                        ),
+                        const SizedBox(height: 12),
                         InputCard(
                           icon: Icons.search,
                           hintText: l10n.cabinetSearchHint,
@@ -78,15 +84,9 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
                         ),
                         const SizedBox(height: 18),
                         if (_controller.isLoading)
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: CircularProgressIndicator(),
-                          )
+                          const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: CircularProgressIndicator())
                         else if (_controller.errorCode != null)
-                          Text(
-                            l10n.loginNetworkError,
-                            style: TextStyle(color: scheme.error),
-                          )
+                          Text(l10n.loginNetworkError, style: TextStyle(color: scheme.error))
                         else if (_controller.searchController.text.trim().isNotEmpty && _controller.results.isEmpty)
                           Text(
                             l10n.cabinetSearchEmpty,
@@ -115,22 +115,18 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
                                         if (!mounted) return;
                                         final messenger = ScaffoldMessenger.of(context);
                                         if (result == CabinetAssignResult.success) {
-                                          messenger.showSnackBar(
-                                            SnackBar(content: Text(l10n.cabinetAddSuccess)),
-                                          );
-                                          context.pop();
+                                          messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetAddSuccess)));
+                                          if (context.canPop()) {
+                                            context.pop(true);
+                                          } else {
+                                            context.go('/cabinet/select');
+                                          }
                                         } else if (result == CabinetAssignResult.exists) {
-                                          messenger.showSnackBar(
-                                            SnackBar(content: Text(l10n.cabinetAddExists)),
-                                          );
+                                          messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetAddExists)));
                                         } else if (result == CabinetAssignResult.network) {
-                                          messenger.showSnackBar(
-                                            SnackBar(content: Text(l10n.loginNetworkError)),
-                                          );
+                                          messenger.showSnackBar(SnackBar(content: Text(l10n.loginNetworkError)));
                                         } else {
-                                          messenger.showSnackBar(
-                                            SnackBar(content: Text(l10n.cabinetAddFailed)),
-                                          );
+                                          messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetAddFailed)));
                                         }
                                       },
                                 child: Container(
@@ -189,10 +185,7 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
                                         SizedBox(
                                           height: 20,
                                           width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: scheme.primary,
-                                          ),
+                                          child: CircularProgressIndicator(strokeWidth: 2, color: scheme.primary),
                                         )
                                       else
                                         Icon(Icons.add, color: scheme.primary.withValues(alpha: 0.8)),

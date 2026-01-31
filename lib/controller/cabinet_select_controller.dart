@@ -43,4 +43,20 @@ class CabinetSelectController extends ChangeNotifier {
     };
     AuthController.persistGlobals();
   }
+
+  Future<CabinetRemoveResult> removeCabinet(int cabinetId) async {
+    final userId = AuthController.globalUserId;
+    if (userId == null) return CabinetRemoveResult.failed;
+
+    final result = await _service.removeCabinet(userId: userId, cabinetId: cabinetId);
+    if (result == CabinetRemoveResult.success) {
+      final currentId = AuthController.globalClinic?['id_cabinet'];
+      if (currentId == cabinetId) {
+        AuthController.globalClinic = null;
+        AuthController.persistGlobals();
+      }
+      await load();
+    }
+    return result;
+  }
 }

@@ -136,6 +136,24 @@ abstract class AppLocalizations {
   /// **'Choose language'**
   String get chooseLanguage;
 
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageFrench.
+  ///
+  /// In en, this message translates to:
+  /// **'French'**
+  String get languageFrench;
+
+  /// No description provided for @languageArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get languageArabic;
+
   /// No description provided for @notFoundTitle.
   ///
   /// In en, this message translates to:
@@ -382,6 +400,54 @@ abstract class AppLocalizations {
   /// **'No clinics found.'**
   String get cabinetSearchEmpty;
 
+  /// No description provided for @cabinetSearchAddNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Clinic'**
+  String get cabinetSearchAddNew;
+
+  /// No description provided for @cabinetSearchAddNewComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get cabinetSearchAddNewComingSoon;
+
+  /// No description provided for @cabinetCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new clinic'**
+  String get cabinetCreateTitle;
+
+  /// No description provided for @cabinetCreateSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Create clinic'**
+  String get cabinetCreateSubmit;
+
+  /// No description provided for @cabinetNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic name'**
+  String get cabinetNameHint;
+
+  /// No description provided for @cabinetNameEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the clinic name'**
+  String get cabinetNameEmptyError;
+
+  /// No description provided for @cabinetAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic address'**
+  String get cabinetAddressHint;
+
+  /// No description provided for @cabinetAddressEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the clinic address'**
+  String get cabinetAddressEmptyError;
+
   /// No description provided for @cabinetAddSuccess.
   ///
   /// In en, this message translates to:
@@ -397,8 +463,50 @@ abstract class AppLocalizations {
   /// No description provided for @cabinetAddFailed.
   ///
   /// In en, this message translates to:
-  /// **'Could not add clinic.'**
+  /// **'could not add clinic'**
   String get cabinetAddFailed;
+
+  /// No description provided for @cabinetRemoveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get cabinetRemoveAction;
+
+  /// No description provided for @cabinetRemoveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove clinic?'**
+  String get cabinetRemoveConfirmTitle;
+
+  /// No description provided for @cabinetRemoveConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove your affiliation with this clinic.'**
+  String get cabinetRemoveConfirmBody;
+
+  /// No description provided for @cabinetRemoveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get cabinetRemoveConfirm;
+
+  /// No description provided for @cabinetRemoveCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cabinetRemoveCancel;
+
+  /// No description provided for @cabinetRemoveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic removed.'**
+  String get cabinetRemoveSuccess;
+
+  /// No description provided for @cabinetRemoveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not remove clinic.'**
+  String get cabinetRemoveFailed;
 
   /// No description provided for @cabinetSelectTitle.
   ///
@@ -520,6 +628,12 @@ abstract class AppLocalizations {
   /// **'Consultation'**
   String get homeMenuConsultation;
 
+  /// No description provided for @homeMenuPatientsList.
+  ///
+  /// In en, this message translates to:
+  /// **'Patients'**
+  String get homeMenuPatientsList;
+
   /// No description provided for @homeMenuHistory.
   ///
   /// In en, this message translates to:
@@ -565,7 +679,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeMenuRdvList.
   ///
   /// In en, this message translates to:
-  /// **'Appointments list'**
+  /// **'Appointments'**
   String get homeMenuRdvList;
 
   /// No description provided for @homeMenuProfile.
@@ -585,6 +699,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log out'**
   String get homeMenuLogout;
+
+  /// No description provided for @homeMenuOpenTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Open menu'**
+  String get homeMenuOpenTooltip;
+
+  /// No description provided for @homeLogoutConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get homeLogoutConfirmMessage;
 
   /// No description provided for @homeGreeting.
   ///

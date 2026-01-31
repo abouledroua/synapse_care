@@ -6,6 +6,7 @@ import '../../controller/locale_controller.dart';
 import '../../view/screen/auth_login_page.dart';
 import '../../view/screen/auth_signup_page.dart';
 import '../../view/screen/access_denied_page.dart';
+import '../../view/screen/cabinet_create_page.dart';
 import '../../view/screen/cabinet_search_page.dart';
 import '../../view/screen/cabinet_select_page.dart';
 import '../../view/screen/home_page.dart';
@@ -26,10 +27,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final isAuthed = AuthController.globalUserId != null;
       final isAuthRoute = state.matchedLocation.startsWith('/auth');
-      final isProtected =
-          state.matchedLocation.startsWith('/home') || state.matchedLocation.startsWith('/cabinet');
+      final isProtected = state.matchedLocation.startsWith('/home') || state.matchedLocation.startsWith('/cabinet');
       if (!isAuthed && isProtected) return '/auth/login';
-      if (isAuthed && isAuthRoute) return '/home';
+      if (isAuthed && isAuthRoute) return '/cabinet/select';
       return null;
     },
     routes: [
@@ -57,6 +57,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/cabinet/search',
         pageBuilder: (context, state) => const NoTransitionPage(child: CabinetSearchPage()),
+      ),
+      GoRoute(
+        path: '/cabinet/create',
+        pageBuilder: (context, state) => const NoTransitionPage(child: CabinetCreatePage()),
       ),
       GoRoute(
         path: '/cabinet/select',

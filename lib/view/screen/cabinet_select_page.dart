@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../controller/cabinet_select_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/cabinet_service.dart';
 import '../widget/synapse_background.dart';
 
 class CabinetSelectPage extends StatefulWidget {
@@ -71,7 +72,12 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton.icon(
-                              onPressed: () => context.push('/cabinet/search'),
+                              onPressed: () async {
+                                final refreshed = await context.push<bool>('/cabinet/search');
+                                if (refreshed == true) {
+                                  await _controller.load();
+                                }
+                              },
                               icon: const Icon(Icons.search_rounded),
                               label: Text(l10n.cabinetSelectFind),
                               style: OutlinedButton.styleFrom(
@@ -120,6 +126,7 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                                 final specialty = (item['specialite_cabinet'] ?? '').toString();
                                 final photoFile = (item['photo_url'] ?? '').toString();
                                 final imageUrl = _controller.cabinetImageUrl(photoFile);
+                                final cabinetId = int.tryParse('${item['id_cabinet'] ?? ''}');
                                 return _CabinetCard(
                                   name: name.isEmpty ? l10n.cabinetSelectUnnamed : name,
                                   specialty: specialty.isEmpty ? l10n.cabinetSelectSampleSpecialty : specialty,
@@ -128,6 +135,39 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                                     _controller.selectCabinet(item);
                                     context.go('/home');
                                   },
+                                  onRemove: cabinetId == null
+                                      ? null
+                                      : () async {
+                                          final confirmed = await showDialog<bool>(
+                                            context: context,
+                                            builder: (dialogContext) => AlertDialog(
+                                              title: Text(l10n.cabinetRemoveConfirmTitle),
+                                              content: Text(l10n.cabinetRemoveConfirmBody),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                                                  child: Text(l10n.cabinetRemoveCancel),
+                                                ),
+                                                FilledButton(
+                                                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                                                  child: Text(l10n.cabinetRemoveConfirm),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                          if (confirmed != true) return;
+
+                                          final messenger = ScaffoldMessenger.of(context);
+                                          final result = await _controller.removeCabinet(cabinetId);
+                                          if (!mounted) return;
+                                          if (result == CabinetRemoveResult.success) {
+                                            messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetRemoveSuccess)));
+                                          } else if (result == CabinetRemoveResult.network) {
+                                            messenger.showSnackBar(SnackBar(content: Text(l10n.loginNetworkError)));
+                                          } else {
+                                            messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetRemoveFailed)));
+                                          }
+                                        },
                                 );
                               },
                             ),
@@ -150,12 +190,14 @@ class _CabinetCard extends StatelessWidget {
     required this.name,
     required this.specialty,
     required this.onTap,
+    this.onRemove,
     this.imageUrl,
   });
 
   final String name;
   final String specialty;
   final VoidCallback onTap;
+  final VoidCallback? onRemove;
   final String? imageUrl;
 
   @override
@@ -198,7 +240,14 @@ class _CabinetCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: scheme.primary.withValues(alpha: 0.8)),
+            if (onRemove != null)
+              IconButton(
+                onPressed: onRemove,
+                icon: Icon(Icons.remove_circle_outline, color: scheme.error),
+                tooltip: AppLocalizations.of(context)!.cabinetRemoveAction,
+              )
+            else
+              Icon(Icons.chevron_right, color: scheme.primary.withValues(alpha: 0.8)),
           ],
         ),
       ),

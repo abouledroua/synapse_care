@@ -27,6 +27,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chooseLanguage => 'اختر اللغة';
 
   @override
+  String get languageEnglish => 'الإنجليزية';
+
+  @override
+  String get languageFrench => 'الفرنسية';
+
+  @override
+  String get languageArabic => 'العربية';
+
+  @override
   String get notFoundTitle => 'الصفحة غير موجودة';
 
   @override
@@ -152,6 +161,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cabinetSearchEmpty => 'لم يتم العثور على عيادات.';
 
   @override
+  String get cabinetSearchAddNew => 'إضافة عيادة جديدة';
+
+  @override
+  String get cabinetSearchAddNewComingSoon => 'قريبًا';
+
+  @override
+  String get cabinetCreateTitle => 'إنشاء عيادة جديدة';
+
+  @override
+  String get cabinetCreateSubmit => 'إنشاء عيادة';
+
+  @override
+  String get cabinetNameHint => 'اسم العيادة';
+
+  @override
+  String get cabinetNameEmptyError => 'يرجى إدخال اسم العيادة';
+
+  @override
+  String get cabinetAddressHint => 'عنوان العيادة';
+
+  @override
+  String get cabinetAddressEmptyError => 'يرجى إدخال عنوان العيادة';
+
+  @override
   String get cabinetAddSuccess => 'تمت إضافة العيادة بنجاح.';
 
   @override
@@ -159,6 +192,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cabinetAddFailed => 'تعذر إضافة العيادة.';
+
+  @override
+  String get cabinetRemoveAction => 'إزالة';
+
+  @override
+  String get cabinetRemoveConfirmTitle => 'إزالة العيادة؟';
+
+  @override
+  String get cabinetRemoveConfirmBody => 'سيتم حذف انتسابك لهذه العيادة.';
+
+  @override
+  String get cabinetRemoveConfirm => 'إزالة';
+
+  @override
+  String get cabinetRemoveCancel => 'إلغاء';
+
+  @override
+  String get cabinetRemoveSuccess => 'تمت إزالة العيادة.';
+
+  @override
+  String get cabinetRemoveFailed => 'تعذر إزالة العيادة.';
 
   @override
   String get cabinetSelectTitle => 'اختر عيادتك';
@@ -221,6 +275,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeMenuConsultation => 'استشارة';
 
   @override
+  String get homeMenuPatientsList => 'المرضى';
+
+  @override
   String get homeMenuHistory => 'السجل';
 
   @override
@@ -242,7 +299,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeMenuRdvTake => 'أخذ موعد';
 
   @override
-  String get homeMenuRdvList => 'قائمة المواعيد';
+  String get homeMenuRdvList => 'المواعيد';
 
   @override
   String get homeMenuProfile => 'ملفي الشخصي';
@@ -252,6 +309,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeMenuLogout => 'تسجيل الخروج';
+
+  @override
+  String get homeMenuOpenTooltip => 'فتح القائمة';
+
+  @override
+  String get homeLogoutConfirmMessage => 'هل تريد تسجيل الخروج؟';
 
   @override
   String homeGreeting(Object name) {

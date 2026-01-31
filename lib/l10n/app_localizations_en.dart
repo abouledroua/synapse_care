@@ -29,6 +29,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseLanguage => 'Choose language';
 
   @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageFrench => 'French';
+
+  @override
+  String get languageArabic => 'Arabic';
+
+  @override
   String get notFoundTitle => 'Page not found';
 
   @override
@@ -155,13 +164,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cabinetSearchEmpty => 'No clinics found.';
 
   @override
+  String get cabinetSearchAddNew => 'Add New Clinic';
+
+  @override
+  String get cabinetSearchAddNewComingSoon => 'Coming soon';
+
+  @override
+  String get cabinetCreateTitle => 'Create a new clinic';
+
+  @override
+  String get cabinetCreateSubmit => 'Create clinic';
+
+  @override
+  String get cabinetNameHint => 'Clinic name';
+
+  @override
+  String get cabinetNameEmptyError => 'Please enter the clinic name';
+
+  @override
+  String get cabinetAddressHint => 'Clinic address';
+
+  @override
+  String get cabinetAddressEmptyError => 'Please enter the clinic address';
+
+  @override
   String get cabinetAddSuccess => 'Clinic added successfully.';
 
   @override
   String get cabinetAddExists => 'Clinic already added.';
 
   @override
-  String get cabinetAddFailed => 'Could not add clinic.';
+  String get cabinetAddFailed => 'could not add clinic';
+
+  @override
+  String get cabinetRemoveAction => 'Remove';
+
+  @override
+  String get cabinetRemoveConfirmTitle => 'Remove clinic?';
+
+  @override
+  String get cabinetRemoveConfirmBody =>
+      'This will remove your affiliation with this clinic.';
+
+  @override
+  String get cabinetRemoveConfirm => 'Remove';
+
+  @override
+  String get cabinetRemoveCancel => 'Cancel';
+
+  @override
+  String get cabinetRemoveSuccess => 'Clinic removed.';
+
+  @override
+  String get cabinetRemoveFailed => 'Could not remove clinic.';
 
   @override
   String get cabinetSelectTitle => 'Choose your clinic';
@@ -225,6 +280,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeMenuConsultation => 'Consultation';
 
   @override
+  String get homeMenuPatientsList => 'Patients';
+
+  @override
   String get homeMenuHistory => 'History';
 
   @override
@@ -246,7 +304,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeMenuRdvTake => 'Take appointment';
 
   @override
-  String get homeMenuRdvList => 'Appointments list';
+  String get homeMenuRdvList => 'Appointments';
 
   @override
   String get homeMenuProfile => 'My profile';
@@ -256,6 +314,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeMenuLogout => 'Log out';
+
+  @override
+  String get homeMenuOpenTooltip => 'Open menu';
+
+  @override
+  String get homeLogoutConfirmMessage => 'Are you sure you want to log out?';
 
   @override
   String homeGreeting(Object name) {

@@ -15,7 +15,7 @@ class AppTheme {
 
   static Color _seedForIndex(int index) {
     if (index == 1) return const Color(0xFFA895E3); // purple
-    if (index == 2) return const Color(0xFFE57373); // red
-    return const Color(0xFF66BB6A); // green
+    if (index == 2) return const Color.fromARGB(255, 216, 138, 138); // red
+    return const Color.fromARGB(255, 154, 189, 153); // green
   }
 }

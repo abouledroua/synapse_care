@@ -16,12 +16,34 @@ class AuthSignupForm extends StatefulWidget {
     required this.l10n,
     required this.scheme,
     required this.onSubmit,
+    this.submitLabel,
+    this.nameHint,
+    this.addressController,
+    this.addressHint,
+    this.addressError,
+    this.addressMaxLines,
+    this.addressMinLines,
+    this.onAddressChanged,
+    this.showEmail = true,
+    this.showPassword = true,
+    this.showConfirmPassword = true,
   });
 
   final AuthController controller;
   final AppLocalizations l10n;
   final ColorScheme scheme;
   final VoidCallback onSubmit;
+  final String? submitLabel;
+  final String? nameHint;
+  final TextEditingController? addressController;
+  final String? addressHint;
+  final String? addressError;
+  final int? addressMaxLines;
+  final int? addressMinLines;
+  final ValueChanged<String>? onAddressChanged;
+  final bool showEmail;
+  final bool showPassword;
+  final bool showConfirmPassword;
 
   @override
   State<AuthSignupForm> createState() => _AuthSignupFormState();
@@ -30,6 +52,7 @@ class AuthSignupForm extends StatefulWidget {
 class _AuthSignupFormState extends State<AuthSignupForm> {
   final _nameFocus = FocusNode();
   final _specialtyFocus = FocusNode();
+  final _addressFocus = FocusNode();
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
   final _confirmFocus = FocusNode();
@@ -40,6 +63,7 @@ class _AuthSignupFormState extends State<AuthSignupForm> {
   void dispose() {
     _nameFocus.dispose();
     _specialtyFocus.dispose();
+    _addressFocus.dispose();
     _emailFocus.dispose();
     _passwordFocus.dispose();
     _confirmFocus.dispose();
@@ -49,54 +73,59 @@ class _AuthSignupFormState extends State<AuthSignupForm> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      if (widget.controller.isDoctor) ...[
-        AnimatedBuilder(
-          animation: _photoController,
-          builder: (context, child) {
-            final photo = _photoController.photo;
-            return Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                GestureDetector(
-                  onTap: () => _photoController.pickFromGallery(widget.controller),
-                  child: CircleAvatar(
-                    radius: 45,
-                    backgroundColor: widget.scheme.primary.withValues(alpha: 0.15),
-                    backgroundImage: photo != null ? FileImage(File(photo.path)) : null,
-                    child: photo == null
-                        ? Icon(
-                            Icons.photo_camera_outlined,
-                            size: 30,
-                            color: widget.scheme.primary.withValues(alpha: 0.8),
-                          )
-                        : null,
-                  ),
-                ),
-                if (photo != null)
+  Widget build(BuildContext context) {
+    final submitLabel = widget.submitLabel ?? widget.l10n.signup;
+    final nameHint = widget.nameHint ?? widget.l10n.nameHint;
+    final showAddress = widget.addressController != null;
+    final addressHint = widget.addressHint ?? widget.l10n.cabinetAddressHint;
+    return Column(
+      children: [
+        if (widget.controller.isDoctor) ...[
+          AnimatedBuilder(
+            animation: _photoController,
+            builder: (context, child) {
+              final photo = _photoController.photo;
+              return Stack(
+                alignment: Alignment.bottomRight,
+                children: [
                   GestureDetector(
-                    onTap: () => _photoController.clear(widget.controller),
-                    child: Container(
-                      height: 22,
-                      width: 22,
-                      decoration: BoxDecoration(
-                        color: widget.scheme.surface,
-                        shape: BoxShape.circle,
-                        boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
-                      ),
-                      child: Icon(Icons.close, size: 14, color: widget.scheme.primary),
+                    onTap: () => _photoController.pickFromGallery(widget.controller),
+                    child: CircleAvatar(
+                      radius: 45,
+                      backgroundColor: widget.scheme.primary.withValues(alpha: 0.15),
+                      backgroundImage: photo != null ? FileImage(File(photo.path)) : null,
+                      child: photo == null
+                          ? Icon(
+                              Icons.photo_camera_outlined,
+                              size: 30,
+                              color: widget.scheme.primary.withValues(alpha: 0.8),
+                            )
+                          : null,
                     ),
                   ),
-              ],
-            );
-          },
-        ),
-        const SizedBox(height: 16),
-      ],
+                  if (photo != null)
+                    GestureDetector(
+                      onTap: () => _photoController.clear(widget.controller),
+                      child: Container(
+                        height: 22,
+                        width: 22,
+                        decoration: BoxDecoration(
+                          color: widget.scheme.surface,
+                          shape: BoxShape.circle,
+                          boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
+                        ),
+                        child: Icon(Icons.close, size: 14, color: widget.scheme.primary),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
       InputCard(
         icon: Icons.person_outline,
-        hintText: widget.l10n.nameHint,
+        hintText: nameHint,
         keyboardType: TextInputType.name,
         controller: widget.controller.nameController,
         focusNode: _nameFocus,
@@ -115,77 +144,102 @@ class _AuthSignupFormState extends State<AuthSignupForm> {
           keyboardType: TextInputType.multiline,
           controller: widget.controller.specialtyController,
           focusNode: _specialtyFocus,
-          onSubmitted: (_) => _emailFocus.requestFocus(),
+          textInputAction: TextInputAction.newline,
+          maxLines: 3,
+          minLines: 1,
+          onSubmitted: (_) => showAddress ? _addressFocus.requestFocus() : _emailFocus.requestFocus(),
           onChanged: (value) => widget.controller.validateSpecialty(
             value,
             emptyMessage: widget.l10n.specialtyEmptyError,
           ),
           errorText: widget.controller.specialtyError,
         ),
+        if (showAddress) ...[
+          const SizedBox(height: 16),
+          InputCard(
+            icon: Icons.location_on_outlined,
+            hintText: addressHint,
+            keyboardType: TextInputType.multiline,
+            controller: widget.addressController,
+            focusNode: _addressFocus,
+            textInputAction: TextInputAction.newline,
+            maxLines: widget.addressMaxLines ?? 3,
+            minLines: widget.addressMinLines ?? 1,
+            onSubmitted: (_) => _emailFocus.requestFocus(),
+            onChanged: widget.onAddressChanged,
+            errorText: widget.addressError,
+          ),
+        ],
       ],
-      const SizedBox(height: 16),
-      InputCard(
-        icon: Icons.email_outlined,
-        hintText: widget.l10n.emailHint,
-        keyboardType: TextInputType.emailAddress,
-        controller: widget.controller.emailController,
-        focusNode: _emailFocus,
-        onSubmitted: (_) => _passwordFocus.requestFocus(),
-        onChanged: (value) => widget.controller.validateEmail(
-          value,
-          emptyMessage: widget.l10n.emailEmptyError,
-          invalidMessage: widget.l10n.emailInvalidError,
-        ),
-        errorText: widget.controller.emailError,
-      ),
-      const SizedBox(height: 16),
-      InputCard(
-        icon: Icons.lock_outline,
-        hintText: widget.l10n.passwordHint,
-        obscureText: widget.controller.obscurePassword,
-        controller: widget.controller.passwordController,
-        focusNode: _passwordFocus,
-        onSubmitted: (_) => _confirmFocus.requestFocus(),
-        onChanged: (value) => widget.controller.updatePassword(
-          value,
-          tooShort: widget.l10n.passwordTooShort,
-          needSpecial: widget.l10n.passwordNeedSpecial,
-          needUpper: widget.l10n.passwordNeedUpper,
-          mismatch: widget.l10n.passwordMismatch,
-        ),
-        errorText: widget.controller.passwordError,
-        suffixIcon: IconButton(
-          icon: Icon(
-            widget.controller.obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-            color: widget.scheme.primary.withValues(alpha: 0.7),
+      if (widget.showEmail) ...[
+        const SizedBox(height: 16),
+        InputCard(
+          icon: Icons.email_outlined,
+          hintText: widget.l10n.emailHint,
+          keyboardType: TextInputType.emailAddress,
+          controller: widget.controller.emailController,
+          focusNode: _emailFocus,
+          onSubmitted: (_) => widget.showPassword ? _passwordFocus.requestFocus() : _phoneFocus.requestFocus(),
+          onChanged: (value) => widget.controller.validateEmail(
+            value,
+            emptyMessage: widget.l10n.emailEmptyError,
+            invalidMessage: widget.l10n.emailInvalidError,
           ),
-          onPressed: widget.controller.toggleObscurePassword,
+          errorText: widget.controller.emailError,
         ),
-      ),
-      const SizedBox(height: 16),
-      InputCard(
-        icon: Icons.lock_outline,
-        hintText: widget.l10n.confirmPasswordHint,
-        obscureText: widget.controller.obscurePassword,
-        controller: widget.controller.confirmController,
-        focusNode: _confirmFocus,
-        onSubmitted: (_) => _phoneFocus.requestFocus(),
-        onChanged: (value) => widget.controller.updateConfirmPassword(
-          value,
-          tooShort: widget.l10n.passwordTooShort,
-          needSpecial: widget.l10n.passwordNeedSpecial,
-          needUpper: widget.l10n.passwordNeedUpper,
-          mismatch: widget.l10n.passwordMismatch,
-        ),
-        errorText: widget.controller.confirmPasswordError,
-        suffixIcon: IconButton(
-          icon: Icon(
-            widget.controller.obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-            color: widget.scheme.primary.withValues(alpha: 0.7),
+      ],
+      if (widget.showPassword) ...[
+        const SizedBox(height: 16),
+        InputCard(
+          icon: Icons.lock_outline,
+          hintText: widget.l10n.passwordHint,
+          obscureText: widget.controller.obscurePassword,
+          controller: widget.controller.passwordController,
+          focusNode: _passwordFocus,
+          onSubmitted: (_) => widget.showConfirmPassword ? _confirmFocus.requestFocus() : _phoneFocus.requestFocus(),
+          onChanged: (value) => widget.controller.updatePassword(
+            value,
+            tooShort: widget.l10n.passwordTooShort,
+            needSpecial: widget.l10n.passwordNeedSpecial,
+            needUpper: widget.l10n.passwordNeedUpper,
+            mismatch: widget.l10n.passwordMismatch,
           ),
-          onPressed: widget.controller.toggleObscurePassword,
+          errorText: widget.controller.passwordError,
+          suffixIcon: IconButton(
+            icon: Icon(
+              widget.controller.obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+              color: widget.scheme.primary.withValues(alpha: 0.7),
+            ),
+            onPressed: widget.controller.toggleObscurePassword,
+          ),
         ),
-      ),
+      ],
+      if (widget.showConfirmPassword) ...[
+        const SizedBox(height: 16),
+        InputCard(
+          icon: Icons.lock_outline,
+          hintText: widget.l10n.confirmPasswordHint,
+          obscureText: widget.controller.obscurePassword,
+          controller: widget.controller.confirmController,
+          focusNode: _confirmFocus,
+          onSubmitted: (_) => _phoneFocus.requestFocus(),
+          onChanged: (value) => widget.controller.updateConfirmPassword(
+            value,
+            tooShort: widget.l10n.passwordTooShort,
+            needSpecial: widget.l10n.passwordNeedSpecial,
+            needUpper: widget.l10n.passwordNeedUpper,
+            mismatch: widget.l10n.passwordMismatch,
+          ),
+          errorText: widget.controller.confirmPasswordError,
+          suffixIcon: IconButton(
+            icon: Icon(
+              widget.controller.obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+              color: widget.scheme.primary.withValues(alpha: 0.7),
+            ),
+            onPressed: widget.controller.toggleObscurePassword,
+          ),
+        ),
+      ],
       const SizedBox(height: 16),
       SizedBox(
         height: 58,
@@ -222,7 +276,8 @@ class _AuthSignupFormState extends State<AuthSignupForm> {
         ),
       ),
       const SizedBox(height: 12),
-      PrimaryButton(label: widget.l10n.signup, onPressed: widget.onSubmit),
+      PrimaryButton(label: submitLabel, onPressed: widget.onSubmit),
     ],
-  );
+    );
+  }
 }

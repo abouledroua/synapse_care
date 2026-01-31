@@ -15,6 +15,8 @@ class InputCard extends StatelessWidget {
     this.onChanged,
     this.errorText,
     this.autofillHints,
+    this.maxLines = 1,
+    this.minLines,
   });
 
   final IconData icon;
@@ -29,6 +31,8 @@ class InputCard extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final String? errorText;
   final List<String>? autofillHints;
+  final int? maxLines;
+  final int? minLines;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +49,8 @@ class InputCard extends StatelessWidget {
         keyboardType: keyboardType,
         controller: controller,
         focusNode: focusNode,
+        maxLines: maxLines,
+        minLines: minLines,
         textInputAction: textInputAction ?? TextInputAction.next,
         autofillHints: autofillHints,
         onSubmitted: onSubmitted,
