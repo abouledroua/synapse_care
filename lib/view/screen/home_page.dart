@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controller/home_controller.dart';
+import '../../core/constant/layout_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../widget/home_dashboard.dart';
 import '../widget/home_quick_actions.dart';
@@ -26,28 +27,31 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     _controller.startClock();
   }
 
   @override
   void dispose() {
     _controller.stopClock();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isWide = size.width >= 900;
+    final isWide = size.width >= LayoutConstants.wideBreakpoint;
+    final isCompact = size.width < LayoutConstants.wideBreakpoint;
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final searchBar = _HomeSearchBar(
+      key: _searchBarKey,
+      scheme: scheme,
+      l10n: l10n,
+      isCompact: isCompact,
+      controller: _controller.searchController,
+      onChanged: _controller.searchPatients,
+      isSearching: _controller.isSearching,
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _updateSearchBarRect());
     return AnimatedBuilder(
@@ -76,14 +80,103 @@ class _HomePageState extends State<HomePage> {
                               doctorName: _controller.doctorName(),
                               clinicName: _controller.clinicName(),
                               userPhotoUrl: _controller.userPhotoUrl(),
-                              searchController: _controller.searchController,
-                              onSearchChanged: _controller.searchPatients,
-                              isSearching: _controller.isSearching,
-                              searchBarKey: _searchBarKey,
+                              searchBar: isCompact ? null : searchBar,
                             ),
-                            const SizedBox(height: 10),
-                            HomeQuickActions(l10n: l10n, scheme: scheme),
-                            const SizedBox(height: 18),
+                            if (isCompact) ...[
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(child: searchBar),
+                                  const SizedBox(width: 10),
+                                  PopupMenuButton<_QuickActionKey>(
+                                    position: PopupMenuPosition.under,
+                                    offset: const Offset(0, 6),
+                                    color: Colors.white.withValues(alpha: 0.96),
+                                    elevation: 10,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(
+                                        value: _QuickActionKey.patients,
+                                        child: _QuickActionMenuItem(
+                                          label: l10n.homeMenuPatientsList,
+                                          icon: Icons.people_alt_outlined,
+                                          color: const Color(0xFF1F8A70),
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: _QuickActionKey.consultations,
+                                        child: _QuickActionMenuItem(
+                                          label: l10n.homeMenuConsultation,
+                                          icon: Icons.medical_information_outlined,
+                                          color: const Color(0xFF3F6BB6),
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: _QuickActionKey.rdv,
+                                        child: _QuickActionMenuItem(
+                                          label: l10n.homeMenuRdvList,
+                                          icon: Icons.event_available_outlined,
+                                          color: const Color(0xFFE39B27),
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: _QuickActionKey.caisse,
+                                        child: _QuickActionMenuItem(
+                                          label: l10n.homeMenuCaisse,
+                                          icon: Icons.point_of_sale_outlined,
+                                          color: const Color(0xFF2D6A9F),
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: _QuickActionKey.settings,
+                                        child: _QuickActionMenuItem(
+                                          label: l10n.homeMenuSettings,
+                                          icon: Icons.settings_outlined,
+                                          color: const Color(0xFF8E3B46),
+                                        ),
+                                      ),
+                                    ],
+                                    onSelected: (value) {
+                                      switch (value) {
+                                        case _QuickActionKey.patients:
+                                          context.push('/patients/list');
+                                        case _QuickActionKey.consultations:
+                                          break;
+                                        case _QuickActionKey.rdv:
+                                          break;
+                                        case _QuickActionKey.caisse:
+                                          break;
+                                        case _QuickActionKey.settings:
+                                          break;
+                                      }
+                                    },
+                                    child: Container(
+                                      height: 50,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        color: scheme.surface.withValues(alpha: 0.9),
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: const [
+                                          BoxShadow(color: Color(0x22000000), blurRadius: 14, offset: Offset(0, 8)),
+                                        ],
+                                      ),
+                                      child: Icon(Icons.grid_view_rounded, color: scheme.primary),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                            if (isWide) ...[
+                              const SizedBox(height: 10),
+                              HomeQuickActions(
+                                l10n: l10n,
+                                scheme: scheme,
+                                onPatientsTap: () => context.push('/patients/list'),
+                              ),
+                              const SizedBox(height: 18),
+                            ] else ...[
+                              const SizedBox(height: 18),
+                            ],
                             Expanded(
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,6 +240,124 @@ class _HomePageState extends State<HomePage> {
     if (rect == null) return 0;
     final desired = rect.center.dx - panelWidth / 2;
     return desired.clamp(0.0, screenWidth - panelWidth);
+  }
+}
+
+class _HomeSearchBar extends StatelessWidget {
+  const _HomeSearchBar({
+    super.key,
+    required this.scheme,
+    required this.l10n,
+    required this.isCompact,
+    required this.controller,
+    required this.onChanged,
+    required this.isSearching,
+  });
+
+  final ColorScheme scheme;
+  final AppLocalizations l10n;
+  final bool isCompact;
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+  final bool isSearching;
+
+  @override
+  Widget build(BuildContext context) {
+    final searchHeight = isCompact ? 50.0 : 58.0;
+    final searchPadding = isCompact ? 12.0 : 18.0;
+    final hintSize = isCompact ? 14.0 : 16.0;
+
+    return Container(
+      height: searchHeight,
+      padding: EdgeInsets.symmetric(horizontal: searchPadding),
+      decoration: BoxDecoration(
+        color: scheme.surface.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(26),
+        boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.search),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              onChanged: onChanged,
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: hintSize),
+              decoration: InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                hintText: l10n.homeSearchHint,
+                hintStyle: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.6), fontSize: hintSize),
+              ),
+            ),
+          ),
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, value, child) {
+              if (value.text.isEmpty) {
+                return const SizedBox(width: 4);
+              }
+              return IconButton(
+                onPressed: () {
+                  controller.clear();
+                  onChanged('');
+                },
+                icon: Icon(Icons.clear, color: scheme.primary),
+                tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+                splashRadius: 18,
+              );
+            },
+          ),
+          Container(width: 1, height: 24, color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
+          const SizedBox(width: 10),
+          if (isSearching)
+            SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: scheme.primary))
+          else
+            Icon(Icons.search, color: scheme.primary),
+        ],
+      ),
+    );
+  }
+}
+
+enum _QuickActionKey { patients, consultations, rdv, caisse, settings }
+
+class _QuickActionMenuItem extends StatelessWidget {
+  const _QuickActionMenuItem({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.16),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color.withValues(alpha: 0.4)),
+          ),
+          child: Icon(icon, size: 16, color: color),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
   }
 }
 

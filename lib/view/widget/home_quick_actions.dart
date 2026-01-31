@@ -4,10 +4,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../l10n/app_localizations.dart';
 
 class HomeQuickActions extends StatelessWidget {
-  const HomeQuickActions({super.key, required this.l10n, required this.scheme});
+  const HomeQuickActions({
+    super.key,
+    required this.l10n,
+    required this.scheme,
+    this.onPatientsTap,
+  });
 
   final AppLocalizations l10n;
   final ColorScheme scheme;
+  final VoidCallback? onPatientsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +28,7 @@ class HomeQuickActions extends StatelessWidget {
             icon: FontAwesomeIcons.userGroup,
             color: const Color(0xFF1F8A70),
             scheme: scheme,
+            onTap: onPatientsTap,
           ),
           _QuickActionChip(
             label: l10n.homeMenuConsultation,
@@ -54,16 +61,23 @@ class HomeQuickActions extends StatelessWidget {
 }
 
 class _QuickActionChip extends StatelessWidget {
-  const _QuickActionChip({required this.label, required this.icon, required this.color, required this.scheme});
+  const _QuickActionChip({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.scheme,
+    this.onTap,
+  });
 
   final String label;
   final IconData icon;
   final Color color;
   final ColorScheme scheme;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final content = Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.16),
@@ -81,6 +95,14 @@ class _QuickActionChip extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    if (onTap == null) return content;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: content,
     );
   }
 }

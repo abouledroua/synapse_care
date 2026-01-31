@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../controller/auth_controller.dart';
 import '../../controller/theme_controller.dart';
+import '../../core/constant/layout_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../widget/auth_doctor_section.dart';
 import '../widget/auth_sms_section.dart';
@@ -29,7 +30,7 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isWide = size.width >= 720;
+    final isWide = size.width >= LayoutConstants.wideBreakpoint;
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(

@@ -334,7 +334,7 @@ app.post("/cabinet", async (req, res) => {
 
 app.get("/patients", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM patients ORDER BY id ASC");
+    const result = await pool.query("SELECT * FROM patients ORDER BY nom ASC, prenom ASC");
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });

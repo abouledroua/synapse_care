@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../controller/cabinet_search_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/constant/layout_constants.dart';
 import '../../services/cabinet_service.dart';
 import '../widget/input_card.dart';
 import '../widget/synapse_background.dart';
@@ -32,7 +33,7 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isWide = size.width >= 720;
+    final isWide = size.width >= LayoutConstants.wideBreakpoint;
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 

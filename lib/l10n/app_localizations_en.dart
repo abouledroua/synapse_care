@@ -38,6 +38,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageArabic => 'Arabic';
 
   @override
+  String get patientListTitle => 'List of Patients';
+
+  @override
+  String get patientListAddNew => 'Add New Patient';
+
+  @override
+  String get patientListRefresh => 'Refresh';
+
+  @override
+  String get patientListAddComingSoon => 'Coming soon';
+
+  @override
+  String get patientHeaderFullName => 'Full Name';
+
+  @override
+  String get patientHeaderSexe => 'Sex';
+
+  @override
+  String get patientHeaderAge => 'Age';
+
+  @override
+  String get patientHeaderPhone => 'Phone';
+
+  @override
+  String get patientHeaderAddress => 'Address';
+
+  @override
+  String get patientHeaderDebt => 'Debt';
+
+  @override
+  String get patientHeaderBloodGroup => 'Blood group';
+
+  @override
+  String get patientHeaderActions => 'Actions';
+
+  @override
+  String get patientSexMale => 'Male';
+
+  @override
+  String get patientSexFemale => 'Female';
+
+  @override
+  String get patientActionUpdate => 'Update';
+
+  @override
+  String get patientActionDelete => 'Delete';
+
+  @override
+  String get patientAgeYears => 'year(s)';
+
+  @override
+  String get patientAgeMonths => 'month(s)';
+
+  @override
+  String get patientAgeDays => 'day(s)';
+
+  @override
+  String get patientListUpdateComingSoon => 'Update coming soon';
+
+  @override
+  String get patientListDeleteComingSoon => 'Delete coming soon';
+
+  @override
   String get notFoundTitle => 'Page not found';
 
   @override

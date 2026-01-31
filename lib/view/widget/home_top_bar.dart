@@ -1,10 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../controller/auth_controller.dart';
 import '../../controller/locale_controller.dart';
+import '../../core/constant/layout_constants.dart';
 import '../../l10n/app_localizations.dart';
 
 class HomeTopBar extends StatelessWidget {
@@ -18,10 +20,7 @@ class HomeTopBar extends StatelessWidget {
     required this.doctorName,
     required this.clinicName,
     required this.userPhotoUrl,
-    required this.searchController,
-    required this.onSearchChanged,
-    required this.isSearching,
-    required this.searchBarKey,
+    this.searchBar,
   });
 
   final String dateText;
@@ -32,20 +31,13 @@ class HomeTopBar extends StatelessWidget {
   final String? doctorName;
   final String? clinicName;
   final String? userPhotoUrl;
-  final TextEditingController searchController;
-  final ValueChanged<String> onSearchChanged;
-  final bool isSearching;
-  final GlobalKey searchBarKey;
+  final Widget? searchBar;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isCompact = constraints.maxWidth < 900;
-        final searchHeight = isCompact ? 50.0 : 58.0;
-        final searchPadding = isCompact ? 12.0 : 18.0;
-        final hintSize = isCompact ? 14.0 : 16.0;
-
+        final isCompact = constraints.maxWidth < LayoutConstants.wideBreakpoint;
         return Row(
           children: [
             const SizedBox(width: 20),
@@ -54,7 +46,7 @@ class HomeTopBar extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: scheme.primary.withValues(alpha: 0.8)),
+                    FaIcon(FontAwesomeIcons.calendarDays, size: 16, color: scheme.primary.withValues(alpha: 0.8)),
                     const SizedBox(width: 6),
                     Text(
                       dateText,
@@ -70,7 +62,7 @@ class HomeTopBar extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.access_time, size: 14, color: scheme.primary.withValues(alpha: 0.7)),
+                    FaIcon(FontAwesomeIcons.clock, size: 14, color: scheme.primary.withValues(alpha: 0.7)),
                     const SizedBox(width: 6),
                     Text(
                       timeText,
@@ -85,68 +77,12 @@ class HomeTopBar extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Container(
-                key: searchBarKey,
-                height: searchHeight,
-                padding: EdgeInsets.symmetric(horizontal: searchPadding),
-                decoration: BoxDecoration(
-                  color: scheme.surface.withValues(alpha: 0.7),
-                  borderRadius: BorderRadius.circular(26),
-                  boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        controller: searchController,
-                        onChanged: onSearchChanged,
-                        style: TextStyle(color: scheme.onSurfaceVariant, fontSize: hintSize),
-                        decoration: InputDecoration(
-                          isDense: true,
-                          border: InputBorder.none,
-                          hintText: l10n.homeSearchHint,
-                          hintStyle: TextStyle(
-                            color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
-                            fontSize: hintSize,
-                          ),
-                        ),
-                      ),
-                    ),
-                    ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: searchController,
-                      builder: (context, value, child) {
-                        if (value.text.isEmpty) {
-                          return const SizedBox(width: 4);
-                        }
-                        return IconButton(
-                          onPressed: () {
-                            searchController.clear();
-                            onSearchChanged('');
-                          },
-                          icon: Icon(Icons.clear, color: scheme.primary),
-                          tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
-                          splashRadius: 18,
-                        );
-                      },
-                    ),
-                    Container(width: 1, height: 24, color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
-                    const SizedBox(width: 10),
-                    if (isSearching)
-                      SizedBox(
-                        height: 18,
-                        width: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: scheme.primary),
-                      )
-                    else
-                      Icon(Icons.search, color: scheme.primary),
-                  ],
-                ),
-              ),
-            ),
+            if (searchBar != null) ...[
+              const SizedBox(width: 10),
+              Expanded(child: searchBar!),
+            ] else ...[
+              const Spacer(),
+            ],
             const SizedBox(width: 12),
             PopupMenuButton<_LanguageChoice>(
               position: PopupMenuPosition.under,

@@ -36,6 +36,69 @@ class AppLocalizationsAr extends AppLocalizations {
   String get languageArabic => 'العربية';
 
   @override
+  String get patientListTitle => 'قائمة المرضى';
+
+  @override
+  String get patientListAddNew => 'إضافة مريض جديد';
+
+  @override
+  String get patientListRefresh => 'تحديث';
+
+  @override
+  String get patientListAddComingSoon => 'قريبًا';
+
+  @override
+  String get patientHeaderFullName => 'الاسم الكامل';
+
+  @override
+  String get patientHeaderSexe => 'الجنس';
+
+  @override
+  String get patientHeaderAge => 'العمر';
+
+  @override
+  String get patientHeaderPhone => 'الهاتف';
+
+  @override
+  String get patientHeaderAddress => 'العنوان';
+
+  @override
+  String get patientHeaderDebt => 'الدين';
+
+  @override
+  String get patientHeaderBloodGroup => 'فصيلة الدم';
+
+  @override
+  String get patientHeaderActions => 'الإجراءات';
+
+  @override
+  String get patientSexMale => 'ذكر';
+
+  @override
+  String get patientSexFemale => 'أنثى';
+
+  @override
+  String get patientActionUpdate => 'تعديل';
+
+  @override
+  String get patientActionDelete => 'حذف';
+
+  @override
+  String get patientAgeYears => 'سنة';
+
+  @override
+  String get patientAgeMonths => 'شهر';
+
+  @override
+  String get patientAgeDays => 'يوم';
+
+  @override
+  String get patientListUpdateComingSoon => 'التحديث قريبًا';
+
+  @override
+  String get patientListDeleteComingSoon => 'الحذف قريبًا';
+
+  @override
   String get notFoundTitle => 'الصفحة غير موجودة';
 
   @override

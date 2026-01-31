@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../controller/cabinet_select_controller.dart';
+import '../../core/constant/layout_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/cabinet_service.dart';
 import '../widget/synapse_background.dart';
@@ -31,7 +32,7 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isWide = size.width >= 720;
+    final isWide = size.width >= LayoutConstants.wideBreakpoint;
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
@@ -186,13 +187,7 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
 }
 
 class _CabinetCard extends StatelessWidget {
-  const _CabinetCard({
-    required this.name,
-    required this.specialty,
-    required this.onTap,
-    this.onRemove,
-    this.imageUrl,
-  });
+  const _CabinetCard({required this.name, required this.specialty, required this.onTap, this.onRemove, this.imageUrl});
 
   final String name;
   final String specialty;
@@ -219,9 +214,7 @@ class _CabinetCard extends StatelessWidget {
               radius: 24,
               backgroundColor: scheme.primary.withValues(alpha: 0.15),
               backgroundImage: imageUrl != null ? NetworkImage(imageUrl!) : null,
-              child: imageUrl == null
-                  ? Icon(Icons.local_hospital_outlined, color: scheme.primary)
-                  : null,
+              child: imageUrl == null ? Icon(Icons.local_hospital_outlined, color: scheme.primary) : null,
             ),
             const SizedBox(width: 14),
             Expanded(

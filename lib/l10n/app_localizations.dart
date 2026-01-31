@@ -154,6 +154,132 @@ abstract class AppLocalizations {
   /// **'Arabic'**
   String get languageArabic;
 
+  /// No description provided for @patientListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'List of Patients'**
+  String get patientListTitle;
+
+  /// No description provided for @patientListAddNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Patient'**
+  String get patientListAddNew;
+
+  /// No description provided for @patientListRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get patientListRefresh;
+
+  /// No description provided for @patientListAddComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get patientListAddComingSoon;
+
+  /// No description provided for @patientHeaderFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get patientHeaderFullName;
+
+  /// No description provided for @patientHeaderSexe.
+  ///
+  /// In en, this message translates to:
+  /// **'Sex'**
+  String get patientHeaderSexe;
+
+  /// No description provided for @patientHeaderAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get patientHeaderAge;
+
+  /// No description provided for @patientHeaderPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get patientHeaderPhone;
+
+  /// No description provided for @patientHeaderAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get patientHeaderAddress;
+
+  /// No description provided for @patientHeaderDebt.
+  ///
+  /// In en, this message translates to:
+  /// **'Debt'**
+  String get patientHeaderDebt;
+
+  /// No description provided for @patientHeaderBloodGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood group'**
+  String get patientHeaderBloodGroup;
+
+  /// No description provided for @patientHeaderActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get patientHeaderActions;
+
+  /// No description provided for @patientSexMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get patientSexMale;
+
+  /// No description provided for @patientSexFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get patientSexFemale;
+
+  /// No description provided for @patientActionUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get patientActionUpdate;
+
+  /// No description provided for @patientActionDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get patientActionDelete;
+
+  /// No description provided for @patientAgeYears.
+  ///
+  /// In en, this message translates to:
+  /// **'year(s)'**
+  String get patientAgeYears;
+
+  /// No description provided for @patientAgeMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'month(s)'**
+  String get patientAgeMonths;
+
+  /// No description provided for @patientAgeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'day(s)'**
+  String get patientAgeDays;
+
+  /// No description provided for @patientListUpdateComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Update coming soon'**
+  String get patientListUpdateComingSoon;
+
+  /// No description provided for @patientListDeleteComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete coming soon'**
+  String get patientListDeleteComingSoon;
+
   /// No description provided for @notFoundTitle.
   ///
   /// In en, this message translates to:

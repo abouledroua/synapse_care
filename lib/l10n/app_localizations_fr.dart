@@ -38,6 +38,69 @@ class AppLocalizationsFr extends AppLocalizations {
   String get languageArabic => 'Arabe';
 
   @override
+  String get patientListTitle => 'Liste des patients';
+
+  @override
+  String get patientListAddNew => 'Ajouter un patient';
+
+  @override
+  String get patientListRefresh => 'Actualiser';
+
+  @override
+  String get patientListAddComingSoon => 'Bientôt disponible';
+
+  @override
+  String get patientHeaderFullName => 'Nom complet';
+
+  @override
+  String get patientHeaderSexe => 'Sexe';
+
+  @override
+  String get patientHeaderAge => 'Âge';
+
+  @override
+  String get patientHeaderPhone => 'Téléphone';
+
+  @override
+  String get patientHeaderAddress => 'Adresse';
+
+  @override
+  String get patientHeaderDebt => 'Dette';
+
+  @override
+  String get patientHeaderBloodGroup => 'Groupe sanguin';
+
+  @override
+  String get patientHeaderActions => 'Actions';
+
+  @override
+  String get patientSexMale => 'Homme';
+
+  @override
+  String get patientSexFemale => 'Femme';
+
+  @override
+  String get patientActionUpdate => 'Modifier';
+
+  @override
+  String get patientActionDelete => 'Supprimer';
+
+  @override
+  String get patientAgeYears => 'an(s)';
+
+  @override
+  String get patientAgeMonths => 'mois';
+
+  @override
+  String get patientAgeDays => 'jour';
+
+  @override
+  String get patientListUpdateComingSoon => 'Mise à jour bientôt disponible';
+
+  @override
+  String get patientListDeleteComingSoon => 'Suppression bientôt disponible';
+
+  @override
   String get notFoundTitle => 'Page introuvable';
 
   @override

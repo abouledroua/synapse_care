@@ -10,6 +10,7 @@ import '../../view/screen/cabinet_create_page.dart';
 import '../../view/screen/cabinet_search_page.dart';
 import '../../view/screen/cabinet_select_page.dart';
 import '../../view/screen/home_page.dart';
+import '../../view/screen/patient_list_page.dart';
 import '../../view/screen/landing_page.dart';
 import '../../view/screen/language_picker_page.dart';
 import '../../view/screen/not_found_page.dart';
@@ -65,6 +66,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/cabinet/select',
         pageBuilder: (context, state) => const NoTransitionPage(child: CabinetSelectPage()),
+      ),
+      GoRoute(
+        path: '/patients/list',
+        pageBuilder: (context, state) => const NoTransitionPage(child: PatientListPage()),
       ),
       GoRoute(
         path: '/home',
