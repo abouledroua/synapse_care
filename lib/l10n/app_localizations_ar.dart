@@ -111,6 +111,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get patientCreateTitle => 'إضافة مريض';
 
   @override
+  String get patientEditTitle => 'تعديل بيانات المريض';
+
+  @override
+  String get patientEditSuccess => 'تم تحديث بيانات المريض';
+
+  @override
+  String get patientEditFailed => 'تعذر تحديث بيانات المريض';
+
+  @override
   String get patientCreateSubmit => 'حفظ';
 
   @override

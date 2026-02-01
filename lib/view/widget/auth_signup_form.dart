@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
 import '../../controller/auth_controller.dart';
@@ -261,6 +262,7 @@ class _AuthSignupFormState extends State<AuthSignupForm> {
             initialCountryCode: 'DZ',
             dropdownIcon: Icon(Icons.arrow_drop_down, color: widget.scheme.primary.withValues(alpha: 0.7)),
             style: TextStyle(color: widget.scheme.onSurfaceVariant),
+            inputFormatters:  [FilteringTextInputFormatter.digitsOnly],
             validator: (phone) => widget.controller.validatePhone(
               phone,
               emptyMessage: widget.l10n.phoneEmptyError,

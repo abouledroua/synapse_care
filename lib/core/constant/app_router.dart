@@ -79,6 +79,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => const NoTransitionPage(child: PatientCreatePage()),
       ),
       GoRoute(
+        path: '/patients/edit',
+        pageBuilder: (context, state) {
+          final patient = state.extra as Map<String, dynamic>?;
+          return NoTransitionPage(child: PatientCreatePage(patient: patient));
+        },
+      ),
+      GoRoute(
         path: '/home',
         pageBuilder: (context, state) => const NoTransitionPage(child: HomePage()),
       ),

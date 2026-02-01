@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 
 class HomeDashboard extends StatelessWidget {
-  const HomeDashboard({super.key, required this.scheme, required this.isWide, required this.l10n});
+  const HomeDashboard({super.key, required this.scheme, required this.isWide, required this.l10n, this.patientCount});
 
   final ColorScheme scheme;
   final bool isWide;
   final AppLocalizations l10n;
+  final int? patientCount;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +92,7 @@ class HomeDashboard extends StatelessWidget {
                             width: cardWidth,
                             scheme: scheme,
                             title: l10n.homeDashPatients,
-                            value: '86',
+                            value: patientCount?.toString() ?? '—',
                             icon: Icons.people_alt_outlined,
                             accent: scheme.secondary,
                           ),

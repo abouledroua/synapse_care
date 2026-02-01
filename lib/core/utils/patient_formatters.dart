@@ -5,6 +5,7 @@ class PatientFormatters {
 
   static String formatGs(dynamic gsValue) {
     final gsNumber = gsValue is num ? gsValue.toInt() : int.tryParse(gsValue?.toString() ?? '');
+    if (gsNumber == -1) return '';
     switch (gsNumber) {
       case 1:
         return 'A+';

@@ -19,7 +19,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final HomeController _controller = HomeController();
   final GlobalKey _searchBarKey = GlobalKey();
   final GlobalKey _dashboardStackKey = GlobalKey();
@@ -28,13 +28,22 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _controller.startClock();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.stopClock();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _controller.loadPatientCount();
+    }
   }
 
   @override
@@ -186,7 +195,12 @@ class _HomePageState extends State<HomePage> {
                                     child: Stack(
                                       key: _dashboardStackKey,
                                       children: [
-                                        HomeDashboard(scheme: scheme, isWide: isWide, l10n: l10n),
+                                        HomeDashboard(
+                                          scheme: scheme,
+                                          isWide: isWide,
+                                          l10n: l10n,
+                                          patientCount: _controller.patientCount,
+                                        ),
                                         if (_controller.searchController.text.trim().isNotEmpty)
                                           Positioned(
                                             left: _panelLeft(size.width, min(size.width, 800)),

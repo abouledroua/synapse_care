@@ -1,0 +1,3 @@
+ALTER TABLE patients
+  DROP COLUMN IF EXISTS wilaya,
+  DROP COLUMN IF EXISTS apc;

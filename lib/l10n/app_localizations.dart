@@ -304,6 +304,24 @@ abstract class AppLocalizations {
   /// **'Create Patient'**
   String get patientCreateTitle;
 
+  /// No description provided for @patientEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Patient'**
+  String get patientEditTitle;
+
+  /// No description provided for @patientEditSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient updated'**
+  String get patientEditSuccess;
+
+  /// No description provided for @patientEditFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update patient'**
+  String get patientEditFailed;
+
   /// No description provided for @patientCreateSubmit.
   ///
   /// In en, this message translates to:

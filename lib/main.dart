@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'core/constant/app_router.dart';
 import 'controller/locale_controller.dart';
@@ -11,6 +12,7 @@ import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  GoRouter.optionURLReflectsImperativeAPIs = true;
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await ThemeController.instance.load();
   await LocaleController.instance.load();

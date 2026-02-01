@@ -113,6 +113,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get patientCreateTitle => 'Create Patient';
 
   @override
+  String get patientEditTitle => 'Edit Patient';
+
+  @override
+  String get patientEditSuccess => 'Patient updated';
+
+  @override
+  String get patientEditFailed => 'Failed to update patient';
+
+  @override
   String get patientCreateSubmit => 'Save';
 
   @override

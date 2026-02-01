@@ -13,6 +13,7 @@ class HomeController extends ChangeNotifier {
   final PatientService _patientService;
   bool menuOpen = false;
   Timer? _clockTimer;
+  Timer? _patientCountTimer;
   DateTime _now = DateTime.now();
   final TextEditingController searchController = TextEditingController();
   final ScrollController searchScrollController = ScrollController();
@@ -20,6 +21,7 @@ class HomeController extends ChangeNotifier {
   bool isSearching = false;
   String? searchError;
   List<Map<String, dynamic>> searchResults = [];
+  int? patientCount;
 
   DateTime get now => _now;
 
@@ -29,16 +31,24 @@ class HomeController extends ChangeNotifier {
       _now = DateTime.now();
       notifyListeners();
     });
+    _patientCountTimer?.cancel();
+    loadPatientCount();
+    _patientCountTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      loadPatientCount();
+    });
   }
 
   void stopClock() {
     _clockTimer?.cancel();
     _clockTimer = null;
+    _patientCountTimer?.cancel();
+    _patientCountTimer = null;
   }
 
   @override
   void dispose() {
     _clockTimer?.cancel();
+    _patientCountTimer?.cancel();
     _searchDebounce?.cancel();
     searchController.dispose();
     searchScrollController.dispose();
@@ -84,6 +94,15 @@ class HomeController extends ChangeNotifier {
     if (photo.isEmpty) return null;
     final baseUrl = ApiConfig.resolveBaseUrl();
     return '$baseUrl/photos/$photo';
+  }
+
+  Future<void> loadPatientCount() async {
+    try {
+      patientCount = await _patientService.fetchPatientCount();
+    } catch (_) {
+      patientCount = null;
+    }
+    notifyListeners();
   }
 
   void searchPatients(String value) {

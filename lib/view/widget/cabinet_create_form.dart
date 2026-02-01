@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
@@ -190,11 +190,7 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
               backgroundColor: widget.scheme.primary.withValues(alpha: 0.15),
               backgroundImage: _photo != null ? FileImage(File(_photo!.path)) : null,
               child: _photo == null
-                  ? Icon(
-                      Icons.photo_camera_outlined,
-                      size: 30,
-                      color: widget.scheme.primary.withValues(alpha: 0.8),
-                    )
+                  ? Icon(Icons.photo_camera_outlined, size: 30, color: widget.scheme.primary.withValues(alpha: 0.8))
                   : null,
             ),
           ),
@@ -273,6 +269,7 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
             initialCountryCode: 'DZ',
             dropdownIcon: Icon(Icons.arrow_drop_down, color: widget.scheme.primary.withValues(alpha: 0.7)),
             style: TextStyle(color: widget.scheme.onSurfaceVariant),
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             validator: _validatePhone,
             onChanged: _handlePhoneChanged,
             textInputAction: TextInputAction.done,

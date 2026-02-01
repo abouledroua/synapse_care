@@ -113,6 +113,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get patientCreateTitle => 'Créer un patient';
 
   @override
+  String get patientEditTitle => 'Modification du patient';
+
+  @override
+  String get patientEditSuccess => 'Patient modifié';
+
+  @override
+  String get patientEditFailed => 'Impossible de modifier le patient';
+
+  @override
   String get patientCreateSubmit => 'Enregistrer';
 
   @override

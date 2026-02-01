@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../core/constant/layout_constants.dart';
 import '../../core/utils/patient_formatters.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/patient_service.dart';
 
 class PatientListView extends StatelessWidget {
   const PatientListView({
@@ -25,21 +27,31 @@ class PatientListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    return Scrollbar(
       controller: controller,
-      itemCount: patients.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
-      itemBuilder: (context, index) {
+      thumbVisibility: kIsWeb ? true : null,
+      thickness: kIsWeb ? 8 : null,
+      radius: kIsWeb ? const Radius.circular(8) : null,
+      trackVisibility: kIsWeb ? true : null,
+      interactive: kIsWeb ? true : null,
+      child: ListView.separated(
+        controller: controller,
+        itemCount: patients.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
         final item = patients[index];
         final nom = (item['nom'] ?? '').toString();
         final prenom = (item['prenom'] ?? '').toString();
         final sexeValue = item['sexe'];
         final sexeNumber = sexeValue is num ? sexeValue.toInt() : int.tryParse(sexeValue?.toString() ?? '');
         final isFemale = sexeNumber == 2;
+        final sexIcon = isFemale ? FontAwesomeIcons.venus : FontAwesomeIcons.mars;
+        final sexColor = isFemale ? const Color(0xFFD63384) : const Color(0xFF1F8A70);
         final tel = PatientFormatters.formatPhone(item['tel1']);
         final email = (item['email'] ?? '').toString();
         final nin = (item['nin'] ?? '').toString();
         final nss = (item['nss'] ?? '').toString();
+        final tel2 = PatientFormatters.formatPhone(item['tel2']);
         final age = PatientFormatters.formatAge(
           item['age'],
           item['type_age'],
@@ -47,6 +59,10 @@ class PatientListView extends StatelessWidget {
           monthsLabel: l10n.patientAgeMonths,
           daysLabel: l10n.patientAgeDays,
         );
+        final debtValue = item['dette'] is num
+            ? (item['dette'] as num).toDouble()
+            : double.tryParse('${item['dette'] ?? ''}') ?? 0;
+        final hasDebt = debtValue > 0;
         final adresse = (item['adresse'] ?? '').toString();
         final dette = PatientFormatters.formatDebt(
           item['dette'],
@@ -55,6 +71,8 @@ class PatientListView extends StatelessWidget {
           currencyArabic: l10n.patientCurrencyDzdArabic,
         );
         final gs = PatientFormatters.formatGs(item['gs']);
+        final photoFile = (item['photo_url'] ?? '').toString();
+        final imageUrl = PatientService().patientPhotoUrl(photoFile);
         final displayName = '${prenom.isEmpty ? '' : '$prenom '}$nom'.trim();
         final primaryItems = [
           _InfoItem(l10n.patientHeaderAge, age),
@@ -66,12 +84,13 @@ class PatientListView extends StatelessWidget {
           _InfoItem(l10n.patientHeaderNin, nin),
           _InfoItem(l10n.patientHeaderAddress, adresse),
           _InfoItem(l10n.patientHeaderNss, nss),
+          _InfoItem(l10n.patientHeaderPhone, tel2),
           _InfoItem(l10n.patientHeaderBloodGroup, gs),
         ];
         return Container(
           padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
           decoration: BoxDecoration(
-            color: isFemale ? const Color(0xFFFFE6F0) : const Color(0xFFFFFFFF),
+            color: hasDebt ? const Color(0xFFFFE6F0) : const Color(0xFFFFFFFF),
             borderRadius: BorderRadius.circular(18),
             boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
           ),
@@ -82,10 +101,26 @@ class PatientListView extends StatelessWidget {
               childrenPadding: const EdgeInsets.only(left: 44, right: 8, bottom: 8),
               title: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: scheme.primary.withValues(alpha: 0.12),
-                    child: Icon(Icons.person_outline, color: scheme.primary),
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: scheme.primary.withValues(alpha: 0.12),
+                        backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
+                        child: imageUrl == null ? Icon(Icons.person_outline, color: scheme.primary) : null,
+                      ),
+                      Container(
+                        height: 16,
+                        width: 16,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
+                        ),
+                        child: Center(child: FaIcon(sexIcon, size: 9, color: sexColor)),
+                      ),
+                    ],
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -125,7 +160,8 @@ class PatientListView extends StatelessWidget {
             ),
           ),
         );
-      },
+        },
+      ),
     );
   }
 }
