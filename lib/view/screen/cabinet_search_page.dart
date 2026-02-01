@@ -113,7 +113,7 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
                                     ? null
                                     : () async {
                                         final result = await _controller.assignCabinet(cabinetId);
-                                        if (!mounted) return;
+                                        if (!context.mounted) return;
                                         final messenger = ScaffoldMessenger.of(context);
                                         if (result == CabinetAssignResult.success) {
                                           messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetAddSuccess)));

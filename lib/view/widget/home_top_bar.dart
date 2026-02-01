@@ -77,12 +77,7 @@ class HomeTopBar extends StatelessWidget {
                 ),
               ],
             ),
-            if (searchBar != null) ...[
-              const SizedBox(width: 10),
-              Expanded(child: searchBar!),
-            ] else ...[
-              const Spacer(),
-            ],
+            if (searchBar != null) ...[const SizedBox(width: 10), Expanded(child: searchBar!)] else ...[const Spacer()],
             const SizedBox(width: 12),
             PopupMenuButton<_LanguageChoice>(
               position: PopupMenuPosition.under,
@@ -160,6 +155,7 @@ class HomeTopBar extends StatelessWidget {
                         ],
                       ),
                     );
+                    if (!context.mounted) return;
                     if (shouldLogout != true) return;
                     final controller = AuthController();
                     controller.logout();
@@ -247,6 +243,7 @@ TextStyle _menuTextStyle(ColorScheme scheme) {
 }
 
 enum _ProfileAction { profile, changeClinic, logout }
+
 enum _LanguageChoice { en, fr, ar }
 
 _FlagType _flagForLocale(String localeName) {

@@ -40,7 +40,7 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
       animation: _controller,
       builder: (context, child) => PopScope(
         canPop: false,
-        onPopInvoked: (didPop) {},
+        onPopInvokedWithResult: (didPop, result) {},
         child: Scaffold(
           body: Stack(
             children: [
@@ -158,9 +158,9 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                                           );
                                           if (confirmed != true) return;
 
-                                          final messenger = ScaffoldMessenger.of(context);
                                           final result = await _controller.removeCabinet(cabinetId);
-                                          if (!mounted) return;
+                                          if (!context.mounted) return;
+                                          final messenger = ScaffoldMessenger.of(context);
                                           if (result == CabinetRemoveResult.success) {
                                             messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetRemoveSuccess)));
                                           } else if (result == CabinetRemoveResult.network) {

@@ -27,7 +27,7 @@ class NotFoundPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '404',
+                        l10n.notFoundCode,
                         style: TextStyle(
                           fontSize: 64,
                           fontWeight: FontWeight.w700,

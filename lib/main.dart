@@ -32,13 +32,13 @@ class MyApp extends ConsumerWidget {
         theme: ThemeController.instance.theme,
         routerConfig: router,
         locale: LocaleController.instance.locale,
+        supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: AppLocalizations.supportedLocales,
       ),
     );
   }

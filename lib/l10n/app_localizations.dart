@@ -226,6 +226,24 @@ abstract class AppLocalizations {
   /// **'Actions'**
   String get patientHeaderActions;
 
+  /// No description provided for @patientHeaderNin.
+  ///
+  /// In en, this message translates to:
+  /// **'NIN'**
+  String get patientHeaderNin;
+
+  /// No description provided for @patientHeaderNss.
+  ///
+  /// In en, this message translates to:
+  /// **'NSS'**
+  String get patientHeaderNss;
+
+  /// No description provided for @patientHeaderEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get patientHeaderEmail;
+
   /// No description provided for @patientSexMale.
   ///
   /// In en, this message translates to:
@@ -268,6 +286,246 @@ abstract class AppLocalizations {
   /// **'day(s)'**
   String get patientAgeDays;
 
+  /// No description provided for @patientCurrencyDzdLatin.
+  ///
+  /// In en, this message translates to:
+  /// **'DA'**
+  String get patientCurrencyDzdLatin;
+
+  /// No description provided for @patientCurrencyDzdArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'دج'**
+  String get patientCurrencyDzdArabic;
+
+  /// No description provided for @patientCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Patient'**
+  String get patientCreateTitle;
+
+  /// No description provided for @patientCreateSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get patientCreateSubmit;
+
+  /// No description provided for @patientCreateSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get patientCreateSaving;
+
+  /// No description provided for @patientCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient created.'**
+  String get patientCreateSuccess;
+
+  /// No description provided for @patientCreateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create patient.'**
+  String get patientCreateFailed;
+
+  /// No description provided for @patientSectionIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get patientSectionIdentity;
+
+  /// No description provided for @patientSectionContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get patientSectionContact;
+
+  /// No description provided for @patientSectionInsurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insurance'**
+  String get patientSectionInsurance;
+
+  /// No description provided for @patientFieldCodeBarre.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode'**
+  String get patientFieldCodeBarre;
+
+  /// No description provided for @patientFieldNom.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get patientFieldNom;
+
+  /// No description provided for @patientFieldPrenom.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get patientFieldPrenom;
+
+  /// No description provided for @patientFieldDateNaissance.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get patientFieldDateNaissance;
+
+  /// No description provided for @patientFieldEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get patientFieldEmail;
+
+  /// No description provided for @patientFieldAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get patientFieldAge;
+
+  /// No description provided for @patientFieldTel1.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone 1'**
+  String get patientFieldTel1;
+
+  /// No description provided for @patientFieldTel2.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone 2'**
+  String get patientFieldTel2;
+
+  /// No description provided for @patientFieldWilaya.
+  ///
+  /// In en, this message translates to:
+  /// **'Wilaya'**
+  String get patientFieldWilaya;
+
+  /// No description provided for @patientFieldApc.
+  ///
+  /// In en, this message translates to:
+  /// **'APC'**
+  String get patientFieldApc;
+
+  /// No description provided for @patientFieldAdresse.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get patientFieldAdresse;
+
+  /// No description provided for @patientFieldDette.
+  ///
+  /// In en, this message translates to:
+  /// **'Debt'**
+  String get patientFieldDette;
+
+  /// No description provided for @patientFieldPresume.
+  ///
+  /// In en, this message translates to:
+  /// **'Presumed'**
+  String get patientFieldPresume;
+
+  /// No description provided for @patientFieldSexe.
+  ///
+  /// In en, this message translates to:
+  /// **'Sex'**
+  String get patientFieldSexe;
+
+  /// No description provided for @patientFieldTypeAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Age unit'**
+  String get patientFieldTypeAge;
+
+  /// No description provided for @patientFieldConventionne.
+  ///
+  /// In en, this message translates to:
+  /// **'Insured'**
+  String get patientFieldConventionne;
+
+  /// No description provided for @patientFieldPourcConv.
+  ///
+  /// In en, this message translates to:
+  /// **'Coverage (%)'**
+  String get patientFieldPourcConv;
+
+  /// No description provided for @patientFieldLieuNaissance.
+  ///
+  /// In en, this message translates to:
+  /// **'Place of birth'**
+  String get patientFieldLieuNaissance;
+
+  /// No description provided for @patientFieldGs.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood group'**
+  String get patientFieldGs;
+
+  /// No description provided for @patientFieldProfession.
+  ///
+  /// In en, this message translates to:
+  /// **'Profession'**
+  String get patientFieldProfession;
+
+  /// No description provided for @patientFieldDiagnostique.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnosis'**
+  String get patientFieldDiagnostique;
+
+  /// No description provided for @patientFieldNin.
+  ///
+  /// In en, this message translates to:
+  /// **'NIN'**
+  String get patientFieldNin;
+
+  /// No description provided for @patientFieldNss.
+  ///
+  /// In en, this message translates to:
+  /// **'NSS'**
+  String get patientFieldNss;
+
+  /// No description provided for @patientFieldNbImpression.
+  ///
+  /// In en, this message translates to:
+  /// **'Print count'**
+  String get patientFieldNbImpression;
+
+  /// No description provided for @patientFieldCodeMalade.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient code'**
+  String get patientFieldCodeMalade;
+
+  /// No description provided for @patientFieldPhotoUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo URL'**
+  String get patientFieldPhotoUrl;
+
+  /// No description provided for @patientOptionYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get patientOptionYes;
+
+  /// No description provided for @patientOptionNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get patientOptionNo;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required field'**
+  String get fieldRequired;
+
+  /// No description provided for @fieldInvalidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid number'**
+  String get fieldInvalidNumber;
+
   /// No description provided for @patientListUpdateComingSoon.
   ///
   /// In en, this message translates to:
@@ -291,6 +549,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The requested URL does not exist.'**
   String get notFoundBody;
+
+  /// No description provided for @notFoundCode.
+  ///
+  /// In en, this message translates to:
+  /// **'404'**
+  String get notFoundCode;
 
   /// No description provided for @backHome.
   ///

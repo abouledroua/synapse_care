@@ -17,6 +17,7 @@ dependencies:
   flutter_riverpod: any
   go_router: any
   http: any
+  intl: any
   intl_phone_field: any
   font_awesome_flutter: any
   image_picker: any

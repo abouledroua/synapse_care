@@ -341,6 +341,120 @@ app.get("/patients", async (req, res) => {
   }
 });
 
+app.post("/patients", async (req, res) => {
+  try {
+    const {
+      code_barre,
+      nom,
+      prenom,
+      date_naissance,
+      email,
+      age,
+      tel1,
+      wilaya,
+      apc,
+      adresse,
+      dette,
+      presume,
+      sexe,
+      type_age,
+      conventionne,
+      pourc_conv,
+      lieu_naissance,
+      gs,
+      profession,
+      diagnostique,
+      tel2,
+      nin,
+      nss,
+      nb_impression,
+      code_malade,
+      photo_url,
+    } = req.body || {};
+
+    const missing = [];
+    if (!code_barre) missing.push("code_barre");
+    if (!nom) missing.push("nom");
+    if (!prenom) missing.push("prenom");
+    if (!date_naissance) missing.push("date_naissance");
+    if (!email) missing.push("email");
+    if (age === undefined || age === null) missing.push("age");
+    if (!tel1) missing.push("tel1");
+    if (wilaya === undefined || wilaya === null) missing.push("wilaya");
+    if (apc === undefined || apc === null) missing.push("apc");
+    if (!adresse) missing.push("adresse");
+    if (dette === undefined || dette === null) missing.push("dette");
+    if (presume === undefined || presume === null) missing.push("presume");
+    if (sexe === undefined || sexe === null) missing.push("sexe");
+    if (type_age === undefined || type_age === null) missing.push("type_age");
+    if (conventionne === undefined || conventionne === null) missing.push("conventionne");
+    if (pourc_conv === undefined || pourc_conv === null) missing.push("pourc_conv");
+    if (!lieu_naissance) missing.push("lieu_naissance");
+    if (gs === undefined || gs === null) missing.push("gs");
+    if (!profession) missing.push("profession");
+    if (!diagnostique) missing.push("diagnostique");
+    if (!tel2) missing.push("tel2");
+    if (!nin) missing.push("nin");
+    if (!nss) missing.push("nss");
+    if (nb_impression === undefined || nb_impression === null) missing.push("nb_impression");
+    if (!code_malade) missing.push("code_malade");
+    if (photo_url === undefined || photo_url === null) missing.push("photo_url");
+
+    if (missing.length > 0) {
+      return res.status(400).json({ error: `Missing fields: ${missing.join(", ")}` });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO patients (
+        code_barre, nom, prenom, date_naissance, email, age, tel1, wilaya, apc, adresse, dette,
+        presume, sexe, type_age, conventionne, pourc_conv, lieu_naissance, gs, profession, diagnostique,
+        tel2, nin, nss, nb_impression, code_malade, photo_url
+      )
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,
+        $12, $13, $14, $15, $16, $17, $18, $19, $20,
+        $21, $22, $23, $24, $25, $26
+      )
+      RETURNING *`,
+      [
+        code_barre,
+        nom,
+        prenom,
+        date_naissance,
+        email,
+        age,
+        tel1,
+        wilaya,
+        apc,
+        adresse,
+        dette,
+        presume,
+        sexe,
+        type_age,
+        conventionne,
+        pourc_conv,
+        lieu_naissance,
+        gs,
+        profession,
+        diagnostique,
+        tel2,
+        nin,
+        nss,
+        nb_impression,
+        code_malade,
+        photo_url,
+      ],
+    );
+
+    return res.status(201).json(result.rows[0]);
+  } catch (err) {
+    if (err && err.code === "23505") {
+      return res.status(409).json({ error: "Patient already exists." });
+    }
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/patients/search", async (req, res) => {
   try {
     const q = String(req.query.q || "").trim();

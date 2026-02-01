@@ -32,4 +32,16 @@ class PatientService {
     if (decoded is! List) return [];
     return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
   }
+
+  Future<void> createPatient(Map<String, dynamic> payload) async {
+    final uri = Uri.parse('$_baseUrl/patients');
+    final response = await _client.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    if (response.statusCode != 201) {
+      throw Exception('Failed to create patient');
+    }
+  }
 }

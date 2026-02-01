@@ -11,6 +11,7 @@ import '../../view/screen/cabinet_search_page.dart';
 import '../../view/screen/cabinet_select_page.dart';
 import '../../view/screen/home_page.dart';
 import '../../view/screen/patient_list_page.dart';
+import '../../view/screen/patient_create_page.dart';
 import '../../view/screen/landing_page.dart';
 import '../../view/screen/language_picker_page.dart';
 import '../../view/screen/not_found_page.dart';
@@ -28,7 +29,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final isAuthed = AuthController.globalUserId != null;
       final isAuthRoute = state.matchedLocation.startsWith('/auth');
-      final isProtected = state.matchedLocation.startsWith('/home') || state.matchedLocation.startsWith('/cabinet');
+      final isProtected = state.matchedLocation.startsWith('/home') ||
+          state.matchedLocation.startsWith('/cabinet') ||
+          state.matchedLocation.startsWith('/patients');
       if (!isAuthed && isProtected) return '/auth/login';
       if (isAuthed && isAuthRoute) return '/cabinet/select';
       return null;
@@ -70,6 +73,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/patients/list',
         pageBuilder: (context, state) => const NoTransitionPage(child: PatientListPage()),
+      ),
+      GoRoute(
+        path: '/patients/create',
+        pageBuilder: (context, state) => const NoTransitionPage(child: PatientCreatePage()),
       ),
       GoRoute(
         path: '/home',

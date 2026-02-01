@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../controller/home_controller.dart';
 import '../../core/constant/layout_constants.dart';
+import '../../core/utils/patient_formatters.dart';
 import '../../l10n/app_localizations.dart';
 import '../widget/home_dashboard.dart';
 import '../widget/home_quick_actions.dart';
@@ -58,7 +59,7 @@ class _HomePageState extends State<HomePage> {
       animation: _controller,
       builder: (context, child) => PopScope(
         canPop: false,
-        onPopInvoked: (didPop) {},
+        onPopInvokedWithResult: (didPop, result) {},
         child: Scaffold(
           body: Stack(
             children: [
@@ -419,12 +420,12 @@ class _PatientSearchPanel extends StatelessWidget {
             controller: scrollController,
             primary: false,
             itemCount: results.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            separatorBuilder: (_, _) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final item = results[index];
               final nom = (item['nom'] ?? '').toString();
               final prenom = (item['prenom'] ?? '').toString();
-              final tel = (item['tel1'] ?? '').toString();
+              final tel = PatientFormatters.formatPhone(item['tel1']);
               final email = (item['email'] ?? '').toString();
               final displayName = '${prenom.isEmpty ? '' : '$prenom '}$nom'.trim();
               return Row(

@@ -37,7 +37,7 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
       animation: _controller,
       builder: (context, child) => PopScope(
         canPop: false,
-        onPopInvoked: (didPop) {
+        onPopInvokedWithResult: (didPop, result) {
           // Block system back on login.
         },
         child: Scaffold(
@@ -82,6 +82,7 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                                     await first.closed;
                                     await Future.delayed(const Duration(seconds: 1));
 
+                                    if (!context.mounted) return;
                                     messenger.showSnackBar(
                                       SnackBar(
                                         content: Text(l10n.otpValidDemo(_controller.phoneNumber)),
@@ -116,7 +117,7 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                                       genericMessage: l10n.loginFailed,
                                       networkMessage: l10n.loginNetworkError,
                                     );
-                                    if (!mounted) return;
+                                    if (!context.mounted) return;
 
                                     final messenger = ScaffoldMessenger.of(context);
                                     if (error != null) {

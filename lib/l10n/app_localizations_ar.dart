@@ -72,6 +72,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get patientHeaderActions => 'الإجراءات';
 
   @override
+  String get patientHeaderNin => 'الرقم الوطني';
+
+  @override
+  String get patientHeaderNss => 'الضمان الاجتماعي';
+
+  @override
+  String get patientHeaderEmail => 'البريد الإلكتروني';
+
+  @override
   String get patientSexMale => 'ذكر';
 
   @override
@@ -93,6 +102,126 @@ class AppLocalizationsAr extends AppLocalizations {
   String get patientAgeDays => 'يوم';
 
   @override
+  String get patientCurrencyDzdLatin => 'DA';
+
+  @override
+  String get patientCurrencyDzdArabic => 'دج';
+
+  @override
+  String get patientCreateTitle => 'إضافة مريض';
+
+  @override
+  String get patientCreateSubmit => 'حفظ';
+
+  @override
+  String get patientCreateSaving => 'جارٍ الحفظ...';
+
+  @override
+  String get patientCreateSuccess => 'تم إنشاء المريض.';
+
+  @override
+  String get patientCreateFailed => 'تعذر إنشاء المريض.';
+
+  @override
+  String get patientSectionIdentity => 'الهوية';
+
+  @override
+  String get patientSectionContact => 'الاتصال';
+
+  @override
+  String get patientSectionInsurance => 'التأمين';
+
+  @override
+  String get patientFieldCodeBarre => 'الباركود';
+
+  @override
+  String get patientFieldNom => 'اللقب';
+
+  @override
+  String get patientFieldPrenom => 'الاسم';
+
+  @override
+  String get patientFieldDateNaissance => 'تاريخ الميلاد';
+
+  @override
+  String get patientFieldEmail => 'البريد الإلكتروني';
+
+  @override
+  String get patientFieldAge => 'العمر';
+
+  @override
+  String get patientFieldTel1 => 'الهاتف 1';
+
+  @override
+  String get patientFieldTel2 => 'الهاتف 2';
+
+  @override
+  String get patientFieldWilaya => 'الولاية';
+
+  @override
+  String get patientFieldApc => 'البلدية';
+
+  @override
+  String get patientFieldAdresse => 'العنوان';
+
+  @override
+  String get patientFieldDette => 'الدين';
+
+  @override
+  String get patientFieldPresume => 'مفترض';
+
+  @override
+  String get patientFieldSexe => 'الجنس';
+
+  @override
+  String get patientFieldTypeAge => 'وحدة العمر';
+
+  @override
+  String get patientFieldConventionne => 'مؤمّن';
+
+  @override
+  String get patientFieldPourcConv => 'نسبة التغطية (%)';
+
+  @override
+  String get patientFieldLieuNaissance => 'مكان الميلاد';
+
+  @override
+  String get patientFieldGs => 'فصيلة الدم';
+
+  @override
+  String get patientFieldProfession => 'المهنة';
+
+  @override
+  String get patientFieldDiagnostique => 'التشخيص';
+
+  @override
+  String get patientFieldNin => 'الرقم الوطني';
+
+  @override
+  String get patientFieldNss => 'الضمان الاجتماعي';
+
+  @override
+  String get patientFieldNbImpression => 'عدد الطباعة';
+
+  @override
+  String get patientFieldCodeMalade => 'رمز المريض';
+
+  @override
+  String get patientFieldPhotoUrl => 'رابط الصورة';
+
+  @override
+  String get patientOptionYes => 'نعم';
+
+  @override
+  String get patientOptionNo => 'لا';
+
+  @override
+  String get fieldRequired => 'حقل مطلوب';
+
+  @override
+  String get fieldInvalidNumber => 'رقم غير صالح';
+
+  @override
   String get patientListUpdateComingSoon => 'التحديث قريبًا';
 
   @override
@@ -103,6 +232,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notFoundBody => 'الرابط المطلوب غير موجود.';
+
+  @override
+  String get notFoundCode => '404';
 
   @override
   String get backHome => 'العودة إلى الصفحة الرئيسية';

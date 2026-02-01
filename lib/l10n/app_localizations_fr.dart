@@ -74,6 +74,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get patientHeaderActions => 'Actions';
 
   @override
+  String get patientHeaderNin => 'NIN';
+
+  @override
+  String get patientHeaderNss => 'NSS';
+
+  @override
+  String get patientHeaderEmail => 'Email';
+
+  @override
   String get patientSexMale => 'Homme';
 
   @override
@@ -95,6 +104,126 @@ class AppLocalizationsFr extends AppLocalizations {
   String get patientAgeDays => 'jour';
 
   @override
+  String get patientCurrencyDzdLatin => 'DA';
+
+  @override
+  String get patientCurrencyDzdArabic => 'دج';
+
+  @override
+  String get patientCreateTitle => 'Créer un patient';
+
+  @override
+  String get patientCreateSubmit => 'Enregistrer';
+
+  @override
+  String get patientCreateSaving => 'Enregistrement...';
+
+  @override
+  String get patientCreateSuccess => 'Patient créé.';
+
+  @override
+  String get patientCreateFailed => 'Impossible de créer le patient.';
+
+  @override
+  String get patientSectionIdentity => 'Identité';
+
+  @override
+  String get patientSectionContact => 'Contact';
+
+  @override
+  String get patientSectionInsurance => 'Assurance';
+
+  @override
+  String get patientFieldCodeBarre => 'Code-barres';
+
+  @override
+  String get patientFieldNom => 'Nom';
+
+  @override
+  String get patientFieldPrenom => 'Prénom';
+
+  @override
+  String get patientFieldDateNaissance => 'Date de naissance';
+
+  @override
+  String get patientFieldEmail => 'Email';
+
+  @override
+  String get patientFieldAge => 'Âge';
+
+  @override
+  String get patientFieldTel1 => 'Téléphone 1';
+
+  @override
+  String get patientFieldTel2 => 'Téléphone 2';
+
+  @override
+  String get patientFieldWilaya => 'Wilaya';
+
+  @override
+  String get patientFieldApc => 'APC';
+
+  @override
+  String get patientFieldAdresse => 'Adresse';
+
+  @override
+  String get patientFieldDette => 'Dette';
+
+  @override
+  String get patientFieldPresume => 'Présumé';
+
+  @override
+  String get patientFieldSexe => 'Sexe';
+
+  @override
+  String get patientFieldTypeAge => 'Unité d\'âge';
+
+  @override
+  String get patientFieldConventionne => 'Conventionné';
+
+  @override
+  String get patientFieldPourcConv => 'Taux de couverture (%)';
+
+  @override
+  String get patientFieldLieuNaissance => 'Lieu de naissance';
+
+  @override
+  String get patientFieldGs => 'Groupe sanguin';
+
+  @override
+  String get patientFieldProfession => 'Profession';
+
+  @override
+  String get patientFieldDiagnostique => 'Diagnostic';
+
+  @override
+  String get patientFieldNin => 'NIN';
+
+  @override
+  String get patientFieldNss => 'NSS';
+
+  @override
+  String get patientFieldNbImpression => 'Nombre d\'impressions';
+
+  @override
+  String get patientFieldCodeMalade => 'Code malade';
+
+  @override
+  String get patientFieldPhotoUrl => 'URL photo';
+
+  @override
+  String get patientOptionYes => 'Oui';
+
+  @override
+  String get patientOptionNo => 'Non';
+
+  @override
+  String get fieldRequired => 'Champ obligatoire';
+
+  @override
+  String get fieldInvalidNumber => 'Nombre invalide';
+
+  @override
   String get patientListUpdateComingSoon => 'Mise à jour bientôt disponible';
 
   @override
@@ -105,6 +234,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notFoundBody => 'L\'URL demandée n\'existe pas.';
+
+  @override
+  String get notFoundCode => '404';
 
   @override
   String get backHome => 'Retour à l\'accueil';

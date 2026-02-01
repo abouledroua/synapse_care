@@ -40,7 +40,7 @@ class _AuthSignupPageState extends State<AuthSignupPage> {
       animation: _controller,
       builder: (context, child) => PopScope(
         canPop: false,
-        onPopInvoked: (didPop) {
+        onPopInvokedWithResult: (didPop, result) {
           if (!didPop) {
             context.go('/auth/login');
           }
@@ -90,7 +90,7 @@ class _AuthSignupPageState extends State<AuthSignupPage> {
                                     password: _controller.passwordController.text,
                                     speciality: _controller.specialtyController.text.trim(),
                                   );
-                                  if (!mounted) return;
+                                  if (!context.mounted) return;
 
                                   final messenger = ScaffoldMessenger.of(context);
                                   if (error != null) {
