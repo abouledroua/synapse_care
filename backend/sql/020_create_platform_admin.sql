@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS platform_admin (
+  id_user INTEGER PRIMARY KEY REFERENCES users(id_user) ON DELETE CASCADE,
+  etat SMALLINT NOT NULL DEFAULT 1 CHECK (etat IN (0, 1)),
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  created_by INTEGER NULL REFERENCES users(id_user)
+);

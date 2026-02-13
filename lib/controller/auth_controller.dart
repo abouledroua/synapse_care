@@ -8,6 +8,8 @@ import 'package:intl_phone_field/phone_number.dart';
 import '../core/config/api_config.dart';
 import '../services/session_storage.dart';
 
+enum AuthRole { patient, doctor, assistant }
+
 class AuthController extends ChangeNotifier {
   static int? globalUserId;
   static Map<String, dynamic>? globalUser;
@@ -16,7 +18,7 @@ class AuthController extends ChangeNotifier {
   static Timer? _globalTimer;
   static const Duration sessionTimeoutDuration = Duration(minutes: 20);
   bool obscurePassword = true;
-  bool isDoctor = false;
+  AuthRole role = AuthRole.patient;
   String? phoneError;
   String phoneNumber = '';
   bool isBusy = false;
@@ -50,6 +52,18 @@ class AuthController extends ChangeNotifier {
   static String _resolveApiBaseUrl() => resolveApiBaseUrl();
   String apiBaseUrl = _resolveApiBaseUrl();
 
+  AuthRole _roleFromDbValue(dynamic raw) {
+    final roleValue = raw is num ? raw.toInt() : int.tryParse('$raw');
+    switch (roleValue) {
+      case 1:
+        return AuthRole.doctor;
+      case 2:
+        return AuthRole.assistant;
+      default:
+        return AuthRole.patient;
+    }
+  }
+
   @override
   void dispose() {
     _sessionTimer?.cancel();
@@ -66,10 +80,18 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setDoctor(bool value) {
-    if (isDoctor == value) return;
-    isDoctor = value;
+  bool get isDoctor => role == AuthRole.doctor;
+  bool get isPatient => role == AuthRole.patient;
+  bool get isAssistant => role == AuthRole.assistant;
+
+  void setRole(AuthRole value) {
+    if (role == value) return;
+    role = value;
     notifyListeners();
+  }
+
+  void setDoctor(bool value) {
+    setRole(value ? AuthRole.doctor : AuthRole.patient);
   }
 
   void _setPhoneError(String? value) {
@@ -393,7 +415,7 @@ class AuthController extends ChangeNotifier {
       'phone': phone,
       'password': password,
       'speciality': speciality,
-      if (photoUrl != null) 'photo_url': photoUrl,
+      'photo_url': photoUrl,
       if (photoBase64 != null && photoExtension != null) 'photo_base64': photoBase64,
       if (photoBase64 != null && photoExtension != null) 'photo_ext': photoExtension,
     };
@@ -465,6 +487,7 @@ class AuthController extends ChangeNotifier {
         }
         if (userData != null) {
           _setGlobalUser(userData);
+          setRole(_roleFromDbValue(userData['role']));
         }
         setLoginSubmitError(null);
         return null;
@@ -540,5 +563,12 @@ class AuthController extends ChangeNotifier {
       globalClinic = null;
       _globalLastActivity = null;
     });
+  }
+
+  static bool get isPlatformAdmin {
+    final raw = globalUser?['is_platform_admin'];
+    if (raw is bool) return raw;
+    if (raw is num) return raw.toInt() == 1;
+    return '$raw'.toLowerCase() == 'true';
   }
 }

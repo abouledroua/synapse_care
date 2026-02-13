@@ -5,7 +5,9 @@ import '../../controller/auth_controller.dart';
 import '../../controller/locale_controller.dart';
 import '../../view/screen/auth_login_page.dart';
 import '../../view/screen/auth_signup_page.dart';
+import '../../view/screen/forgot_password_page.dart';
 import '../../view/screen/access_denied_page.dart';
+import '../../view/screen/admin_clinic_validation_page.dart';
 import '../../view/screen/cabinet_create_page.dart';
 import '../../view/screen/cabinet_search_page.dart';
 import '../../view/screen/cabinet_select_page.dart';
@@ -15,6 +17,7 @@ import '../../view/screen/patient_create_page.dart';
 import '../../view/screen/landing_page.dart';
 import '../../view/screen/language_picker_page.dart';
 import '../../view/screen/not_found_page.dart';
+import '../../view/screen/profile_page.dart';
 import '../../view/screen/timeout_page.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -31,9 +34,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final isAuthRoute = state.matchedLocation.startsWith('/auth');
       final isProtected = state.matchedLocation.startsWith('/home') ||
           state.matchedLocation.startsWith('/cabinet') ||
-          state.matchedLocation.startsWith('/patients');
+          state.matchedLocation.startsWith('/patients') ||
+          state.matchedLocation.startsWith('/admin');
       if (!isAuthed && isProtected) return '/auth/login';
-      if (isAuthed && isAuthRoute) return '/cabinet/select';
+      if (isAuthed && isAuthRoute) {
+        if (AuthController.isPlatformAdmin) return '/admin/clinics';
+        return '/cabinet/select';
+      }
       return null;
     },
     routes: [
@@ -49,6 +56,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/login',
         pageBuilder: (context, state) => const NoTransitionPage(child: AuthLoginPage()),
+      ),
+      GoRoute(
+        path: '/auth/forgot',
+        pageBuilder: (context, state) => const NoTransitionPage(child: ForgotPasswordPage()),
       ),
       GoRoute(
         path: '/auth/signup',
@@ -88,6 +99,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/home',
         pageBuilder: (context, state) => const NoTransitionPage(child: HomePage()),
+      ),
+      GoRoute(
+        path: '/profile',
+        pageBuilder: (context, state) => const NoTransitionPage(child: ProfilePage()),
+      ),
+      GoRoute(
+        path: '/admin/clinics',
+        pageBuilder: (context, state) => const NoTransitionPage(child: AdminClinicValidationPage()),
       ),
       GoRoute(
         path: '/timeout',

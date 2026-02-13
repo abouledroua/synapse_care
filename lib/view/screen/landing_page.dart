@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 import '../widget/primary_button.dart';
 
 class LandingPage extends StatelessWidget {
@@ -17,7 +17,7 @@ class LandingPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const SynapseBackground(),
+          const AppBackground(),
           SafeArea(
             child: Center(
               child: ConstrainedBox(
@@ -28,22 +28,7 @@ class LandingPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: 210,
-                        width: 280,
-                        child: Image.asset('assets/images/logo_sl_v.png', fit: BoxFit.contain),
-                      ),
-                      Text(
-                        l10n.appTitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurfaceVariant,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 210, child: Image.asset('assets/images/logo_sl_v.png', fit: BoxFit.contain)),
                       Text(
                         l10n.welcomeHeadline,
                         textAlign: TextAlign.center,

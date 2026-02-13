@@ -1,4 +1,4 @@
-package com.bouledrouaamor.synapse_care
+package com.bouledrouaamor.curatio
 
 import io.flutter.embedding.android.FlutterActivity
 

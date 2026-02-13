@@ -7,7 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../core/constant/layout_constants.dart';
 import '../../services/cabinet_service.dart';
 import '../widget/cabinet_create_form.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 
 class CabinetCreatePage extends StatefulWidget {
   const CabinetCreatePage({super.key});
@@ -34,11 +34,13 @@ class _CabinetCreatePageState extends State<CabinetCreatePage> {
     });
 
     final photoBase64 = payload.photoBytes == null ? null : base64Encode(payload.photoBytes!);
-    final result = await _service.createCabinet(
+    final createResponse = await _service.createCabinet(
       name: payload.name,
       specialty: payload.specialty,
       address: payload.address,
       phone: payload.phone,
+      nationalitePatientDefaut: payload.nationalitePatientDefaut,
+      defaultCurrency: payload.defaultCurrency,
       photoBase64: photoBase64,
       photoExtension: payload.photoExtension,
     );
@@ -49,18 +51,22 @@ class _CabinetCreatePageState extends State<CabinetCreatePage> {
     });
 
     final messenger = ScaffoldMessenger.of(context);
-    if (result == CabinetCreateResult.success) {
+    if (createResponse.result == CabinetCreateResult.success) {
       messenger.showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.cabinetAddSuccess)));
-      context.go('/cabinet/search');
+      context.go('/cabinet/select');
       return;
     }
-    if (result == CabinetCreateResult.exists) {
+    if (createResponse.result == CabinetCreateResult.exists) {
       setState(() {
         _nameServerError = AppLocalizations.of(context)!.cabinetAddExists;
       });
       return;
     }
-    messenger.showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.cabinetAddFailed)));
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.cabinetAddFailed),
+      ),
+    );
   }
 
   @override
@@ -73,7 +79,7 @@ class _CabinetCreatePageState extends State<CabinetCreatePage> {
     return Scaffold(
       body: Stack(
         children: [
-          const SynapseBackground(),
+          const AppBackground(),
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -86,7 +92,7 @@ class _CabinetCreatePageState extends State<CabinetCreatePage> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: IconButton(
-                          onPressed: () => context.pop(),
+                          onPressed: () => context.pop(true),
                           icon: const Icon(Icons.arrow_back),
                           color: scheme.primary,
                         ),

@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.bouledrouaamor.synapse_care" "\0"
-            VALUE "FileDescription", "synapse_care" "\0"
+            VALUE "CompanyName", "com.bouledrouaamor.curatio" "\0"
+            VALUE "FileDescription", "curatio" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "synapse_care" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.bouledrouaamor.synapse_care. All rights reserved." "\0"
-            VALUE "OriginalFilename", "synapse_care.exe" "\0"
-            VALUE "ProductName", "synapse_care" "\0"
+            VALUE "InternalName", "curatio" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.bouledrouaamor.curatio. All rights reserved." "\0"
+            VALUE "OriginalFilename", "curatio.exe" "\0"
+            VALUE "ProductName", "curatio" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

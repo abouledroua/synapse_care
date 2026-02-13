@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData light() {
-    const seed = Color(0xFFA895E3);
+    const seed = Color.fromARGB(255, 235, 239, 240);
     final scheme = ColorScheme.fromSeed(seedColor: seed);
     return ThemeData(useMaterial3: true, colorScheme: scheme, scaffoldBackgroundColor: scheme.surface);
   }
@@ -14,8 +14,8 @@ class AppTheme {
   }
 
   static Color _seedForIndex(int index) {
-    if (index == 1) return const Color(0xFFA895E3); // purple
-    if (index == 2) return const Color.fromARGB(255, 216, 138, 138); // red
-    return const Color.fromARGB(255, 154, 189, 153); // green
+    if (index == 1) return const Color.fromARGB(255, 235, 239, 240); // blue
+    if (index == 2) return const Color.fromARGB(255, 207, 175, 175); // red
+    return const Color.fromARGB(255, 210, 231, 209); // green
   }
 }

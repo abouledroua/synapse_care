@@ -4,12 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../l10n/app_localizations.dart';
 
 class HomeQuickActions extends StatelessWidget {
-  const HomeQuickActions({
-    super.key,
-    required this.l10n,
-    required this.scheme,
-    this.onPatientsTap,
-  });
+  const HomeQuickActions({super.key, required this.l10n, required this.scheme, this.onPatientsTap});
 
   final AppLocalizations l10n;
   final ColorScheme scheme;
@@ -18,7 +13,7 @@ class HomeQuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
       child: Wrap(
         spacing: 10,
         runSpacing: 12,
@@ -99,10 +94,6 @@ class _QuickActionChip extends StatelessWidget {
 
     if (onTap == null) return content;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: content,
-    );
+    return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(22), child: content);
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'auth_controller.dart';
 import '../services/patient_service.dart';
 
 class PatientListController extends ChangeNotifier {
@@ -17,6 +18,18 @@ class PatientListController extends ChangeNotifier {
   String? error;
   List<Map<String, dynamic>> patients = [];
 
+  int? get cabinetId {
+    final raw = AuthController.globalClinic?['id_cabinet'];
+    if (raw is int) return raw;
+    if (raw is num) return raw.toInt();
+    if (raw is String) return int.tryParse(raw);
+    return null;
+  }
+
+  int? get userId {
+    return AuthController.globalUserId;
+  }
+
   @override
   void dispose() {
     _searchDebounce?.cancel();
@@ -27,11 +40,18 @@ class PatientListController extends ChangeNotifier {
   }
 
   Future<void> loadPatients() async {
+    if (cabinetId == null || userId == null) {
+      loading = false;
+      error = 'no_clinic';
+      patients = [];
+      notifyListeners();
+      return;
+    }
     loading = true;
     error = null;
     notifyListeners();
     try {
-      patients = await _service.fetchPatients();
+      patients = await _service.fetchPatients(cabinetId: cabinetId!, userId: userId!);
     } catch (_) {
       error = 'network';
       patients = [];
@@ -44,6 +64,12 @@ class PatientListController extends ChangeNotifier {
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+      if (cabinetId == null || userId == null) {
+        error = 'no_clinic';
+        patients = [];
+        notifyListeners();
+        return;
+      }
       final query = searchController.text.trim();
       if (query.isEmpty) {
         loadPatients();
@@ -60,17 +86,34 @@ class PatientListController extends ChangeNotifier {
   }
 
   Future<void> searchPatients(String query) async {
+    if (cabinetId == null || userId == null) {
+      loading = false;
+      error = 'no_clinic';
+      patients = [];
+      notifyListeners();
+      return;
+    }
     loading = true;
     error = null;
     notifyListeners();
     try {
-      patients = await _service.searchPatients(query);
+      patients = await _service.searchPatients(query: query, cabinetId: cabinetId!, userId: userId!);
     } catch (_) {
       error = 'network';
       patients = [];
     } finally {
       loading = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> deletePatient(int id) async {
+    try {
+      if (cabinetId == null || userId == null) return false;
+      await _service.deletePatient(id, cabinetId: cabinetId!, userId: userId!);
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 }

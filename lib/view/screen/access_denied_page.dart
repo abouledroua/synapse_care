@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../widget/primary_button.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 
 class AccessDeniedPage extends StatelessWidget {
   const AccessDeniedPage({super.key});
@@ -15,7 +15,7 @@ class AccessDeniedPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const SynapseBackground(),
+          const AppBackground(),
           SafeArea(
             child: Center(
               child: Padding(

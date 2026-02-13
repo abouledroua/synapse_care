@@ -5,7 +5,7 @@ import '../../controller/cabinet_select_controller.dart';
 import '../../core/constant/layout_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/cabinet_service.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 
 class CabinetSelectPage extends StatefulWidget {
   const CabinetSelectPage({super.key});
@@ -35,16 +35,23 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
     final isWide = size.width >= LayoutConstants.wideBreakpoint;
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
-
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) => PopScope(
+      builder: (context, child) {
+        final filteredCabinets = _controller.cabinets.where((item) {
+          final rawEtat = item['etat'];
+          final etat = rawEtat is num ? rawEtat.toInt() : int.tryParse('$rawEtat') ?? 0;
+          final rawStatus = item['status'];
+          final status = rawStatus is num ? rawStatus.toInt() : int.tryParse('$rawStatus') ?? 0;
+          return etat != 2 && status != 2;
+        }).toList();
+        return PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {},
         child: Scaffold(
           body: Stack(
             children: [
-              const SynapseBackground(),
+              const AppBackground(),
               SafeArea(
                 child: Center(
                   child: SingleChildScrollView(
@@ -70,24 +77,37 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                             style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
                           ),
                           const SizedBox(height: 20),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: () async {
-                                final refreshed = await context.push<bool>('/cabinet/search');
-                                if (refreshed == true) {
-                                  await _controller.load();
-                                }
-                              },
-                              icon: const Icon(Icons.search_rounded),
-                              label: Text(l10n.cabinetSelectFind),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                side: BorderSide(color: scheme.primary.withValues(alpha: 0.6)),
-                                foregroundColor: scheme.primary,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: FilledButton.icon(
+                                  onPressed: () async {
+                                    final refreshed = await context.push<bool>('/cabinet/search');
+                                    if (refreshed == true) {
+                                      await _controller.load();
+                                    }
+                                  },
+                                  icon: const Icon(Icons.search_rounded),
+                                  label: Text(l10n.cabinetSelectFind),
+                                  style: FilledButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 10),
+                              OutlinedButton.icon(
+                                onPressed: _controller.isLoading ? null : _controller.load,
+                                icon: const Icon(Icons.refresh),
+                                label: Text(l10n.patientListRefresh),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                                  side: BorderSide(color: scheme.primary.withValues(alpha: 0.6)),
+                                  foregroundColor: scheme.primary,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 10),
                           Divider(color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
@@ -106,7 +126,7 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                                 style: TextStyle(color: scheme.error),
                               ),
                             )
-                          else if (_controller.cabinets.isEmpty)
+                          else if (filteredCabinets.isEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: Text(
@@ -119,20 +139,39 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                             ListView.separated(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: _controller.cabinets.length,
+                              itemCount: filteredCabinets.length,
                               separatorBuilder: (_, _) => const SizedBox(height: 12),
                               itemBuilder: (context, index) {
-                                final item = _controller.cabinets[index];
+                                final item = filteredCabinets[index];
                                 final name = (item['nom_cabinet'] ?? '').toString();
                                 final specialty = (item['specialite_cabinet'] ?? '').toString();
                                 final photoFile = (item['photo_url'] ?? '').toString();
                                 final imageUrl = _controller.cabinetImageUrl(photoFile);
                                 final cabinetId = int.tryParse('${item['id_cabinet'] ?? ''}');
+                                final rawStatus = item['status'];
+                                final status = rawStatus is num ? rawStatus.toInt() : int.tryParse('$rawStatus') ?? 0;
+                                final rawEtat = item['etat'];
+                                final etat = rawEtat is num ? rawEtat.toInt() : int.tryParse('$rawEtat') ?? 0;
+                                final clinicValidated = etat == 1;
+                                final isApproved = status == 1 && clinicValidated;
+                                final statusText = etat == 2
+                                    ? l10n.cabinetStatusRejected
+                                    : (!clinicValidated || status == 0
+                                        ? l10n.cabinetStatusPending
+                                        : (status == 2 ? l10n.cabinetStatusRejected : null));
                                 return _CabinetCard(
                                   name: name.isEmpty ? l10n.cabinetSelectUnnamed : name,
                                   specialty: specialty.isEmpty ? l10n.cabinetSelectSampleSpecialty : specialty,
                                   imageUrl: imageUrl,
+                                  statusText: statusText,
                                   onTap: () {
+                                    if (!isApproved) {
+                                      final message = etat == 2 || status == 2
+                                          ? l10n.cabinetSelectRejectedToast
+                                          : l10n.cabinetSelectPendingToast;
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                                      return;
+                                    }
                                     _controller.selectCabinet(item);
                                     context.go('/home');
                                   },
@@ -163,6 +202,10 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
                                           final messenger = ScaffoldMessenger.of(context);
                                           if (result == CabinetRemoveResult.success) {
                                             messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetRemoveSuccess)));
+                                          } else if (result == CabinetRemoveResult.lastAdmin) {
+                                            messenger.showSnackBar(
+                                              SnackBar(content: Text(l10n.cabinetRemoveLastAdminError)),
+                                            );
                                           } else if (result == CabinetRemoveResult.network) {
                                             messenger.showSnackBar(SnackBar(content: Text(l10n.loginNetworkError)));
                                           } else {
@@ -181,19 +224,28 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
             ],
           ),
         ),
-      ),
+      );
+      },
     );
   }
 }
 
 class _CabinetCard extends StatelessWidget {
-  const _CabinetCard({required this.name, required this.specialty, required this.onTap, this.onRemove, this.imageUrl});
+  const _CabinetCard({
+    required this.name,
+    required this.specialty,
+    required this.onTap,
+    this.onRemove,
+    this.imageUrl,
+    this.statusText,
+  });
 
   final String name;
   final String specialty;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final VoidCallback? onRemove;
   final String? imageUrl;
+  final String? statusText;
 
   @override
   Widget build(BuildContext context) {
@@ -226,9 +278,28 @@ class _CabinetCard extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.w600, color: scheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    specialty,
-                    style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 13),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          specialty,
+                          style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 13),
+                        ),
+                      ),
+                      if (statusText != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: scheme.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: scheme.primary.withValues(alpha: 0.4)),
+                          ),
+                          child: Text(
+                            statusText!,
+                            style: TextStyle(color: scheme.primary, fontSize: 11, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),

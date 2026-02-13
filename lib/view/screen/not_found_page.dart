@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 import '../widget/primary_button.dart';
 
 class NotFoundPage extends StatelessWidget {
@@ -15,7 +15,7 @@ class NotFoundPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const SynapseBackground(),
+          const AppBackground(),
           SafeArea(
             child: Center(
               child: ConstrainedBox(
@@ -39,11 +39,7 @@ class NotFoundPage extends StatelessWidget {
                       Text(
                         l10n.notFoundTitle,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurfaceVariant,
-                        ),
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: scheme.onSurfaceVariant),
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -56,10 +52,7 @@ class NotFoundPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      PrimaryButton(
-                        label: l10n.backHome,
-                        onPressed: () => context.go('/'),
-                      ),
+                      PrimaryButton(label: l10n.backHome, onPressed: () => context.go('/')),
                     ],
                   ),
                 ),
@@ -71,5 +64,3 @@ class NotFoundPage extends StatelessWidget {
     );
   }
 }
-
-

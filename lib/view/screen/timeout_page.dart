@@ -5,7 +5,7 @@ import '../../controller/timeout_controller.dart';
 import '../../core/constant/layout_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../widget/brand_header.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 
 class TimeoutPage extends StatefulWidget {
   const TimeoutPage({super.key});
@@ -46,7 +46,7 @@ class _TimeoutPageState extends State<TimeoutPage> {
     return Scaffold(
       body: Stack(
         children: [
-          const SynapseBackground(),
+          const AppBackground(),
           SafeArea(
             child: Center(
               child: Padding(
@@ -73,10 +73,7 @@ class _TimeoutPageState extends State<TimeoutPage> {
                       Text(
                         l10n.timeoutBody,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
-                        ),
+                        style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
                       ),
                     ],
                   ),

@@ -40,6 +40,8 @@ class CabinetSelectController extends ChangeNotifier {
       'nom_cabinet': item['nom_cabinet'],
       'specialite_cabinet': item['specialite_cabinet'],
       'photo_url': item['photo_url'],
+      'nationalite_patient_defaut': item['nationalite_patient_defaut'],
+      'default_currency': item['default_currency'],
     };
     AuthController.persistGlobals();
   }

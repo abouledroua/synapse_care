@@ -1,4 +1,4 @@
-name: synapse_care
+name: curatio
 description: "A Health Care Application built with Flutter."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -21,6 +21,8 @@ dependencies:
   intl_phone_field: any
   font_awesome_flutter: any
   image_picker: any
+  country_picker: any
+  currency_picker: any
   shared_preferences: any
 
 dev_dependencies:

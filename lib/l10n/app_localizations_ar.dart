@@ -120,6 +120,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get patientEditFailed => 'تعذر تحديث بيانات المريض';
 
   @override
+  String get patientDeleteConfirmTitle => 'حذف المريض';
+
+  @override
+  String get patientDeleteConfirmBody =>
+      'هل أنت متأكد أنك تريد حذف هذا المريض؟';
+
+  @override
+  String get patientDeleteCancel => 'إلغاء';
+
+  @override
+  String get patientDeleteConfirm => 'حذف';
+
+  @override
+  String get patientDeleteSuccess => 'تم حذف المريض';
+
+  @override
+  String get patientDeleteFailed => 'تعذر حذف المريض';
+
+  @override
   String get patientCreateSubmit => 'حفظ';
 
   @override
@@ -127,6 +146,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get patientCreateSuccess => 'تم إنشاء المريض.';
+
+  @override
+  String get patientCreateLinked => 'المريض موجود مسبقاً وتم ربطه بالعيادة.';
+
+  @override
+  String get patientLinkTitle => 'مريض موجود';
+
+  @override
+  String get patientLinkBody =>
+      'هذا المريض موجود مسبقاً. هل تريد ربطه بهذه العيادة؟';
+
+  @override
+  String get patientLinkConfirm => 'ربط المريض';
+
+  @override
+  String get patientLinkCancel => 'إلغاء';
+
+  @override
+  String get patientLinkSuccess => 'تم ربط المريض بهذه العيادة.';
+
+  @override
+  String get patientLinkFailed => 'تعذر ربط المريض.';
 
   @override
   String get patientCreateFailed => 'تعذر إنشاء المريض.';
@@ -142,6 +183,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get patientFieldCodeBarre => 'الباركود';
+
+  @override
+  String get patientFieldNationality => 'الجنسية';
+
+  @override
+  String get patientNationalityAlgeria => 'الجزائر';
+
+  @override
+  String get patientNationalityFrance => 'فرنسا';
+
+  @override
+  String get patientNationalityOther => 'أخرى';
 
   @override
   String get patientFieldNom => 'اللقب';
@@ -219,6 +272,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get patientFieldPhotoUrl => 'رابط الصورة';
 
   @override
+  String get patientClinicRequired => 'يرجى اختيار العيادة أولاً.';
+
+  @override
   String get patientOptionYes => 'نعم';
 
   @override
@@ -262,6 +318,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signup => 'إنشاء حساب';
+
+  @override
+  String get signupFailed => 'فشل إنشاء الحساب.';
+
+  @override
+  String get signupEmailExists => 'البريد الإلكتروني موجود بالفعل.';
+
+  @override
+  String get signupPhoneExists => 'رقم الهاتف موجود بالفعل.';
 
   @override
   String get emailHint => 'البريد الإلكتروني';
@@ -329,6 +394,53 @@ class AppLocalizationsAr extends AppLocalizations {
   String get forgotPassword => 'هل نسيت كلمة المرور؟';
 
   @override
+  String get forgotPasswordTitle => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'أدخل بريدك الإلكتروني لاستلام رابط إعادة التعيين.';
+
+  @override
+  String get forgotPasswordEmailHint => 'البريد الإلكتروني';
+
+  @override
+  String get forgotPasswordSend => 'إرسال الرابط';
+
+  @override
+  String get forgotPasswordSending => 'جارٍ الإرسال...';
+
+  @override
+  String get forgotPasswordSuccess =>
+      'إذا كان البريد موجوداً فسيتم إرسال رابط.';
+
+  @override
+  String get forgotPasswordCodeSent => 'تم إرسال الرمز. تحقق من بريدك.';
+
+  @override
+  String get forgotPasswordEmailNotFound => 'البريد غير موجود.';
+
+  @override
+  String get forgotPasswordCodeHint => 'رمز التحقق';
+
+  @override
+  String get forgotPasswordVerify => 'تحقق من الرمز';
+
+  @override
+  String get forgotPasswordInvalidCode => 'رمز غير صحيح أو منتهي.';
+
+  @override
+  String get forgotPasswordNewPasswordHint => 'كلمة مرور جديدة';
+
+  @override
+  String get forgotPasswordConfirmPasswordHint => 'تأكيد كلمة المرور';
+
+  @override
+  String get forgotPasswordReset => 'إعادة التعيين';
+
+  @override
+  String get forgotPasswordResetSuccess => 'تم تحديث كلمة المرور. سجّل الدخول.';
+
+  @override
   String get continueCta => 'متابعة';
 
   @override
@@ -351,6 +463,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get doctor => 'طبيب';
+
+  @override
+  String get staff => 'طبيب / مساعد';
+
+  @override
+  String get assistant => 'مساعد(ة)';
 
   @override
   String get cabinetSearchTitle => 'ابحث عن عيادتك الطبية';
@@ -377,6 +495,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cabinetCreateSubmit => 'إنشاء عيادة';
 
   @override
+  String get cabinetDefaultPatientNationality => 'جنسية المرضى الافتراضية';
+
+  @override
+  String get cabinetDefaultCurrency => 'العملة الافتراضية';
+
+  @override
   String get cabinetNameHint => 'اسم العيادة';
 
   @override
@@ -396,6 +520,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cabinetAddFailed => 'تعذر إضافة العيادة.';
+
+  @override
+  String get cabinetRequestSent => 'تم إرسال الطلب. في انتظار الموافقة.';
+
+  @override
+  String get cabinetRequestExists =>
+      'تم إرسال الطلب مسبقًا أو تمت الموافقة عليه.';
+
+  @override
+  String get cabinetRequestFailed => 'تعذر إرسال الطلب.';
 
   @override
   String get cabinetRemoveAction => 'إزالة';
@@ -419,6 +553,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cabinetRemoveFailed => 'تعذر إزالة العيادة.';
 
   @override
+  String get cabinetRemoveLastAdminError =>
+      'لا يمكنك إزالة هذا الانتساب لأنك المسؤول الوحيد عن هذه العيادة.';
+
+  @override
   String get cabinetSelectTitle => 'اختر عيادتك';
 
   @override
@@ -429,6 +567,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cabinetSelectEmpty => 'لم يتم العثور على عيادات مرتبطة.';
+
+  @override
+  String get cabinetStatusPending => 'قيد الانتظار';
+
+  @override
+  String get cabinetStatusRejected => 'مرفوض';
+
+  @override
+  String get cabinetSelectPendingToast => 'هذه العيادة قيد الموافقة.';
+
+  @override
+  String get cabinetSelectRejectedToast => 'تم رفض طلب هذه العيادة.';
 
   @override
   String get cabinetSelectUnnamed => 'عيادة بدون اسم';
@@ -509,10 +659,89 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeMenuProfile => 'ملفي الشخصي';
 
   @override
+  String get profileFullNameLabel => 'الاسم الكامل';
+
+  @override
+  String get profileEmailLabel => 'البريد الإلكتروني';
+
+  @override
+  String get profilePhoneLabel => 'الهاتف';
+
+  @override
+  String get profileSpecialtyLabel => 'التخصص';
+
+  @override
+  String get profileClinicLabel => 'العيادة';
+
+  @override
   String get homeMenuChangeClinic => 'تغيير العيادة';
 
   @override
+  String get homeMenuAdminPanel => 'لوحة الإدارة';
+
+  @override
   String get homeMenuLogout => 'تسجيل الخروج';
+
+  @override
+  String get adminClinicsTitle => 'العيادات في انتظار التحقق';
+
+  @override
+  String get adminClinicsTitlePending => 'العيادات المعلقة';
+
+  @override
+  String get adminClinicsTitleApproved => 'العيادات المقبولة';
+
+  @override
+  String get adminClinicsTitleCanceled => 'العيادات الملغاة';
+
+  @override
+  String get adminClinicsTitleAll => 'كل العيادات';
+
+  @override
+  String get adminClinicsRefresh => 'تحديث';
+
+  @override
+  String get adminClinicsEmpty => 'لا توجد عيادات معلقة.';
+
+  @override
+  String get adminClinicsPending => 'قيد الانتظار';
+
+  @override
+  String get adminClinicsAll => 'الكل';
+
+  @override
+  String get adminClinicsApproved => 'مقبولة';
+
+  @override
+  String get adminClinicsCanceled => 'ملغاة';
+
+  @override
+  String get adminClinicsSearchHint => 'ابحث عن عيادة...';
+
+  @override
+  String get adminClinicsApprove => 'قبول';
+
+  @override
+  String get adminClinicsReject => 'رفض';
+
+  @override
+  String get adminClinicsApproveSuccess => 'تمت الموافقة على العيادة.';
+
+  @override
+  String get adminClinicsRejectSuccess => 'تم رفض العيادة.';
+
+  @override
+  String get adminClinicsActionFailed => 'تعذر تحديث حالة العيادة.';
+
+  @override
+  String get adminClinicsUnauthorized =>
+      'ليست لديك صلاحية الوصول إلى هذه الصفحة.';
+
+  @override
+  String get adminClinicsCreatedBy => 'أُنشئت بواسطة';
+
+  @override
+  String get adminClinicsCreatedAt => 'تاريخ الإنشاء';
 
   @override
   String get homeMenuOpenTooltip => 'فتح القائمة';

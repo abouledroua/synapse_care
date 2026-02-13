@@ -1,7 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:country_picker/country_picker.dart';
+import 'package:currency_picker/currency_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
@@ -16,6 +16,8 @@ class CabinetCreatePayload {
     required this.specialty,
     required this.address,
     required this.phone,
+    required this.nationalitePatientDefaut,
+    required this.defaultCurrency,
     this.photoBytes,
     this.photoExtension,
   });
@@ -24,6 +26,8 @@ class CabinetCreatePayload {
   final String specialty;
   final String address;
   final String phone;
+  final int? nationalitePatientDefaut;
+  final String defaultCurrency;
   final Uint8List? photoBytes;
   final String? photoExtension;
 }
@@ -64,6 +68,9 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
   String? _nameError;
   String? _phoneError;
   String _phoneNumber = '';
+  String _defaultPatientNationality = '';
+  String _defaultCurrency = 'DZD';
+  int? _nationalityCode;
 
   @override
   void dispose() {
@@ -171,6 +178,8 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
         specialty: _specialtyController.text.trim(),
         address: _addressController.text.trim(),
         phone: _phoneNumber,
+        nationalitePatientDefaut: _nationalityCode,
+        defaultCurrency: _defaultCurrency,
         photoBytes: _photoBytes,
         photoExtension: _photoExtension,
       ),
@@ -178,107 +187,200 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          GestureDetector(
-            onTap: _pickPhoto,
-            child: CircleAvatar(
-              radius: 45,
-              backgroundColor: widget.scheme.primary.withValues(alpha: 0.15),
-              backgroundImage: _photo != null ? FileImage(File(_photo!.path)) : null,
-              child: _photo == null
-                  ? Icon(Icons.photo_camera_outlined, size: 30, color: widget.scheme.primary.withValues(alpha: 0.8))
-                  : null,
-            ),
-          ),
-          if (_photo != null)
+  Widget build(BuildContext context) {
+    if (_defaultPatientNationality.isEmpty) {
+      _defaultPatientNationality = widget.l10n.patientNationalityAlgeria;
+      _nationalityCode ??= 213;
+    }
+    return Column(
+      children: [
+        Stack(
+          alignment: Alignment.bottomRight,
+          children: [
             GestureDetector(
-              onTap: _clearPhoto,
-              child: Container(
-                height: 22,
-                width: 22,
-                decoration: BoxDecoration(
-                  color: widget.scheme.surface,
-                  shape: BoxShape.circle,
-                  boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
-                ),
-                child: Icon(Icons.close, size: 14, color: widget.scheme.primary),
+              onTap: _pickPhoto,
+              child: CircleAvatar(
+                radius: 45,
+                backgroundColor: widget.scheme.primary.withValues(alpha: 0.15),
+                backgroundImage: _photoBytes != null ? MemoryImage(_photoBytes!) : null,
+                child: _photo == null
+                    ? Icon(Icons.photo_camera_outlined, size: 30, color: widget.scheme.primary.withValues(alpha: 0.8))
+                    : null,
               ),
             ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      InputCard(
-        icon: Icons.local_hospital_outlined,
-        hintText: widget.l10n.cabinetNameHint,
-        keyboardType: TextInputType.name,
-        controller: _nameController,
-        focusNode: _nameFocus,
-        onSubmitted: (_) => _specialtyFocus.requestFocus(),
-        onChanged: (value) {
-          _validateName();
-          widget.onNameChanged?.call(value);
-        },
-        errorText: _nameError ?? widget.nameErrorText,
-      ),
-      const SizedBox(height: 16),
-      InputCard(
-        icon: Icons.medical_information_outlined,
-        hintText: widget.l10n.specialtyHint,
-        keyboardType: TextInputType.multiline,
-        controller: _specialtyController,
-        focusNode: _specialtyFocus,
-        textInputAction: TextInputAction.newline,
-        maxLines: 3,
-        minLines: 1,
-        onSubmitted: (_) => _addressFocus.requestFocus(),
-      ),
-      const SizedBox(height: 16),
-      InputCard(
-        icon: Icons.location_on_outlined,
-        hintText: widget.l10n.cabinetAddressHint,
-        keyboardType: TextInputType.multiline,
-        controller: _addressController,
-        focusNode: _addressFocus,
-        textInputAction: TextInputAction.newline,
-        maxLines: 3,
-        minLines: 1,
-        onSubmitted: (_) => _phoneFocus.requestFocus(),
-      ),
-      const SizedBox(height: 16),
-      SizedBox(
-        height: 58,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.92),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
-          ),
-          child: IntlPhoneField(
-            focusNode: _phoneFocus,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: widget.l10n.phoneHint,
-              hintStyle: TextStyle(color: widget.scheme.primary.withValues(alpha: 0.5)),
-              errorText: _phoneError,
+            if (_photo != null)
+              GestureDetector(
+                onTap: _clearPhoto,
+                child: Container(
+                  height: 22,
+                  width: 22,
+                  decoration: BoxDecoration(
+                    color: widget.scheme.surface,
+                    shape: BoxShape.circle,
+                    boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
+                  ),
+                  child: Icon(Icons.close, size: 14, color: widget.scheme.primary),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        InputCard(
+          icon: Icons.local_hospital_outlined,
+          hintText: widget.l10n.cabinetNameHint,
+          keyboardType: TextInputType.name,
+          controller: _nameController,
+          focusNode: _nameFocus,
+          onSubmitted: (_) => _specialtyFocus.requestFocus(),
+          onChanged: (value) {
+            _validateName();
+            widget.onNameChanged?.call(value);
+          },
+          errorText: _nameError ?? widget.nameErrorText,
+        ),
+        const SizedBox(height: 16),
+        InputCard(
+          icon: Icons.medical_information_outlined,
+          hintText: widget.l10n.specialtyHint,
+          keyboardType: TextInputType.multiline,
+          controller: _specialtyController,
+          focusNode: _specialtyFocus,
+          textInputAction: TextInputAction.newline,
+          maxLines: 3,
+          minLines: 1,
+          onSubmitted: (_) => _addressFocus.requestFocus(),
+        ),
+        const SizedBox(height: 16),
+        InputCard(
+          icon: Icons.location_on_outlined,
+          hintText: widget.l10n.cabinetAddressHint,
+          keyboardType: TextInputType.multiline,
+          controller: _addressController,
+          focusNode: _addressFocus,
+          textInputAction: TextInputAction.newline,
+          maxLines: 3,
+          minLines: 1,
+          onSubmitted: (_) => _phoneFocus.requestFocus(),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              flex: 11,
+              child: InkWell(
+                onTap: () => showCountryPicker(
+                  context: context,
+                  showPhoneCode: false,
+                  onSelect: (country) => setState(() {
+                    _defaultPatientNationality = country.name;
+                    _nationalityCode = int.tryParse(country.phoneCode);
+                  }),
+                ),
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  height: 58,
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.flag_outlined, color: widget.scheme.primary.withValues(alpha: 0.8)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _defaultPatientNationality.isEmpty
+                              ? widget.l10n.cabinetDefaultPatientNationality
+                              : _defaultPatientNationality,
+                          style: TextStyle(
+                            color: widget.scheme.onSurfaceVariant,
+                            fontSize: 14,
+                            fontWeight: _defaultPatientNationality.isEmpty ? FontWeight.w400 : FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.arrow_drop_down, color: widget.scheme.primary.withValues(alpha: 0.7)),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            initialCountryCode: 'DZ',
-            dropdownIcon: Icon(Icons.arrow_drop_down, color: widget.scheme.primary.withValues(alpha: 0.7)),
-            style: TextStyle(color: widget.scheme.onSurfaceVariant),
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            validator: _validatePhone,
-            onChanged: _handlePhoneChanged,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _submit(),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 7,
+              child: InkWell(
+                onTap: () => showCurrencyPicker(
+                  context: context,
+                  showFlag: true,
+                  showCurrencyName: true,
+                  showCurrencyCode: true,
+                  onSelect: (currency) => setState(() => _defaultCurrency = currency.code),
+                ),
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  height: 58,
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.payments_outlined, color: widget.scheme.primary.withValues(alpha: 0.8)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _defaultCurrency.isEmpty ? widget.l10n.cabinetDefaultCurrency : _defaultCurrency,
+                          style: TextStyle(
+                            color: widget.scheme.onSurfaceVariant,
+                            fontSize: 14,
+                            fontWeight: _defaultCurrency.isEmpty ? FontWeight.w400 : FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.arrow_drop_down, color: widget.scheme.primary.withValues(alpha: 0.7)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 58,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.92),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
+            ),
+            child: IntlPhoneField(
+              focusNode: _phoneFocus,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: widget.l10n.phoneHint,
+                hintStyle: TextStyle(color: widget.scheme.primary.withValues(alpha: 0.5)),
+                errorText: _phoneError,
+              ),
+              initialCountryCode: 'DZ',
+              dropdownIcon: Icon(Icons.arrow_drop_down, color: widget.scheme.primary.withValues(alpha: 0.7)),
+              style: TextStyle(color: widget.scheme.onSurfaceVariant),
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              validator: _validatePhone,
+              onChanged: _handlePhoneChanged,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _submit(),
+            ),
           ),
         ),
-      ),
-      const SizedBox(height: 12),
-      PrimaryButton(label: widget.l10n.cabinetCreateSubmit, onPressed: _submit),
-    ],
-  );
+        const SizedBox(height: 12),
+        PrimaryButton(label: widget.l10n.cabinetCreateSubmit, onPressed: _submit),
+      ],
+    );
+  }
 }

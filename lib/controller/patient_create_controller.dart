@@ -3,10 +3,12 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/phone_number.dart';
 
+import 'auth_controller.dart';
 import '../l10n/app_localizations.dart';
 import '../services/patient_service.dart';
 
@@ -29,6 +31,7 @@ class PatientCreateController extends ChangeNotifier {
   final profession = TextEditingController();
   final nin = TextEditingController();
   final nss = TextEditingController();
+  final nationalite = TextEditingController();
   final formScrollController = ScrollController();
 
   final ImagePicker _imagePicker = ImagePicker();
@@ -42,9 +45,15 @@ class PatientCreateController extends ChangeNotifier {
   int sexe = 1;
   int typeAge = 1;
   int? gs;
+  int? nationalityCode;
   int presume = 0;
   int conventionne = 0;
+  String phoneCountryCode1 = 'DZ';
+  String phoneCountryCode2 = 'DZ';
   bool saving = false;
+  String? lastError;
+  bool lastCreateLinked = false;
+  int? existingPatientId;
 
   bool get isEditing => patientId != null;
 
@@ -64,6 +73,7 @@ class PatientCreateController extends ChangeNotifier {
     profession.dispose();
     nin.dispose();
     nss.dispose();
+    nationalite.dispose();
     formScrollController.dispose();
     super.dispose();
   }
@@ -146,6 +156,14 @@ class PatientCreateController extends ChangeNotifier {
     profession.text = (patient['profession'] ?? '').toString();
     nin.text = (patient['nin'] ?? '').toString();
     nss.text = (patient['nss'] ?? '').toString();
+    final rawNationality = patient['nationality'];
+    nationalityCode = rawNationality is num ? rawNationality.toInt() : int.tryParse('$rawNationality');
+    if (nationalityCode != null) {
+      final country = CountryParser.tryParsePhoneCode('$nationalityCode');
+      nationalite.text = country?.name ?? '';
+    } else {
+      nationalite.text = (patient['nationalite'] ?? '').toString();
+    }
 
     sexe = patient['sexe'] is num ? (patient['sexe'] as num).toInt() : int.tryParse('${patient['sexe'] ?? ''}') ?? 1;
     typeAge = patient['type_age'] is num
@@ -257,6 +275,37 @@ class PatientCreateController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setNationaliteName(String? value) {
+    nationalite.text = (value ?? '').trim();
+    notifyListeners();
+  }
+
+  void setNationaliteCountry(Country country) {
+    nationalite.text = country.name.trim();
+    nationalityCode = int.tryParse(country.phoneCode);
+    if (!isEditing) {
+      final tel1Empty = tel1.text.trim().isEmpty || tel1.text.trim() == '+213';
+      final tel2Empty = tel2.text.trim().isEmpty || tel2.text.trim() == '+213';
+      if (tel1Empty) phoneCountryCode1 = country.countryCode;
+      if (tel2Empty) phoneCountryCode2 = country.countryCode;
+    }
+    notifyListeners();
+  }
+
+  void setNationaliteFromPhoneCode(String phoneCode) {
+    final country = CountryParser.tryParsePhoneCode(phoneCode);
+    if (country == null) return;
+    nationalite.text = country.name.trim();
+    nationalityCode = int.tryParse(country.phoneCode);
+    if (!isEditing) {
+      final tel1Empty = tel1.text.trim().isEmpty || tel1.text.trim() == '+213';
+      final tel2Empty = tel2.text.trim().isEmpty || tel2.text.trim() == '+213';
+      if (tel1Empty) phoneCountryCode1 = country.countryCode;
+      if (tel2Empty) phoneCountryCode2 = country.countryCode;
+    }
+    notifyListeners();
+  }
+
   void setPresume(bool value) {
     presume = value ? 1 : 0;
     notifyListeners();
@@ -276,8 +325,21 @@ class PatientCreateController extends ChangeNotifier {
 
   Future<bool> submit() async {
     saving = true;
+    lastError = null;
+    lastCreateLinked = false;
+    existingPatientId = null;
     notifyListeners();
     try {
+      final cabinetId = AuthController.globalClinic?['id_cabinet'];
+      final userId = AuthController.globalUserId;
+      if (cabinetId == null) {
+        lastError = 'no_clinic';
+        return false;
+      }
+      if (userId == null) {
+        lastError = 'network';
+        return false;
+      }
       final bytes = photoBytes ?? await photo?.readAsBytes();
       final ageValue = int.tryParse(age.text.trim()) ?? 0;
       final pourcConvValue = double.tryParse(pourcConv.text.trim().replaceAll(',', '.')) ?? 0;
@@ -286,7 +348,8 @@ class PatientCreateController extends ChangeNotifier {
       final effectiveTel1 = rawTel1.isEmpty && rawTel2.isNotEmpty ? rawTel2 : rawTel1;
       final effectiveTel2 = rawTel1.isEmpty && rawTel2.isNotEmpty ? '' : rawTel2;
       final payload = <String, dynamic>{
-        'code_barre': codeBarre.text.trim(),
+        'id_cabinet': cabinetId,
+        'id_user': userId,
         'nom': nom.text.trim(),
         'prenom': prenom.text.trim(),
         'date_naissance': dateNaissance.text.trim(),
@@ -306,13 +369,35 @@ class PatientCreateController extends ChangeNotifier {
         'tel2': effectiveTel2,
         'nin': nin.text.trim(),
         'nss': nss.text.trim(),
+        if (nationalityCode != null) 'nationality': nationalityCode,
         if (bytes != null && bytes.isNotEmpty) 'photo_base64': base64Encode(bytes),
         if (bytes != null && bytes.isNotEmpty) 'photo_ext': photoExtension ?? _extensionFromPath(photo?.path ?? ''),
       };
       if (isEditing) {
-        await _service.updatePatient(patientId!, payload);
+        final result = await _service.updatePatient(patientId!, payload);
+        if (result['status'] == 409 && result['can_link'] == true) {
+          lastError = 'patient_exists';
+          final patient = result['patient'];
+          if (patient is Map && patient['id_patient'] != null) {
+            existingPatientId = patient['id_patient'] is num
+                ? (patient['id_patient'] as num).toInt()
+                : int.tryParse('${patient['id_patient']}');
+          }
+          return false;
+        }
       } else {
-        await _service.createPatient(payload);
+        final result = await _service.createPatient(payload);
+        if (result['status'] == 409 && result['can_link'] == true) {
+          lastError = 'patient_exists';
+          final patient = result['patient'];
+          if (patient is Map && patient['id_patient'] != null) {
+            existingPatientId = patient['id_patient'] is num
+                ? (patient['id_patient'] as num).toInt()
+                : int.tryParse('${patient['id_patient']}');
+          }
+          return false;
+        }
+        lastCreateLinked = result['linked'] == true;
       }
       return true;
     } catch (e) {
@@ -321,6 +406,21 @@ class PatientCreateController extends ChangeNotifier {
     } finally {
       saving = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> linkExistingPatient() async {
+    final cabinetId = AuthController.globalClinic?['id_cabinet'];
+    final userId = AuthController.globalUserId;
+    final patientId = existingPatientId;
+    final parsedCabinetId = cabinetId is num ? cabinetId.toInt() : int.tryParse('$cabinetId');
+    final parsedUserId = userId;
+    if (parsedCabinetId == null || patientId == null || parsedUserId == null) return false;
+    try {
+      await _service.linkPatient(cabinetId: parsedCabinetId, patientId: patientId, userId: parsedUserId);
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 

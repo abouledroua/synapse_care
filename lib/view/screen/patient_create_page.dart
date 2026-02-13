@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:country_picker/country_picker.dart';
 
+import '../../controller/auth_controller.dart';
 import '../../core/constant/layout_constants.dart';
 import '../../controller/patient_create_controller.dart';
 import '../../l10n/app_localizations.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 
 class PatientCreatePage extends StatefulWidget {
   const PatientCreatePage({super.key, this.patient});
@@ -54,11 +56,44 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
     final ok = await _controller.submit();
     if (!mounted) return;
     if (ok) {
-      final message = _controller.isEditing ? l10n.patientEditSuccess : l10n.patientCreateSuccess;
+      final message = _controller.isEditing
+          ? l10n.patientEditSuccess
+          : (_controller.lastCreateLinked ? l10n.patientCreateLinked : l10n.patientCreateSuccess);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       context.pop(true);
     } else {
-      final message = _controller.isEditing ? l10n.patientEditFailed : l10n.patientCreateFailed;
+      if (_controller.lastError == 'patient_exists') {
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(l10n.patientLinkTitle),
+            content: Text(l10n.patientLinkBody),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: Text(l10n.patientLinkCancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: Text(l10n.patientLinkConfirm),
+              ),
+            ],
+          ),
+        );
+        if (confirmed == true) {
+          final linked = await _controller.linkExistingPatient();
+          if (!mounted) return;
+          final message = linked ? l10n.patientLinkSuccess : l10n.patientLinkFailed;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+          if (linked) {
+            context.pop(true);
+          }
+        }
+        return;
+      }
+      final message = _controller.lastError == 'no_clinic'
+          ? l10n.patientClinicRequired
+          : (_controller.isEditing ? l10n.patientEditFailed : l10n.patientCreateFailed);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }
@@ -67,13 +102,22 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
+    if (!_controller.isEditing && _controller.nationalite.text.trim().isEmpty) {
+      final clinicDefault = AuthController.globalClinic?['nationalite_patient_defaut'];
+      final phoneCode = clinicDefault is num ? clinicDefault.toInt().toString() : '$clinicDefault';
+      if (phoneCode.trim().isNotEmpty) {
+        _controller.setNationaliteFromPhoneCode(phoneCode.trim());
+      } else {
+        _controller.setNationaliteFromPhoneCode('213');
+      }
+    }
 
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) => Scaffold(
         body: Stack(
           children: [
-            const SynapseBackground(),
+            const AppBackground(),
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -157,19 +201,56 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
                                   ),
                                   const SizedBox(height: 12),
                                   LayoutBuilder(
+                                    builder: (context, constraints) =>
+                                        (constraints.maxWidth < LayoutConstants.wideBreakpoint)
+                                        ? Column(
+                                            children: [
+                                              _textField(l10n.patientFieldNom, _controller.nom, l10n, required: true),
+                                              _textField(
+                                                l10n.patientFieldPrenom,
+                                                _controller.prenom,
+                                                l10n,
+                                                required: true,
+                                                textCapitalization: TextCapitalization.words,
+                                              ),
+                                            ],
+                                          )
+                                        : Row(
+                                            children: [
+                                              Expanded(
+                                                child: _textField(
+                                                  l10n.patientFieldNom,
+                                                  _controller.nom,
+                                                  l10n,
+                                                  required: true,
+                                                  textCapitalization: TextCapitalization.characters,
+                                                  inputFormatters: [UpperCaseTextFormatter()],
+                                                ),
+                                              ),
+                                              const SizedBox(width: 30),
+                                              Expanded(
+                                                child: _textField(
+                                                  l10n.patientFieldPrenom,
+                                                  _controller.prenom,
+                                                  l10n,
+                                                  required: true,
+                                                  textCapitalization: TextCapitalization.characters,
+                                                  inputFormatters: [UpperCaseTextFormatter()],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                  ),
+                                  LayoutBuilder(
                                     builder: (context, constraints) => Row(
                                       children: [
                                         Expanded(
-                                          child: _textField(
-                                            l10n.patientFieldCodeBarre,
-                                            _controller.codeBarre,
-                                            l10n,
-                                            required: false,
-                                          ),
+                                          flex: 3,
+                                          child: _countryField(l10n.patientFieldNationality, _controller.nationalite),
                                         ),
-                                        const SizedBox(width: 30),
-                                        SizedBox(
-                                          width: 120,
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          flex: 2,
                                           child: _dropdownInt(
                                             l10n.patientFieldSexe,
                                             _controller.sexe,
@@ -182,45 +263,6 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  LayoutBuilder(
-                                    builder: (context, constraints) =>
-                                        (constraints.maxWidth < LayoutConstants.wideBreakpoint)
-                                        ? Column(
-                                            children: [
-                                            _textField(l10n.patientFieldNom, _controller.nom, l10n, required: true),
-                                            _textField(
-                                              l10n.patientFieldPrenom,
-                                              _controller.prenom,
-                                              l10n,
-                                              required: true,
-                                              textCapitalization: TextCapitalization.words,
-                                            ),
-                                            ],
-                                          )
-                                        : Row(
-                                            children: [
-                                            Expanded(
-                                              child: _textField(
-                                                l10n.patientFieldNom,
-                                                _controller.nom,
-                                                l10n,
-                                                required: true,
-                                                textCapitalization: TextCapitalization.words,
-                                              ),
-                                            ),
-                                              const SizedBox(width: 30),
-                                            Expanded(
-                                              child: _textField(
-                                                l10n.patientFieldPrenom,
-                                                _controller.prenom,
-                                                l10n,
-                                                required: true,
-                                                textCapitalization: TextCapitalization.words,
-                                              ),
-                                            ),
-                                            ],
-                                          ),
                                   ),
                                   Row(
                                     children: [
@@ -285,7 +327,7 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
                                                   floatingLabelBehavior: FloatingLabelBehavior.never,
                                                 ),
                                               ),
-                                              const SizedBox(width: 30),
+                                              const SizedBox(width: 10),
                                               Expanded(
                                                 child: _textField(
                                                   l10n.patientFieldLieuNaissance,
@@ -361,8 +403,20 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
                                             ],
                                           ),
                                   ),
-                                  _phoneField(l10n.patientFieldTel1, _controller.tel1, l10n, scheme),
-                                  _phoneField(l10n.patientFieldTel2, _controller.tel2, l10n, scheme),
+                                  _phoneField(
+                                    l10n.patientFieldTel1,
+                                    _controller.tel1,
+                                    l10n,
+                                    scheme,
+                                    countryCode: _controller.phoneCountryCode1,
+                                  ),
+                                  _phoneField(
+                                    l10n.patientFieldTel2,
+                                    _controller.tel2,
+                                    l10n,
+                                    scheme,
+                                    countryCode: _controller.phoneCountryCode2,
+                                  ),
                                   _dropdownInt(
                                     l10n.patientFieldGs,
                                     _controller.gs,
@@ -440,71 +494,72 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
     List<TextInputFormatter>? inputFormatters,
     TextCapitalization textCapitalization = TextCapitalization.none,
     String? Function(String?, AppLocalizations)? validator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-        maxLines: maxLines,
-        textCapitalization: textCapitalization,
-        inputFormatters: inputFormatters,
-        onChanged: onChanged,
-        validator: (value) {
-          if (validator != null) return validator(value, l10n);
-          if (!required) return null;
-          return _controller.requiredValidator(value, l10n);
-        },
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: label,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-        ),
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: TextFormField(
+      controller: controller,
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      maxLines: maxLines,
+      textCapitalization: textCapitalization,
+      inputFormatters: inputFormatters,
+      onChanged: onChanged,
+      validator: (value) => (validator != null)
+          ? validator(value, l10n)
+          : (!required)
+          ? null
+          : _controller.requiredValidator(value, l10n),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _dateField(String label, TextEditingController controller, AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        readOnly: true,
-        onTap: _pickDate,
-        validator: (value) => _controller.requiredValidator(value, l10n),
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: label,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          suffixIcon: const Icon(Icons.calendar_today),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-        ),
+  Widget _dateField(String label, TextEditingController controller, AppLocalizations l10n) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: TextFormField(
+      controller: controller,
+      readOnly: true,
+      onTap: _pickDate,
+      validator: (value) => _controller.requiredValidator(value, l10n),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: const Icon(Icons.calendar_today),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _phoneField(String label, TextEditingController controller, AppLocalizations l10n, ColorScheme scheme) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: IntlPhoneField(
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: label,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-        ),
-        initialCountryCode: 'DZ',
-        initialValue: _controller.phoneFieldValue(controller.text),
-        dropdownIcon: Icon(Icons.arrow_drop_down, color: scheme.primary.withValues(alpha: 0.7)),
-        style: TextStyle(color: scheme.onSurfaceVariant),
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        validator: (phone) => _controller.phoneValidator(phone, l10n),
-        onChanged: (phone) => controller.text = phone.completeNumber,
-        textInputAction: TextInputAction.next,
+  Widget _phoneField(
+    String label,
+    TextEditingController controller,
+    AppLocalizations l10n,
+    ColorScheme scheme, {
+    required String countryCode,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: IntlPhoneField(
+      key: ValueKey('phone-$label-$countryCode'),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       ),
-    );
-  }
+      initialCountryCode: countryCode,
+      initialValue: _controller.phoneFieldValue(controller.text),
+      dropdownIcon: Icon(Icons.arrow_drop_down, color: scheme.primary.withValues(alpha: 0.7)),
+      style: TextStyle(color: scheme.onSurfaceVariant),
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      validator: (phone) => _controller.phoneValidator(phone, l10n),
+      onChanged: (phone) => controller.text = phone.completeNumber,
+      textInputAction: TextInputAction.next,
+    ),
+  );
 
   Widget _dropdownInt(
     String label,
@@ -514,29 +569,51 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
     Color? fillColor,
     FloatingLabelBehavior? floatingLabelBehavior,
     String? hintText,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: DropdownButtonFormField<int>(
-        initialValue: value,
+  }) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: DropdownButtonFormField<int>(
+      initialValue: value,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText ?? label,
+        floatingLabelBehavior: floatingLabelBehavior ?? FloatingLabelBehavior.always,
+        filled: fillColor != null,
+        fillColor: fillColor,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      items: options.entries.map((entry) => DropdownMenuItem<int>(value: entry.key, child: Text(entry.value))).toList(),
+      onChanged: (val) {
+        if (val == null) return;
+        onChanged(val);
+      },
+    ),
+  );
+
+  Widget _countryField(String label, TextEditingController controller) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: InkWell(
+      onTap: () =>
+          showCountryPicker(context: context, showPhoneCode: false, onSelect: _controller.setNationaliteCountry),
+      borderRadius: BorderRadius.circular(14),
+      child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          hintText: hintText ?? label,
-          floatingLabelBehavior: floatingLabelBehavior ?? FloatingLabelBehavior.always,
-          filled: fillColor != null,
-          fillColor: fillColor,
+          hintText: label,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          suffixIcon: const Icon(Icons.arrow_drop_down),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
         ),
-        items: options.entries
-            .map((entry) => DropdownMenuItem<int>(value: entry.key, child: Text(entry.value)))
-            .toList(),
-        onChanged: (val) {
-          if (val == null) return;
-          onChanged(val);
-        },
+        child: Text(
+          controller.text.trim().isEmpty ? label : controller.text.trim(),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: 14,
+            fontWeight: controller.text.trim().isEmpty ? FontWeight.w400 : FontWeight.w600,
+          ),
+        ),
       ),
-    );
-  }
+    ),
+  );
 
   Widget _checkboxField(
     String label,
@@ -568,5 +645,14 @@ class _PatientCreatePageState extends State<PatientCreatePage> {
         ],
       ),
     ),
+  );
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) => newValue.copyWith(
+    text: newValue.text.toUpperCase(),
+    selection: newValue.selection,
+    composing: newValue.composing,
   );
 }

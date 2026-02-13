@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../controller/auth_controller.dart';
 import '../../core/constant/layout_constants.dart';
 import '../../core/utils/patient_formatters.dart';
 import '../../l10n/app_localizations.dart';
@@ -39,127 +40,129 @@ class PatientListView extends StatelessWidget {
         itemCount: patients.length,
         separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
-        final item = patients[index];
-        final nom = (item['nom'] ?? '').toString();
-        final prenom = (item['prenom'] ?? '').toString();
-        final sexeValue = item['sexe'];
-        final sexeNumber = sexeValue is num ? sexeValue.toInt() : int.tryParse(sexeValue?.toString() ?? '');
-        final isFemale = sexeNumber == 2;
-        final sexIcon = isFemale ? FontAwesomeIcons.venus : FontAwesomeIcons.mars;
-        final sexColor = isFemale ? const Color(0xFFD63384) : const Color(0xFF1F8A70);
-        final tel = PatientFormatters.formatPhone(item['tel1']);
-        final email = (item['email'] ?? '').toString();
-        final nin = (item['nin'] ?? '').toString();
-        final nss = (item['nss'] ?? '').toString();
-        final tel2 = PatientFormatters.formatPhone(item['tel2']);
-        final age = PatientFormatters.formatAge(
-          item['age'],
-          item['type_age'],
-          yearsLabel: l10n.patientAgeYears,
-          monthsLabel: l10n.patientAgeMonths,
-          daysLabel: l10n.patientAgeDays,
-        );
-        final debtValue = item['dette'] is num
-            ? (item['dette'] as num).toDouble()
-            : double.tryParse('${item['dette'] ?? ''}') ?? 0;
-        final hasDebt = debtValue > 0;
-        final adresse = (item['adresse'] ?? '').toString();
-        final dette = PatientFormatters.formatDebt(
-          item['dette'],
-          localeName: l10n.localeName,
-          currencyLatin: l10n.patientCurrencyDzdLatin,
-          currencyArabic: l10n.patientCurrencyDzdArabic,
-        );
-        final gs = PatientFormatters.formatGs(item['gs']);
-        final photoFile = (item['photo_url'] ?? '').toString();
-        final imageUrl = PatientService().patientPhotoUrl(photoFile);
-        final displayName = '${prenom.isEmpty ? '' : '$prenom '}$nom'.trim();
-        final primaryItems = [
-          _InfoItem(l10n.patientHeaderAge, age),
-          _InfoItem(l10n.patientHeaderPhone, tel),
-          _InfoItem(l10n.patientHeaderDebt, dette),
-          _InfoItem(l10n.patientHeaderEmail, email),
-        ];
-        final extraItems = [
-          _InfoItem(l10n.patientHeaderNin, nin),
-          _InfoItem(l10n.patientHeaderAddress, adresse),
-          _InfoItem(l10n.patientHeaderNss, nss),
-          _InfoItem(l10n.patientHeaderPhone, tel2),
-          _InfoItem(l10n.patientHeaderBloodGroup, gs),
-        ];
-        return Container(
-          padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
-          decoration: BoxDecoration(
-            color: hasDebt ? const Color(0xFFFFE6F0) : const Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
-          ),
-          child: Theme(
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-            child: ExpansionTile(
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: const EdgeInsets.only(left: 44, right: 8, bottom: 8),
-              title: Row(
-                children: [
-                  Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: scheme.primary.withValues(alpha: 0.12),
-                        backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
-                        child: imageUrl == null ? Icon(Icons.person_outline, color: scheme.primary) : null,
-                      ),
-                      Container(
-                        height: 16,
-                        width: 16,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
-                        ),
-                        child: Center(child: FaIcon(sexIcon, size: 9, color: sexColor)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          final item = patients[index];
+          final nom = (item['nom'] ?? '').toString();
+          final prenom = (item['prenom'] ?? '').toString();
+          final sexeValue = item['sexe'];
+          final sexeNumber = sexeValue is num ? sexeValue.toInt() : int.tryParse(sexeValue?.toString() ?? '');
+          final isFemale = sexeNumber == 2;
+          final sexIcon = isFemale ? FontAwesomeIcons.venus : FontAwesomeIcons.mars;
+          final sexColor = isFemale ? const Color(0xFFD63384) : const Color(0xFF1F8A70);
+          final tel = PatientFormatters.formatPhone(item['tel1']);
+          final email = (item['email'] ?? '').toString();
+          final nin = (item['nin'] ?? '').toString();
+          final nss = (item['nss'] ?? '').toString();
+          final tel2 = PatientFormatters.formatPhone(item['tel2']);
+          final age = PatientFormatters.formatAge(
+            item['age'],
+            item['type_age'],
+            yearsLabel: l10n.patientAgeYears,
+            monthsLabel: l10n.patientAgeMonths,
+            daysLabel: l10n.patientAgeDays,
+          );
+          final debtValue = item['dette'] is num
+              ? (item['dette'] as num).toDouble()
+              : double.tryParse('${item['dette'] ?? ''}') ?? 0;
+          final hasDebt = debtValue > 0;
+          final adresse = (item['adresse'] ?? '').toString();
+          final rawCurrency = (AuthController.globalClinic?['default_currency'] ?? '').toString().trim();
+          final currency = rawCurrency.isNotEmpty ? rawCurrency : l10n.patientCurrencyDzdLatin;
+          final dette = PatientFormatters.formatDebt(
+            item['dette'],
+            localeName: l10n.localeName,
+            currencyLatin: currency,
+            currencyArabic: currency,
+          );
+          final gs = PatientFormatters.formatGs(item['gs']);
+          final photoFile = (item['photo_url'] ?? '').toString();
+          final imageUrl = PatientService().patientPhotoUrl(photoFile);
+          final displayName = '${prenom.isEmpty ? '' : '$prenom '}$nom'.trim();
+          final primaryItems = [
+            _InfoItem(l10n.patientHeaderAge, age),
+            _InfoItem(l10n.patientHeaderPhone, tel),
+            _InfoItem(l10n.patientHeaderDebt, dette),
+            _InfoItem(l10n.patientHeaderEmail, email),
+          ];
+          final extraItems = [
+            _InfoItem(l10n.patientHeaderNin, nin),
+            _InfoItem(l10n.patientHeaderAddress, adresse),
+            _InfoItem(l10n.patientHeaderNss, nss),
+            _InfoItem(l10n.patientHeaderPhone, tel2),
+            _InfoItem(l10n.patientHeaderBloodGroup, gs),
+          ];
+          return Container(
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+            decoration: BoxDecoration(
+              color: hasDebt ? const Color(0xFFFFE6F0) : const Color(0xFFFFFFFF),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              child: ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                childrenPadding: const EdgeInsets.only(left: 44, right: 8, bottom: 8),
+                title: Row(
+                  children: [
+                    Stack(
+                      alignment: Alignment.bottomRight,
                       children: [
-                        Text(
-                          displayName.isEmpty ? l10n.homePatientSearchUnnamed : displayName,
-                          style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w600),
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor: scheme.primary.withValues(alpha: 0.12),
+                          backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
+                          child: imageUrl == null ? Icon(Icons.person_outline, color: scheme.primary) : null,
                         ),
-                        const SizedBox(height: 4),
-                        _InfoWrap(items: primaryItems, scheme: scheme),
+                        Container(
+                          height: 16,
+                          width: 16,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2))],
+                          ),
+                          child: Center(child: FaIcon(sexIcon, size: 9, color: sexColor)),
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            displayName.isEmpty ? l10n.homePatientSearchUnnamed : displayName,
+                            style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 4),
+                          _InfoWrap(items: primaryItems, scheme: scheme),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _InkIcon(
+                      icon: FontAwesomeIcons.penToSquare,
+                      color: scheme.primary,
+                      tooltip: l10n.patientActionUpdate,
+                      onTap: () => onUpdate(item),
+                    ),
+                    const SizedBox(width: 8),
+                    _InkIcon(
+                      icon: FontAwesomeIcons.trashCan,
+                      color: scheme.error,
+                      tooltip: l10n.patientActionDelete,
+                      onTap: () => onDelete(item),
+                    ),
+                  ],
+                ),
+                children: [_InfoWrap(items: extraItems, scheme: scheme)],
               ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _InkIcon(
-                    icon: FontAwesomeIcons.penToSquare,
-                    color: scheme.primary,
-                    tooltip: l10n.patientActionUpdate,
-                    onTap: () => onUpdate(item),
-                  ),
-                  const SizedBox(width: 8),
-                  _InkIcon(
-                    icon: FontAwesomeIcons.trashCan,
-                    color: scheme.error,
-                    tooltip: l10n.patientActionDelete,
-                    onTap: () => onDelete(item),
-                  ),
-                ],
-              ),
-              children: [_InfoWrap(items: extraItems, scheme: scheme)],
             ),
-          ),
-        );
+          );
         },
       ),
     );

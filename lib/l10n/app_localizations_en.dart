@@ -9,14 +9,14 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Synapse Care';
+  String get appTitle => 'Curatio';
 
   @override
   String get brandTagline =>
       'Intelligent platform for care management and patient follow-up.';
 
   @override
-  String get welcomeHeadline => 'Welcome to Synapse Care';
+  String get welcomeHeadline => 'Welcome to Curatio';
 
   @override
   String get welcomeBody =>
@@ -122,6 +122,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get patientEditFailed => 'Failed to update patient';
 
   @override
+  String get patientDeleteConfirmTitle => 'Delete patient';
+
+  @override
+  String get patientDeleteConfirmBody =>
+      'Are you sure you want to delete this patient?';
+
+  @override
+  String get patientDeleteCancel => 'Cancel';
+
+  @override
+  String get patientDeleteConfirm => 'Delete';
+
+  @override
+  String get patientDeleteSuccess => 'Patient deleted';
+
+  @override
+  String get patientDeleteFailed => 'Failed to delete patient';
+
+  @override
   String get patientCreateSubmit => 'Save';
 
   @override
@@ -129,6 +148,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get patientCreateSuccess => 'Patient created.';
+
+  @override
+  String get patientCreateLinked =>
+      'Patient already exists. Linked to this clinic.';
+
+  @override
+  String get patientLinkTitle => 'Patient exists';
+
+  @override
+  String get patientLinkBody =>
+      'This patient already exists. Do you want to link them to this clinic?';
+
+  @override
+  String get patientLinkConfirm => 'Link patient';
+
+  @override
+  String get patientLinkCancel => 'Cancel';
+
+  @override
+  String get patientLinkSuccess => 'Patient linked to this clinic.';
+
+  @override
+  String get patientLinkFailed => 'Could not link patient.';
 
   @override
   String get patientCreateFailed => 'Could not create patient.';
@@ -144,6 +186,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get patientFieldCodeBarre => 'Barcode';
+
+  @override
+  String get patientFieldNationality => 'Nationality';
+
+  @override
+  String get patientNationalityAlgeria => 'Algeria';
+
+  @override
+  String get patientNationalityFrance => 'France';
+
+  @override
+  String get patientNationalityOther => 'Other';
 
   @override
   String get patientFieldNom => 'Last name';
@@ -221,6 +275,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get patientFieldPhotoUrl => 'Photo URL';
 
   @override
+  String get patientClinicRequired => 'Please select a clinic first.';
+
+  @override
   String get patientOptionYes => 'Yes';
 
   @override
@@ -265,6 +322,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signup => 'Sign up';
+
+  @override
+  String get signupFailed => 'Sign up failed.';
+
+  @override
+  String get signupEmailExists => 'Email already exists.';
+
+  @override
+  String get signupPhoneExists => 'Phone number already exists.';
 
   @override
   String get emailHint => 'Email address';
@@ -332,13 +398,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPassword => 'Forgot password?';
 
   @override
+  String get forgotPasswordTitle => 'Reset your password';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Enter your email to receive a reset link.';
+
+  @override
+  String get forgotPasswordEmailHint => 'Email';
+
+  @override
+  String get forgotPasswordSend => 'Send reset link';
+
+  @override
+  String get forgotPasswordSending => 'Sending...';
+
+  @override
+  String get forgotPasswordSuccess =>
+      'If the email exists, a reset link was sent.';
+
+  @override
+  String get forgotPasswordCodeSent => 'Code sent. Check your email.';
+
+  @override
+  String get forgotPasswordEmailNotFound => 'Email does not exist.';
+
+  @override
+  String get forgotPasswordCodeHint => 'Verification code';
+
+  @override
+  String get forgotPasswordVerify => 'Verify code';
+
+  @override
+  String get forgotPasswordInvalidCode => 'Invalid or expired code.';
+
+  @override
+  String get forgotPasswordNewPasswordHint => 'New password';
+
+  @override
+  String get forgotPasswordConfirmPasswordHint => 'Confirm password';
+
+  @override
+  String get forgotPasswordReset => 'Reset password';
+
+  @override
+  String get forgotPasswordResetSuccess => 'Password updated. Please log in.';
+
+  @override
   String get continueCta => 'Continue';
 
   @override
   String get quickSms => 'Fast and secure SMS login';
 
   @override
-  String get newHere => 'New to Synapse Care? ';
+  String get newHere => 'New to Curatio? ';
 
   @override
   String get haveAccount => 'Already have an account? ';
@@ -354,6 +467,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get doctor => 'Doctor';
+
+  @override
+  String get staff => 'Doctor / Assistant';
+
+  @override
+  String get assistant => 'Assistant';
 
   @override
   String get cabinetSearchTitle => 'Find your medical clinic';
@@ -380,6 +499,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cabinetCreateSubmit => 'Create clinic';
 
   @override
+  String get cabinetDefaultPatientNationality => 'Default patient nationality';
+
+  @override
+  String get cabinetDefaultCurrency => 'Default currency';
+
+  @override
   String get cabinetNameHint => 'Clinic name';
 
   @override
@@ -399,6 +524,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cabinetAddFailed => 'could not add clinic';
+
+  @override
+  String get cabinetRequestSent => 'Request sent. Awaiting approval.';
+
+  @override
+  String get cabinetRequestExists =>
+      'Request already sent or already approved.';
+
+  @override
+  String get cabinetRequestFailed => 'Could not send request.';
 
   @override
   String get cabinetRemoveAction => 'Remove';
@@ -423,6 +558,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cabinetRemoveFailed => 'Could not remove clinic.';
 
   @override
+  String get cabinetRemoveLastAdminError =>
+      'You cannot remove this affiliation because you are the only admin of this clinic.';
+
+  @override
   String get cabinetSelectTitle => 'Choose your clinic';
 
   @override
@@ -434,6 +573,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cabinetSelectEmpty => 'No affiliated clinics found.';
+
+  @override
+  String get cabinetStatusPending => 'Pending';
+
+  @override
+  String get cabinetStatusRejected => 'Rejected';
+
+  @override
+  String get cabinetSelectPendingToast => 'This clinic is pending approval.';
+
+  @override
+  String get cabinetSelectRejectedToast => 'This clinic request was rejected.';
 
   @override
   String get cabinetSelectUnnamed => 'Unnamed clinic';
@@ -514,10 +665,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeMenuProfile => 'My profile';
 
   @override
+  String get profileFullNameLabel => 'Full name';
+
+  @override
+  String get profileEmailLabel => 'Email';
+
+  @override
+  String get profilePhoneLabel => 'Phone';
+
+  @override
+  String get profileSpecialtyLabel => 'Specialty';
+
+  @override
+  String get profileClinicLabel => 'Clinic';
+
+  @override
   String get homeMenuChangeClinic => 'Change clinic';
 
   @override
+  String get homeMenuAdminPanel => 'Admin panel';
+
+  @override
   String get homeMenuLogout => 'Log out';
+
+  @override
+  String get adminClinicsTitle => 'Clinics awaiting validation';
+
+  @override
+  String get adminClinicsTitlePending => 'Pending clinics';
+
+  @override
+  String get adminClinicsTitleApproved => 'Approved clinics';
+
+  @override
+  String get adminClinicsTitleCanceled => 'Canceled clinics';
+
+  @override
+  String get adminClinicsTitleAll => 'All clinics';
+
+  @override
+  String get adminClinicsRefresh => 'Refresh';
+
+  @override
+  String get adminClinicsEmpty => 'No pending clinics.';
+
+  @override
+  String get adminClinicsPending => 'Pending';
+
+  @override
+  String get adminClinicsAll => 'All';
+
+  @override
+  String get adminClinicsApproved => 'Approved';
+
+  @override
+  String get adminClinicsCanceled => 'Canceled';
+
+  @override
+  String get adminClinicsSearchHint => 'Search clinic...';
+
+  @override
+  String get adminClinicsApprove => 'Approve';
+
+  @override
+  String get adminClinicsReject => 'Reject';
+
+  @override
+  String get adminClinicsApproveSuccess => 'Clinic approved.';
+
+  @override
+  String get adminClinicsRejectSuccess => 'Clinic rejected.';
+
+  @override
+  String get adminClinicsActionFailed => 'Could not update clinic status.';
+
+  @override
+  String get adminClinicsUnauthorized =>
+      'You are not authorized to access this page.';
+
+  @override
+  String get adminClinicsCreatedBy => 'Created by';
+
+  @override
+  String get adminClinicsCreatedAt => 'Created at';
 
   @override
   String get homeMenuOpenTooltip => 'Open menu';

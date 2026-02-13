@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../controller/home_controller.dart';
+import '../../controller/auth_controller.dart';
 import '../../core/constant/layout_constants.dart';
 import '../../core/utils/patient_formatters.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/patient_service.dart';
 import '../widget/home_dashboard.dart';
 import '../widget/home_quick_actions.dart';
 import '../widget/home_top_bar.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -72,7 +74,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: Scaffold(
           body: Stack(
             children: [
-              const SynapseBackground(),
+              const AppBackground(),
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -81,7 +83,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       Expanded(
                         child: Column(
                           children: [
-                            HomeTopBar(
+                              HomeTopBar(
                               dateText: _controller.formatDate(),
                               timeText: _controller.formatTime(),
                               scheme: scheme,
@@ -89,104 +91,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               isWide: isWide,
                               doctorName: _controller.doctorName(),
                               clinicName: _controller.clinicName(),
-                              userPhotoUrl: _controller.userPhotoUrl(),
-                              searchBar: isCompact ? null : searchBar,
-                            ),
-                            if (isCompact) ...[
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Expanded(child: searchBar),
-                                  const SizedBox(width: 10),
-                                  PopupMenuButton<_QuickActionKey>(
-                                    position: PopupMenuPosition.under,
-                                    offset: const Offset(0, 6),
-                                    color: Colors.white.withValues(alpha: 0.96),
-                                    elevation: 10,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                    itemBuilder: (context) => [
-                                      PopupMenuItem(
-                                        value: _QuickActionKey.patients,
-                                        child: _QuickActionMenuItem(
-                                          label: l10n.homeMenuPatientsList,
-                                          icon: Icons.people_alt_outlined,
-                                          color: const Color(0xFF1F8A70),
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: _QuickActionKey.consultations,
-                                        child: _QuickActionMenuItem(
-                                          label: l10n.homeMenuConsultation,
-                                          icon: Icons.medical_information_outlined,
-                                          color: const Color(0xFF3F6BB6),
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: _QuickActionKey.rdv,
-                                        child: _QuickActionMenuItem(
-                                          label: l10n.homeMenuRdvList,
-                                          icon: Icons.event_available_outlined,
-                                          color: const Color(0xFFE39B27),
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: _QuickActionKey.caisse,
-                                        child: _QuickActionMenuItem(
-                                          label: l10n.homeMenuCaisse,
-                                          icon: Icons.point_of_sale_outlined,
-                                          color: const Color(0xFF2D6A9F),
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: _QuickActionKey.settings,
-                                        child: _QuickActionMenuItem(
-                                          label: l10n.homeMenuSettings,
-                                          icon: Icons.settings_outlined,
-                                          color: const Color(0xFF8E3B46),
-                                        ),
-                                      ),
-                                    ],
-                                    onSelected: (value) {
-                                      switch (value) {
-                                        case _QuickActionKey.patients:
-                                          context.push('/patients/list');
-                                        case _QuickActionKey.consultations:
-                                          break;
-                                        case _QuickActionKey.rdv:
-                                          break;
-                                        case _QuickActionKey.caisse:
-                                          break;
-                                        case _QuickActionKey.settings:
-                                          break;
-                                      }
-                                    },
-                                    child: Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                        color: scheme.surface.withValues(alpha: 0.9),
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: const [
-                                          BoxShadow(color: Color(0x22000000), blurRadius: 14, offset: Offset(0, 8)),
-                                        ],
-                                      ),
-                                      child: Icon(Icons.grid_view_rounded, color: scheme.primary),
-                                    ),
-                                  ),
-                                ],
+                                userPhotoUrl: _controller.userPhotoUrl(),
+                                isPlatformAdmin: AuthController.isPlatformAdmin,
+                                searchBar: isCompact ? null : searchBar,
                               ),
-                            ],
-                            if (isWide) ...[
-                              const SizedBox(height: 10),
-                              HomeQuickActions(
-                                l10n: l10n,
-                                scheme: scheme,
-                                onPatientsTap: () => context.push('/patients/list'),
-                              ),
-                              const SizedBox(height: 18),
-                            ] else ...[
-                              const SizedBox(height: 18),
-                            ],
+                            if (isCompact) ...comptactWidget(searchBar, l10n, context, scheme),
+                            (isWide)
+                                ? HomeQuickActions(
+                                    l10n: l10n,
+                                    scheme: scheme,
+                                    onPatientsTap: () => context.push('/patients/list'),
+                                  )
+                                : const SizedBox(height: 8),
                             Expanded(
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,6 +150,96 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
       ),
     );
+  }
+
+  List<Widget> comptactWidget(
+    _HomeSearchBar searchBar,
+    AppLocalizations l10n,
+    BuildContext context,
+    ColorScheme scheme,
+  ) {
+    return [
+      const SizedBox(height: 12),
+      Row(
+        children: [
+          Expanded(child: searchBar),
+          const SizedBox(width: 10),
+          PopupMenuButton<_QuickActionKey>(
+            position: PopupMenuPosition.under,
+            offset: const Offset(0, 6),
+            color: Colors.white.withValues(alpha: 0.96),
+            elevation: 10,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: _QuickActionKey.patients,
+                child: _QuickActionMenuItem(
+                  label: l10n.homeMenuPatientsList,
+                  icon: Icons.people_alt_outlined,
+                  color: const Color(0xFF1F8A70),
+                ),
+              ),
+              PopupMenuItem(
+                value: _QuickActionKey.consultations,
+                child: _QuickActionMenuItem(
+                  label: l10n.homeMenuConsultation,
+                  icon: Icons.medical_information_outlined,
+                  color: const Color(0xFF3F6BB6),
+                ),
+              ),
+              PopupMenuItem(
+                value: _QuickActionKey.rdv,
+                child: _QuickActionMenuItem(
+                  label: l10n.homeMenuRdvList,
+                  icon: Icons.event_available_outlined,
+                  color: const Color(0xFFE39B27),
+                ),
+              ),
+              PopupMenuItem(
+                value: _QuickActionKey.caisse,
+                child: _QuickActionMenuItem(
+                  label: l10n.homeMenuCaisse,
+                  icon: Icons.point_of_sale_outlined,
+                  color: const Color(0xFF2D6A9F),
+                ),
+              ),
+              PopupMenuItem(
+                value: _QuickActionKey.settings,
+                child: _QuickActionMenuItem(
+                  label: l10n.homeMenuSettings,
+                  icon: Icons.settings_outlined,
+                  color: const Color(0xFF8E3B46),
+                ),
+              ),
+            ],
+            onSelected: (value) {
+              switch (value) {
+                case _QuickActionKey.patients:
+                  context.push('/patients/list');
+                case _QuickActionKey.consultations:
+                  break;
+                case _QuickActionKey.rdv:
+                  break;
+                case _QuickActionKey.caisse:
+                  break;
+                case _QuickActionKey.settings:
+                  break;
+              }
+            },
+            child: Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: scheme.surface.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 14, offset: Offset(0, 8))],
+              ),
+              child: Icon(Icons.grid_view_rounded, color: scheme.primary),
+            ),
+          ),
+        ],
+      ),
+    ];
   }
 
   void _updateSearchBarRect() {
@@ -339,11 +345,7 @@ class _HomeSearchBar extends StatelessWidget {
 enum _QuickActionKey { patients, consultations, rdv, caisse, settings }
 
 class _QuickActionMenuItem extends StatelessWidget {
-  const _QuickActionMenuItem({
-    required this.label,
-    required this.icon,
-    required this.color,
-  });
+  const _QuickActionMenuItem({required this.label, required this.icon, required this.color});
 
   final String label;
   final IconData icon;
@@ -366,10 +368,7 @@ class _QuickActionMenuItem extends StatelessWidget {
         const SizedBox(width: 10),
         Text(
           label,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600),
         ),
       ],
     );
@@ -441,13 +440,16 @@ class _PatientSearchPanel extends StatelessWidget {
               final prenom = (item['prenom'] ?? '').toString();
               final tel = PatientFormatters.formatPhone(item['tel1']);
               final email = (item['email'] ?? '').toString();
+              final photoFile = (item['photo_url'] ?? '').toString();
+              final imageUrl = PatientService().patientPhotoUrl(photoFile);
               final displayName = '${prenom.isEmpty ? '' : '$prenom '}$nom'.trim();
               return Row(
                 children: [
                   CircleAvatar(
                     radius: 18,
                     backgroundColor: scheme.primary.withValues(alpha: 0.12),
-                    child: Icon(Icons.person_outline, color: scheme.primary),
+                    backgroundImage: imageUrl != null ? NetworkImage(imageUrl) : null,
+                    child: imageUrl == null ? Icon(Icons.person_outline, color: scheme.primary) : null,
                   ),
                   const SizedBox(width: 10),
                   Expanded(

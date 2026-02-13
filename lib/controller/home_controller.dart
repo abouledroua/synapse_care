@@ -87,6 +87,18 @@ class HomeController extends ChangeNotifier {
     return name.isEmpty ? null : name;
   }
 
+  int? _cabinetId() {
+    final raw = AuthController.globalClinic?['id_cabinet'];
+    if (raw is int) return raw;
+    if (raw is num) return raw.toInt();
+    if (raw is String) return int.tryParse(raw);
+    return null;
+  }
+
+  int? _userId() {
+    return AuthController.globalUserId;
+  }
+
   String? userPhotoUrl() {
     final user = AuthController.globalUser;
     if (user == null) return null;
@@ -98,7 +110,13 @@ class HomeController extends ChangeNotifier {
 
   Future<void> loadPatientCount() async {
     try {
-      patientCount = await _patientService.fetchPatientCount();
+      final cabinetId = _cabinetId();
+      final userId = _userId();
+      if (cabinetId == null || userId == null) {
+        patientCount = null;
+      } else {
+        patientCount = await _patientService.fetchPatientCount(cabinetId: cabinetId, userId: userId);
+      }
     } catch (_) {
       patientCount = null;
     }
@@ -116,11 +134,24 @@ class HomeController extends ChangeNotifier {
       return;
     }
     _searchDebounce = Timer(const Duration(milliseconds: 350), () async {
+      final cabinetId = _cabinetId();
+      final userId = _userId();
+      if (cabinetId == null || userId == null) {
+        isSearching = false;
+        searchError = 'error';
+        searchResults = [];
+        notifyListeners();
+        return;
+      }
       isSearching = true;
       searchError = null;
       notifyListeners();
       try {
-        searchResults = await _patientService.searchPatients(query);
+        searchResults = await _patientService.searchPatients(
+          query: query,
+          cabinetId: cabinetId,
+          userId: userId,
+        );
       } catch (_) {
         searchError = 'error';
         searchResults = [];

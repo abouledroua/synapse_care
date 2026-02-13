@@ -16,17 +16,7 @@ class BrandHeader extends StatelessWidget {
           height: isWide ? 150 : 130,
           child: Image.asset('assets/images/logo_sl_v.png', fit: BoxFit.contain),
         ),
-        Text(
-          l10n.appTitle,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.w600,
-            color: scheme.onSurfaceVariant,
-            letterSpacing: -0.5,
-          ),
-        ),
-        const SizedBox(height: 24),
+
         const SizedBox(height: 6),
         Text(
           l10n.brandTagline,

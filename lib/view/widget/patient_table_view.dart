@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../controller/auth_controller.dart';
 import '../../core/utils/patient_formatters.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -186,11 +187,15 @@ class _PatientTableViewState extends State<PatientTableView> {
                                       final tel = PatientFormatters.formatPhone(item['tel1']);
                                       final email = (item['email'] ?? '').toString();
                                       final adresse = (item['adresse'] ?? '').toString();
+                                      final rawCurrency =
+                                          (AuthController.globalClinic?['default_currency'] ?? '').toString().trim();
+                                      final currency =
+                                          rawCurrency.isNotEmpty ? rawCurrency : widget.l10n.patientCurrencyDzdLatin;
                                       final dette = PatientFormatters.formatDebt(
                                         item['dette'],
                                         localeName: widget.l10n.localeName,
-                                        currencyLatin: widget.l10n.patientCurrencyDzdLatin,
-                                        currencyArabic: widget.l10n.patientCurrencyDzdArabic,
+                                        currencyLatin: currency,
+                                        currencyArabic: currency,
                                       );
                                       final gs = PatientFormatters.formatGs(item['gs']);
                                       return DataRow(

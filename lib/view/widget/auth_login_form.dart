@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controller/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
@@ -59,7 +60,7 @@ class AuthLoginForm extends StatelessWidget {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
-            onPressed: () {},
+            onPressed: () => context.push('/auth/forgot'),
             child: Text(
               l10n.forgotPassword,
               style: TextStyle(color: scheme.primary.withValues(alpha: 0.7)),

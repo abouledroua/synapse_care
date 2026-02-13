@@ -6,10 +6,10 @@ class RoleIcon extends StatelessWidget {
   final String? imagePath;
 
   @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return (imagePath != null)
-        ? Image.asset(imagePath!, height: 34, width: 34, fit: BoxFit.contain)
-        : Icon(Icons.person, size: 32, color: scheme.primary.withValues(alpha: 0.7));
-  }
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 3.0),
+    child: (imagePath != null)
+        ? Image.asset(imagePath!, height: 42, width: 42, fit: BoxFit.contain)
+        : Icon(Icons.person, size: 32, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7)),
+  );
 }

@@ -12,8 +12,11 @@ class PatientService {
 
   String get _baseUrl => ApiConfig.resolveBaseUrl();
 
-  Future<List<Map<String, dynamic>>> fetchPatients() async {
-    final uri = Uri.parse('$_baseUrl/patients');
+  Future<List<Map<String, dynamic>>> fetchPatients({
+    required int cabinetId,
+    required int userId,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/patients?id_cabinet=$cabinetId&id_user=$userId');
     final response = await _client.get(uri);
     if (response.statusCode != 200) {
       throw Exception('Failed to load patients');
@@ -23,9 +26,16 @@ class PatientService {
     return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
   }
 
-  Future<List<Map<String, dynamic>>> searchPatients(String query) async {
-    final uri = Uri.parse('$_baseUrl/patients/search?q=${Uri.encodeQueryComponent(query)}');
+  Future<List<Map<String, dynamic>>> searchPatients({
+    required String query,
+    required int cabinetId,
+    required int userId,
+  }) async {
+    final uri = Uri.parse(
+      '$_baseUrl/patients/search?q=${Uri.encodeQueryComponent(query)}&id_cabinet=$cabinetId&id_user=$userId',
+    );
     final response = await _client.get(uri);
+    debugPrint('Search patients response: ${response.statusCode} ${response.body}');
     if (response.statusCode != 200) {
       throw Exception('Failed to search patients');
     }
@@ -34,12 +44,21 @@ class PatientService {
     return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
   }
 
-  Future<int> fetchPatientCount() async {
-    final patients = await fetchPatients();
+  Future<int> fetchPatientCount({required int cabinetId, required int userId}) async {
+    final patients = await fetchPatients(cabinetId: cabinetId, userId: userId);
     return patients.length;
   }
 
-  Future<void> createPatient(Map<String, dynamic> payload) async {
+  Future<void> deletePatient(int id, {required int cabinetId, required int userId}) async {
+    final uri = Uri.parse('$_baseUrl/patients/$id?id_cabinet=$cabinetId&id_user=$userId');
+    final response = await _client.delete(uri);
+    debugPrint('Delete patient response: ${response.statusCode} ${response.body}');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete patient');
+    }
+  }
+
+  Future<Map<String, dynamic>> createPatient(Map<String, dynamic> payload) async {
     final uri = Uri.parse('$_baseUrl/patients');
     final response = await _client.post(
       uri,
@@ -47,12 +66,28 @@ class PatientService {
       body: jsonEncode(payload),
     );
     debugPrint('Create patient response: ${response.statusCode} ${response.body}');
-    if (response.statusCode != 201) {
+    if (response.statusCode == 409) {
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map) {
+          return {'status': 409, ...Map<String, dynamic>.from(decoded)};
+        }
+      } catch (_) {}
+      return {'status': 409};
+    }
+    if (response.statusCode != 201 && response.statusCode != 200) {
       throw Exception('Failed to create patient');
     }
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map) {
+        return {'status': response.statusCode, ...Map<String, dynamic>.from(decoded)};
+      }
+    } catch (_) {}
+    return {'status': response.statusCode};
   }
 
-  Future<void> updatePatient(int id, Map<String, dynamic> payload) async {
+  Future<Map<String, dynamic>> updatePatient(int id, Map<String, dynamic> payload) async {
     final uri = Uri.parse('$_baseUrl/patients/$id');
     final response = await _client.put(
       uri,
@@ -60,8 +95,37 @@ class PatientService {
       body: jsonEncode(payload),
     );
     debugPrint('Update patient response: ${response.statusCode} ${response.body}');
+    if (response.statusCode == 409) {
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map) {
+          return {'status': 409, ...Map<String, dynamic>.from(decoded)};
+        }
+      } catch (_) {}
+      return {'status': 409};
+    }
     if (response.statusCode != 200) {
       throw Exception('Failed to update patient');
+    }
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map) {
+        return {'status': response.statusCode, ...Map<String, dynamic>.from(decoded)};
+      }
+    } catch (_) {}
+    return {'status': response.statusCode};
+  }
+
+  Future<void> linkPatient({required int cabinetId, required int patientId, required int userId}) async {
+    final uri = Uri.parse('$_baseUrl/patients/link');
+    final response = await _client.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'id_cabinet': cabinetId, 'id_patient': patientId, 'id_user': userId}),
+    );
+    debugPrint('Link patient response: ${response.statusCode} ${response.body}');
+    if (response.statusCode != 201) {
+      throw Exception('Failed to link patient');
     }
   }
 

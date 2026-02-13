@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Synapse Care'**
+  /// **'Curatio'**
   String get appTitle;
 
   /// No description provided for @brandTagline.
@@ -115,7 +115,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeHeadline.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Synapse Care'**
+  /// **'Welcome to Curatio'**
   String get welcomeHeadline;
 
   /// No description provided for @welcomeBody.
@@ -322,6 +322,42 @@ abstract class AppLocalizations {
   /// **'Failed to update patient'**
   String get patientEditFailed;
 
+  /// No description provided for @patientDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete patient'**
+  String get patientDeleteConfirmTitle;
+
+  /// No description provided for @patientDeleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this patient?'**
+  String get patientDeleteConfirmBody;
+
+  /// No description provided for @patientDeleteCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get patientDeleteCancel;
+
+  /// No description provided for @patientDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get patientDeleteConfirm;
+
+  /// No description provided for @patientDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient deleted'**
+  String get patientDeleteSuccess;
+
+  /// No description provided for @patientDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete patient'**
+  String get patientDeleteFailed;
+
   /// No description provided for @patientCreateSubmit.
   ///
   /// In en, this message translates to:
@@ -339,6 +375,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Patient created.'**
   String get patientCreateSuccess;
+
+  /// No description provided for @patientCreateLinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient already exists. Linked to this clinic.'**
+  String get patientCreateLinked;
+
+  /// No description provided for @patientLinkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient exists'**
+  String get patientLinkTitle;
+
+  /// No description provided for @patientLinkBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This patient already exists. Do you want to link them to this clinic?'**
+  String get patientLinkBody;
+
+  /// No description provided for @patientLinkConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Link patient'**
+  String get patientLinkConfirm;
+
+  /// No description provided for @patientLinkCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get patientLinkCancel;
+
+  /// No description provided for @patientLinkSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient linked to this clinic.'**
+  String get patientLinkSuccess;
+
+  /// No description provided for @patientLinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not link patient.'**
+  String get patientLinkFailed;
 
   /// No description provided for @patientCreateFailed.
   ///
@@ -369,6 +447,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Barcode'**
   String get patientFieldCodeBarre;
+
+  /// No description provided for @patientFieldNationality.
+  ///
+  /// In en, this message translates to:
+  /// **'Nationality'**
+  String get patientFieldNationality;
+
+  /// No description provided for @patientNationalityAlgeria.
+  ///
+  /// In en, this message translates to:
+  /// **'Algeria'**
+  String get patientNationalityAlgeria;
+
+  /// No description provided for @patientNationalityFrance.
+  ///
+  /// In en, this message translates to:
+  /// **'France'**
+  String get patientNationalityFrance;
+
+  /// No description provided for @patientNationalityOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get patientNationalityOther;
 
   /// No description provided for @patientFieldNom.
   ///
@@ -520,6 +622,12 @@ abstract class AppLocalizations {
   /// **'Photo URL'**
   String get patientFieldPhotoUrl;
 
+  /// No description provided for @patientClinicRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a clinic first.'**
+  String get patientClinicRequired;
+
   /// No description provided for @patientOptionYes.
   ///
   /// In en, this message translates to:
@@ -609,6 +717,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign up'**
   String get signup;
+
+  /// No description provided for @signupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up failed.'**
+  String get signupFailed;
+
+  /// No description provided for @signupEmailExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Email already exists.'**
+  String get signupEmailExists;
+
+  /// No description provided for @signupPhoneExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number already exists.'**
+  String get signupPhoneExists;
 
   /// No description provided for @emailHint.
   ///
@@ -736,6 +862,96 @@ abstract class AppLocalizations {
   /// **'Forgot password?'**
   String get forgotPassword;
 
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset your password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to receive a reset link.'**
+  String get forgotPasswordSubtitle;
+
+  /// No description provided for @forgotPasswordEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get forgotPasswordEmailHint;
+
+  /// No description provided for @forgotPasswordSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send reset link'**
+  String get forgotPasswordSend;
+
+  /// No description provided for @forgotPasswordSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get forgotPasswordSending;
+
+  /// No description provided for @forgotPasswordSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'If the email exists, a reset link was sent.'**
+  String get forgotPasswordSuccess;
+
+  /// No description provided for @forgotPasswordCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Code sent. Check your email.'**
+  String get forgotPasswordCodeSent;
+
+  /// No description provided for @forgotPasswordEmailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Email does not exist.'**
+  String get forgotPasswordEmailNotFound;
+
+  /// No description provided for @forgotPasswordCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code'**
+  String get forgotPasswordCodeHint;
+
+  /// No description provided for @forgotPasswordVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify code'**
+  String get forgotPasswordVerify;
+
+  /// No description provided for @forgotPasswordInvalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or expired code.'**
+  String get forgotPasswordInvalidCode;
+
+  /// No description provided for @forgotPasswordNewPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get forgotPasswordNewPasswordHint;
+
+  /// No description provided for @forgotPasswordConfirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get forgotPasswordConfirmPasswordHint;
+
+  /// No description provided for @forgotPasswordReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get forgotPasswordReset;
+
+  /// No description provided for @forgotPasswordResetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated. Please log in.'**
+  String get forgotPasswordResetSuccess;
+
   /// No description provided for @continueCta.
   ///
   /// In en, this message translates to:
@@ -751,7 +967,7 @@ abstract class AppLocalizations {
   /// No description provided for @newHere.
   ///
   /// In en, this message translates to:
-  /// **'New to Synapse Care? '**
+  /// **'New to Curatio? '**
   String get newHere;
 
   /// No description provided for @haveAccount.
@@ -783,6 +999,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Doctor'**
   String get doctor;
+
+  /// No description provided for @staff.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor / Assistant'**
+  String get staff;
+
+  /// No description provided for @assistant.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant'**
+  String get assistant;
 
   /// No description provided for @cabinetSearchTitle.
   ///
@@ -832,6 +1060,18 @@ abstract class AppLocalizations {
   /// **'Create clinic'**
   String get cabinetCreateSubmit;
 
+  /// No description provided for @cabinetDefaultPatientNationality.
+  ///
+  /// In en, this message translates to:
+  /// **'Default patient nationality'**
+  String get cabinetDefaultPatientNationality;
+
+  /// No description provided for @cabinetDefaultCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Default currency'**
+  String get cabinetDefaultCurrency;
+
   /// No description provided for @cabinetNameHint.
   ///
   /// In en, this message translates to:
@@ -873,6 +1113,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'could not add clinic'**
   String get cabinetAddFailed;
+
+  /// No description provided for @cabinetRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent. Awaiting approval.'**
+  String get cabinetRequestSent;
+
+  /// No description provided for @cabinetRequestExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Request already sent or already approved.'**
+  String get cabinetRequestExists;
+
+  /// No description provided for @cabinetRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send request.'**
+  String get cabinetRequestFailed;
 
   /// No description provided for @cabinetRemoveAction.
   ///
@@ -916,6 +1174,12 @@ abstract class AppLocalizations {
   /// **'Could not remove clinic.'**
   String get cabinetRemoveFailed;
 
+  /// No description provided for @cabinetRemoveLastAdminError.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot remove this affiliation because you are the only admin of this clinic.'**
+  String get cabinetRemoveLastAdminError;
+
   /// No description provided for @cabinetSelectTitle.
   ///
   /// In en, this message translates to:
@@ -939,6 +1203,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No affiliated clinics found.'**
   String get cabinetSelectEmpty;
+
+  /// No description provided for @cabinetStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get cabinetStatusPending;
+
+  /// No description provided for @cabinetStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get cabinetStatusRejected;
+
+  /// No description provided for @cabinetSelectPendingToast.
+  ///
+  /// In en, this message translates to:
+  /// **'This clinic is pending approval.'**
+  String get cabinetSelectPendingToast;
+
+  /// No description provided for @cabinetSelectRejectedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'This clinic request was rejected.'**
+  String get cabinetSelectRejectedToast;
 
   /// No description provided for @cabinetSelectUnnamed.
   ///
@@ -1096,17 +1384,173 @@ abstract class AppLocalizations {
   /// **'My profile'**
   String get homeMenuProfile;
 
+  /// No description provided for @profileFullNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get profileFullNameLabel;
+
+  /// No description provided for @profileEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get profileEmailLabel;
+
+  /// No description provided for @profilePhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get profilePhoneLabel;
+
+  /// No description provided for @profileSpecialtyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialty'**
+  String get profileSpecialtyLabel;
+
+  /// No description provided for @profileClinicLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic'**
+  String get profileClinicLabel;
+
   /// No description provided for @homeMenuChangeClinic.
   ///
   /// In en, this message translates to:
   /// **'Change clinic'**
   String get homeMenuChangeClinic;
 
+  /// No description provided for @homeMenuAdminPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin panel'**
+  String get homeMenuAdminPanel;
+
   /// No description provided for @homeMenuLogout.
   ///
   /// In en, this message translates to:
   /// **'Log out'**
   String get homeMenuLogout;
+
+  /// No description provided for @adminClinicsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinics awaiting validation'**
+  String get adminClinicsTitle;
+
+  /// No description provided for @adminClinicsTitlePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending clinics'**
+  String get adminClinicsTitlePending;
+
+  /// No description provided for @adminClinicsTitleApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved clinics'**
+  String get adminClinicsTitleApproved;
+
+  /// No description provided for @adminClinicsTitleCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled clinics'**
+  String get adminClinicsTitleCanceled;
+
+  /// No description provided for @adminClinicsTitleAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All clinics'**
+  String get adminClinicsTitleAll;
+
+  /// No description provided for @adminClinicsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get adminClinicsRefresh;
+
+  /// No description provided for @adminClinicsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending clinics.'**
+  String get adminClinicsEmpty;
+
+  /// No description provided for @adminClinicsPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get adminClinicsPending;
+
+  /// No description provided for @adminClinicsAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get adminClinicsAll;
+
+  /// No description provided for @adminClinicsApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get adminClinicsApproved;
+
+  /// No description provided for @adminClinicsCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled'**
+  String get adminClinicsCanceled;
+
+  /// No description provided for @adminClinicsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search clinic...'**
+  String get adminClinicsSearchHint;
+
+  /// No description provided for @adminClinicsApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get adminClinicsApprove;
+
+  /// No description provided for @adminClinicsReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get adminClinicsReject;
+
+  /// No description provided for @adminClinicsApproveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic approved.'**
+  String get adminClinicsApproveSuccess;
+
+  /// No description provided for @adminClinicsRejectSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic rejected.'**
+  String get adminClinicsRejectSuccess;
+
+  /// No description provided for @adminClinicsActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update clinic status.'**
+  String get adminClinicsActionFailed;
+
+  /// No description provided for @adminClinicsUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authorized to access this page.'**
+  String get adminClinicsUnauthorized;
+
+  /// No description provided for @adminClinicsCreatedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get adminClinicsCreatedBy;
+
+  /// No description provided for @adminClinicsCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get adminClinicsCreatedAt;
 
   /// No description provided for @homeMenuOpenTooltip.
   ///

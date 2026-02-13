@@ -20,6 +20,7 @@ class HomeTopBar extends StatelessWidget {
     required this.doctorName,
     required this.clinicName,
     required this.userPhotoUrl,
+    required this.isPlatformAdmin,
     this.searchBar,
   });
 
@@ -31,6 +32,7 @@ class HomeTopBar extends StatelessWidget {
   final String? doctorName;
   final String? clinicName;
   final String? userPhotoUrl;
+  final bool isPlatformAdmin;
   final Widget? searchBar;
 
   @override
@@ -132,10 +134,13 @@ class HomeTopBar extends StatelessWidget {
               onSelected: (value) async {
                 switch (value) {
                   case _ProfileAction.profile:
-                    // TODO: navigate to profile page when available.
+                    context.push('/profile');
                     break;
                   case _ProfileAction.changeClinic:
                     context.push('/cabinet/select');
+                    break;
+                  case _ProfileAction.adminPanel:
+                    context.push('/admin/clinics');
                     break;
                   case _ProfileAction.logout:
                     final shouldLogout = await showDialog<bool>(
@@ -184,6 +189,17 @@ class HomeTopBar extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (isPlatformAdmin)
+                  PopupMenuItem(
+                    value: _ProfileAction.adminPanel,
+                    child: Row(
+                      children: [
+                        Icon(Icons.admin_panel_settings_outlined, color: scheme.primary),
+                        const SizedBox(width: 10),
+                        Text(l10n.homeMenuAdminPanel, style: _menuTextStyle(scheme)),
+                      ],
+                    ),
+                  ),
                 PopupMenuItem(
                   value: _ProfileAction.logout,
                   child: Row(
@@ -242,7 +258,7 @@ TextStyle _menuTextStyle(ColorScheme scheme) {
   return TextStyle(color: scheme.onSurfaceVariant, fontSize: 15, fontWeight: FontWeight.w500);
 }
 
-enum _ProfileAction { profile, changeClinic, logout }
+enum _ProfileAction { profile, changeClinic, adminPanel, logout }
 
 enum _LanguageChoice { en, fr, ar }
 

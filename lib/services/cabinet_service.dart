@@ -3,10 +3,22 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../core/config/api_config.dart';
+import '../controller/auth_controller.dart';
 
-enum CabinetAssignResult { success, exists, failed, network }
+enum CabinetAssignResult { success, exists, clinicNotValidated, failed, network }
+
 enum CabinetCreateResult { success, exists, failed, network }
-enum CabinetRemoveResult { success, failed, network }
+
+enum CabinetRemoveResult { success, lastAdmin, failed, network }
+
+enum CabinetReviewResult { success, failed, network, unauthorized }
+
+class CabinetCreateResponse {
+  const CabinetCreateResponse(this.result, {this.message});
+
+  final CabinetCreateResult result;
+  final String? message;
+}
 
 class CabinetService {
   CabinetService({http.Client? client}) : _client = client ?? http.Client();
@@ -53,69 +65,166 @@ class CabinetService {
       final response = await _client.post(
         uri,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'id_user': userId,
-          'id_cabinet': cabinetId,
-          'type_access': typeAccess,
-          'etat': etat,
-        }),
+        body: jsonEncode({'id_user': userId, 'id_cabinet': cabinetId, 'type_access': typeAccess, 'etat': etat}),
       );
       if (response.statusCode == 201) return CabinetAssignResult.success;
       if (response.statusCode == 409) return CabinetAssignResult.exists;
+      if (response.statusCode == 403) return CabinetAssignResult.clinicNotValidated;
       return CabinetAssignResult.failed;
     } catch (_) {
       return CabinetAssignResult.network;
     }
   }
 
-  Future<CabinetCreateResult> createCabinet({
+  Future<CabinetCreateResponse> createCabinet({
     required String name,
     required String specialty,
     required String address,
     required String phone,
+    int? nationalitePatientDefaut,
+    required String defaultCurrency,
     String? photoBase64,
     String? photoExtension,
   }) async {
+    final userId = AuthController.globalUserId;
     final uri = Uri.parse('$_baseUrl/cabinet');
     try {
       final response = await _client.post(
         uri,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
+          'id_user': userId,
           'nom_cabinet': name,
           'specialite_cabinet': specialty,
           'adresse_cabinet': address,
           'phone': phone,
+          'nationalite_patient_defaut': nationalitePatientDefaut,
+          'default_currency': defaultCurrency,
           if (photoBase64 != null && photoBase64.isNotEmpty) 'photo_base64': photoBase64,
           if (photoExtension != null && photoExtension.isNotEmpty) 'photo_ext': photoExtension,
         }),
       );
-      if (response.statusCode == 201) return CabinetCreateResult.success;
-      if (response.statusCode == 409) return CabinetCreateResult.exists;
-      return CabinetCreateResult.failed;
+      // Keep backend response visible while stabilizing create-cabinet flow.
+      // ignore: avoid_print
+      print('Create cabinet response: ${response.statusCode} ${response.body}');
+      String? message;
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map && decoded['error'] != null) {
+          message = decoded['error'].toString();
+        }
+      } catch (_) {}
+
+      if (response.statusCode == 201) {
+        return const CabinetCreateResponse(CabinetCreateResult.success);
+      }
+      if (response.statusCode == 409) {
+        return CabinetCreateResponse(CabinetCreateResult.exists, message: message);
+      }
+      return CabinetCreateResponse(CabinetCreateResult.failed, message: message);
     } catch (_) {
-      return CabinetCreateResult.network;
+      return const CabinetCreateResponse(CabinetCreateResult.network);
     }
   }
 
-  Future<CabinetRemoveResult> removeCabinet({
-    required int userId,
-    required int cabinetId,
-  }) async {
+  Future<CabinetRemoveResult> removeCabinet({required int userId, required int cabinetId}) async {
     final uri = Uri.parse('$_baseUrl/cabinet/unassign');
     try {
       final response = await _client.post(
         uri,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'id_user': userId,
-          'id_cabinet': cabinetId,
-        }),
+        body: jsonEncode({'id_user': userId, 'id_cabinet': cabinetId}),
       );
       if (response.statusCode == 200) return CabinetRemoveResult.success;
+      if (response.statusCode == 409) {
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded is Map && decoded['code'] == 'LAST_ADMIN') {
+            return CabinetRemoveResult.lastAdmin;
+          }
+        } catch (_) {}
+      }
       return CabinetRemoveResult.failed;
     } catch (_) {
       return CabinetRemoveResult.network;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPendingCabinetsForPlatformAdmin({
+    required int adminUserId,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/cabinet/pending-platform/$adminUserId');
+    final response = await _client.get(uri);
+    if (response.statusCode == 403) {
+      throw Exception('unauthorized');
+    }
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load pending clinics');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! List) return [];
+    return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPlatformCabinets({
+    required int adminUserId,
+    required String state,
+    String query = '',
+  }) async {
+    final normalizedState = state.trim().isEmpty ? 'pending' : state.trim().toLowerCase();
+    final uri = Uri.parse(
+      '$_baseUrl/cabinet/platform-list/$adminUserId'
+      '?state=${Uri.encodeQueryComponent(normalizedState)}'
+      '&q=${Uri.encodeQueryComponent(query)}',
+    );
+    final response = await _client.get(uri);
+    if (response.statusCode == 403) {
+      throw Exception('unauthorized');
+    }
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load clinics');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! List) return [];
+    return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+  }
+
+  Future<CabinetReviewResult> approveCabinet({
+    required int adminUserId,
+    required int cabinetId,
+  }) async {
+    return _reviewCabinet(
+      path: '/cabinet/validate',
+      payload: {'id_admin': adminUserId, 'id_cabinet': cabinetId},
+    );
+  }
+
+  Future<CabinetReviewResult> rejectCabinet({
+    required int adminUserId,
+    required int cabinetId,
+  }) async {
+    return _reviewCabinet(
+      path: '/cabinet/reject-clinic',
+      payload: {'id_admin': adminUserId, 'id_cabinet': cabinetId},
+    );
+  }
+
+  Future<CabinetReviewResult> _reviewCabinet({
+    required String path,
+    required Map<String, dynamic> payload,
+  }) async {
+    final uri = Uri.parse('$_baseUrl$path');
+    try {
+      final response = await _client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(payload),
+      );
+      if (response.statusCode == 200) return CabinetReviewResult.success;
+      if (response.statusCode == 403) return CabinetReviewResult.unauthorized;
+      return CabinetReviewResult.failed;
+    } catch (_) {
+      return CabinetReviewResult.network;
     }
   }
 }

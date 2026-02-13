@@ -1,0 +1,2 @@
+ALTER TABLE patient
+ADD COLUMN IF NOT EXISTS nationalite TEXT;

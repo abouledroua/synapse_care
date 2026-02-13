@@ -1,4 +1,4 @@
-# synapse_care
+# curatio
 
 A new Flutter project.
 

@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../controller/patient_list_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../widget/patient_list_view.dart';
-import '../widget/synapse_background.dart';
+import '../widget/app_background.dart';
 
 class PatientListPage extends StatefulWidget {
   const PatientListPage({super.key});
@@ -39,8 +39,37 @@ class _PatientListPageState extends State<PatientListPage> {
   }
 
   void _handleDelete(Map<String, dynamic> patient) {
+    final id = patient['id_patient'] is num
+        ? (patient['id_patient'] as num).toInt()
+        : int.tryParse('${patient['id_patient'] ?? ''}');
+    if (id == null) {
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.patientDeleteFailed)));
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.patientListDeleteComingSoon)));
+    showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.patientDeleteConfirmTitle),
+        content: Text(l10n.patientDeleteConfirmBody),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(l10n.patientDeleteCancel)),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(l10n.patientDeleteConfirm)),
+        ],
+      ),
+    ).then((confirmed) async {
+      if (confirmed != true) return;
+      final ok = await _controller.deletePatient(id);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      if (ok) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.patientDeleteSuccess)));
+        _controller.loadPatients();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.patientDeleteFailed)));
+      }
+    });
   }
 
   @override
@@ -52,7 +81,7 @@ class _PatientListPageState extends State<PatientListPage> {
       builder: (context, child) => Scaffold(
         body: Stack(
           children: [
-            const SynapseBackground(),
+            const AppBackground(),
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
@@ -80,6 +109,7 @@ class _PatientListPageState extends State<PatientListPage> {
                           FilledButton.icon(
                             onPressed: () async {
                               final created = await context.push<bool>('/patients/create');
+                              if (!mounted) return;
                               if (created == true) {
                                 _controller.loadPatients();
                               }
@@ -121,7 +151,10 @@ class _PatientListPageState extends State<PatientListPage> {
                           ? const Center(child: CircularProgressIndicator())
                           : _controller.error != null
                           ? Center(
-                              child: Text(l10n.loginNetworkError, style: TextStyle(color: scheme.error)),
+                              child: Text(
+                                _controller.error == 'no_clinic' ? l10n.patientClinicRequired : l10n.loginNetworkError,
+                                style: TextStyle(color: scheme.error),
+                              ),
                             )
                           : _controller.patients.isEmpty
                           ? Center(
