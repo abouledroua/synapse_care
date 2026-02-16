@@ -7,6 +7,7 @@ import nodemailer from "nodemailer";
 
 import { pool } from "../db.js";
 import { UserRole } from "../middleware/authorization.js";
+import { sendServerError } from "../utils/api_error.js";
 
 const router = Router();
 
@@ -119,7 +120,7 @@ router.post("/signup", async (req, res) => {
 
     return res.status(201).json(user);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -159,7 +160,7 @@ router.post("/login", async (req, res) => {
     delete user.password;
     return res.status(200).json(user);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -203,7 +204,7 @@ router.post("/forgot", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -246,7 +247,7 @@ router.post("/verify-reset", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -302,7 +303,7 @@ router.post("/reset-password", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -348,7 +349,7 @@ router.post("/verification/request", async (req, res) => {
 
     return res.status(200).json({ ok: true, status: "pending" });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -363,7 +364,7 @@ router.get("/verification/pending", async (req, res) => {
     );
     return res.status(200).json(result.rows);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -388,7 +389,7 @@ router.post("/verification/approve", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -414,7 +415,7 @@ router.post("/verification/reject", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 

@@ -1,11 +1,14 @@
 import { Router } from "express";
+import pg from "pg";
 import fs from "fs/promises";
 import path from "path";
 
 import { pool } from "../db.js";
 import { ensureAffiliatedUser, ensureCabinetStaff } from "../middleware/authorization.js";
+import { sendServerError } from "../utils/api_error.js";
 
 const router = Router();
+const { Client } = pg;
 
 const PATIENT_PHOTOS_DIR = path.join(process.cwd(), "IMAGES", "PATIENT");
 const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp"]);
@@ -17,6 +20,62 @@ async function ensurePatientPhotosDir() {
 function parseInteger(value) {
   const parsed = Number(value);
   return Number.isInteger(parsed) ? parsed : null;
+}
+
+function clinicDbConfig(database) {
+  return {
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT || 5432),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database,
+  };
+}
+
+async function getClinicDbName(cabinetId) {
+  const result = await pool.query(
+    `SELECT db_name
+     FROM cabinet
+     WHERE id_cabinet = $1
+     LIMIT 1`,
+    [cabinetId],
+  );
+  if (result.rowCount === 0) {
+    const error = new Error("Clinic not found.");
+    error.code = "CLINIC_NOT_FOUND";
+    throw error;
+  }
+  const dbName = `${result.rows[0].db_name ?? ""}`.trim();
+  if (!dbName) {
+    const error = new Error("Clinic database not configured.");
+    error.code = "3D000";
+    throw error;
+  }
+  return dbName;
+}
+
+async function syncPatientToClinicDb(cabinetId, patientId) {
+  const dbName = await getClinicDbName(cabinetId);
+  const client = new Client(clinicDbConfig(dbName));
+  await client.connect();
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS clinic_patient (
+        id_patient_global INTEGER PRIMARY KEY,
+        first_seen_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        last_seen_at TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+    await client.query(
+      `INSERT INTO clinic_patient (id_patient_global)
+       VALUES ($1)
+       ON CONFLICT (id_patient_global)
+       DO UPDATE SET last_seen_at = NOW()`,
+      [patientId],
+    );
+  } finally {
+    await client.end();
+  }
 }
 
 async function ensurePatientLinkedToCabinet(cabinetId, patientId) {
@@ -59,7 +118,7 @@ router.get("/", async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -295,13 +354,14 @@ router.post("/", async (req, res) => {
        ON CONFLICT (id_cabinet, id_patient) DO NOTHING`,
       [cabinetId, patient.id_patient],
     );
+    await syncPatientToClinicDb(cabinetId, patient.id_patient);
 
     return res.status(201).json(patient);
   } catch (err) {
     if (err && err.code === "23505") {
       return res.status(409).json({ error: "Patient already exists." });
     }
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -491,12 +551,14 @@ router.put("/:id", async (req, res) => {
       patient = updated.rows[0];
     }
 
+    await syncPatientToClinicDb(cabinetId, id);
+
     return res.status(200).json(patient);
   } catch (err) {
     if (err && err.code === "23505") {
       return res.status(409).json({ error: "Patient already exists." });
     }
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -513,6 +575,8 @@ router.post("/link", async (req, res) => {
     if (!accessCheck.ok) {
       return res.status(accessCheck.status).json({ error: accessCheck.error });
     }
+    // Ensure clinic DB mirror is ready before creating/updating global relation.
+    await syncPatientToClinicDb(cabinetId, patientId);
     await pool.query(
       `INSERT INTO cabinet_patient (id_cabinet, id_patient)
        VALUES ($1, $2)
@@ -521,7 +585,69 @@ router.post("/link", async (req, res) => {
     );
     return res.status(201).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
+  }
+});
+
+router.post("/check-existing", async (req, res) => {
+  try {
+    const { id_user, id_cabinet, nationality, nin, nss } = req.body || {};
+    const userId = parseInteger(id_user);
+    const cabinetId = parseInteger(id_cabinet);
+    const safeNationality = Number.isInteger(Number(nationality)) ? Number(nationality) : null;
+    const safeNin = nin ? String(nin).trim() : "";
+    const safeNss = nss ? String(nss).trim() : "";
+
+    if (userId === null || cabinetId === null) {
+      return res.status(400).json({ error: "Invalid ids." });
+    }
+    if (safeNationality === null || (!safeNin && !safeNss)) {
+      return res.status(200).json({ exists: false });
+    }
+
+    const accessCheck = await ensureCabinetStaff(cabinetId, userId);
+    if (!accessCheck.ok) {
+      return res.status(accessCheck.status).json({ error: accessCheck.error });
+    }
+
+    const params = [safeNationality];
+    const where = [];
+    if (safeNin) {
+      params.push(safeNin);
+      where.push(`(nationality = $1 AND nin = $${params.length})`);
+    }
+    if (safeNss) {
+      params.push(safeNss);
+      where.push(`(nationality = $1 AND nss = $${params.length})`);
+    }
+
+    const existing = await pool.query(
+      `SELECT *
+       FROM patient
+       WHERE ${where.join(" OR ")}
+       LIMIT 1`,
+      params,
+    );
+    if (existing.rowCount === 0) {
+      return res.status(200).json({ exists: false });
+    }
+
+    const patient = existing.rows[0];
+    const linked = await pool.query(
+      `SELECT 1
+       FROM cabinet_patient
+       WHERE id_cabinet = $1 AND id_patient = $2
+       LIMIT 1`,
+      [cabinetId, patient.id_patient],
+    );
+
+    return res.status(200).json({
+      exists: true,
+      already_linked: linked.rowCount > 0,
+      patient,
+    });
+  } catch (err) {
+    return sendServerError(res, err);
   }
 });
 
@@ -553,7 +679,7 @@ router.delete("/:id", async (req, res) => {
     }
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -597,7 +723,7 @@ router.get("/search", async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 

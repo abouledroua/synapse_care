@@ -54,13 +54,23 @@ async function applyClinicSchema(dbName) {
         id_rdv SERIAL PRIMARY KEY,
         id_patient_global INTEGER NOT NULL,
         date_rdv DATE NOT NULL,
-        heure_rdv TIME NOT NULL,
+        heure_rdv TIME NULL,
         heure_arrivee TIME NULL,
         num_rdv INTEGER NOT NULL,
         motif_rdv TEXT NULL,
         etat_rdv SMALLINT NOT NULL DEFAULT 0,
         created_at TIMESTAMP NOT NULL DEFAULT NOW()
       )
+    `);
+
+    // Make appointment time optional for existing clinic databases.
+    await client.query(`
+      ALTER TABLE rdv
+      ALTER COLUMN heure_rdv DROP NOT NULL
+    `);
+    await client.query(`
+      ALTER TABLE rdv
+      ALTER COLUMN heure_arrivee DROP NOT NULL
     `);
 
     await client.query(`
@@ -78,6 +88,9 @@ async function applyClinicSchema(dbName) {
       "CREATE INDEX IF NOT EXISTS rdv_patient_idx ON rdv (id_patient_global)",
     );
     await client.query(
+      "CREATE INDEX IF NOT EXISTS rdv_date_idx ON rdv (date_rdv)",
+    );
+    await client.query(
       "CREATE INDEX IF NOT EXISTS consultation_patient_idx ON consultation (id_patient_global)",
     );
   } finally {
@@ -90,4 +103,18 @@ export async function provisionClinicDatabase(cabinetId) {
   await ensureDatabaseExists(dbName);
   await applyClinicSchema(dbName);
   return dbName;
+}
+
+export async function ensureAllClinicDatabasesSchema(globalPool) {
+  const result = await globalPool.query(
+    `SELECT db_name
+     FROM cabinet
+     WHERE COALESCE(TRIM(db_name), '') <> ''`,
+  );
+  for (const row of result.rows) {
+    const dbName = `${row.db_name ?? ""}`.trim();
+    if (!dbName) continue;
+    await ensureDatabaseExists(dbName);
+    await applyClinicSchema(dbName);
+  }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../core/config/api_config.dart';
+import '../core/network/api_request_exception.dart';
 import '../controller/auth_controller.dart';
 
 enum CabinetAssignResult { success, exists, clinicNotValidated, failed, network }
@@ -34,24 +35,49 @@ class CabinetService {
 
   Future<List<Map<String, dynamic>>> fetchCabinetsForUser(int userId) async {
     final uri = Uri.parse('$_baseUrl/cabinet/by-user/$userId');
-    final response = await _client.get(uri);
-    if (response.statusCode != 200) {
-      throw Exception('Failed to load cabinets');
+    try {
+      final response = await _client.get(uri);
+      if (response.statusCode != 200) {
+        throw _httpFailureFrom(response, fallbackCode: 'request_failed');
+      }
+      final decoded = jsonDecode(response.body);
+      if (decoded is! List) return [];
+      return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    } catch (error) {
+      if (error is ApiRequestException) rethrow;
+      throw ApiRequestException(code: _transportFailureCode(error), message: error.toString());
     }
-    final decoded = jsonDecode(response.body);
-    if (decoded is! List) return [];
-    return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
   }
 
   Future<List<Map<String, dynamic>>> searchCabinets(String query) async {
     final uri = Uri.parse('$_baseUrl/cabinet/search?q=${Uri.encodeQueryComponent(query)}');
-    final response = await _client.get(uri);
-    if (response.statusCode != 200) {
-      throw Exception('Failed to search cabinets');
+    try {
+      final response = await _client.get(uri);
+      if (response.statusCode != 200) {
+        throw _httpFailureFrom(response, fallbackCode: 'request_failed');
+      }
+      final decoded = jsonDecode(response.body);
+      if (decoded is! List) return [];
+      return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    } catch (error) {
+      if (error is ApiRequestException) rethrow;
+      throw ApiRequestException(code: _transportFailureCode(error), message: error.toString());
     }
-    final decoded = jsonDecode(response.body);
-    if (decoded is! List) return [];
-    return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+  }
+
+  Future<void> ensureCabinetDatabaseReady(int cabinetId) async {
+    final uri = Uri.parse('$_baseUrl/cabinet/$cabinetId/db-ready');
+    try {
+      final response = await _client.get(uri);
+      if (response.statusCode == 200) return;
+      if (response.statusCode == 404) {
+        throw const ApiRequestException(code: 'db_not_found', statusCode: 404);
+      }
+      throw _httpFailureFrom(response, fallbackCode: 'request_failed');
+    } catch (error) {
+      if (error is ApiRequestException) rethrow;
+      throw ApiRequestException(code: _transportFailureCode(error), message: error.toString());
+    }
   }
 
   Future<CabinetAssignResult> assignCabinet({
@@ -226,5 +252,52 @@ class CabinetService {
     } catch (_) {
       return CabinetReviewResult.network;
     }
+  }
+
+  ApiRequestException _httpFailureFrom(http.Response response, {required String fallbackCode}) {
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map) {
+        final rawCode = decoded['code']?.toString().trim().toLowerCase();
+        if (rawCode != null && rawCode.isNotEmpty) {
+          return ApiRequestException(
+            code: _mapServerCode(rawCode),
+            statusCode: response.statusCode,
+            message: decoded['error']?.toString(),
+          );
+        }
+      }
+    } catch (_) {}
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      return ApiRequestException(code: 'unauthorized', statusCode: response.statusCode);
+    }
+    return ApiRequestException(code: fallbackCode, statusCode: response.statusCode);
+  }
+
+  String _mapServerCode(String code) {
+    switch (code) {
+      case 'db_not_found':
+        return 'db_not_found';
+      case 'db_unavailable':
+        return 'db_unavailable';
+      default:
+        return 'request_failed';
+    }
+  }
+
+  String _transportFailureCode(Object error) {
+    final text = error.toString().toLowerCase();
+    if (text.contains('network is unreachable') ||
+        text.contains('no route to host') ||
+        text.contains('failed host lookup')) {
+      return 'internet_unavailable';
+    }
+    if (text.contains('connection refused') ||
+        text.contains('connection reset') ||
+        text.contains('connection closed') ||
+        text.contains('timed out')) {
+      return 'server_unreachable';
+    }
+    return 'network';
   }
 }

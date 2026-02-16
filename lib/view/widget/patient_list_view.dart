@@ -16,6 +16,8 @@ class PatientListView extends StatelessWidget {
     required this.l10n,
     required this.onUpdate,
     required this.onDelete,
+    this.onSelect,
+    this.pickerMode = false,
     this.controller,
   });
 
@@ -24,17 +26,19 @@ class PatientListView extends StatelessWidget {
   final AppLocalizations l10n;
   final ValueChanged<Map<String, dynamic>> onUpdate;
   final ValueChanged<Map<String, dynamic>> onDelete;
+  final ValueChanged<Map<String, dynamic>>? onSelect;
+  final bool pickerMode;
   final ScrollController? controller;
 
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
       controller: controller,
-      thumbVisibility: kIsWeb ? true : null,
+      thumbVisibility: kIsWeb,
       thickness: kIsWeb ? 8 : null,
       radius: kIsWeb ? const Radius.circular(8) : null,
-      trackVisibility: kIsWeb ? true : null,
-      interactive: kIsWeb ? true : null,
+      trackVisibility: kIsWeb,
+      interactive: kIsWeb,
       child: ListView.separated(
         controller: controller,
         itemCount: patients.length,
@@ -78,7 +82,6 @@ class PatientListView extends StatelessWidget {
           final imageUrl = PatientService().patientPhotoUrl(photoFile);
           final displayName = '${prenom.isEmpty ? '' : '$prenom '}$nom'.trim();
           final primaryItems = [
-            _InfoItem(l10n.patientHeaderAge, age),
             _InfoItem(l10n.patientHeaderPhone, tel),
             _InfoItem(l10n.patientHeaderDebt, dette),
             _InfoItem(l10n.patientHeaderEmail, email),
@@ -101,6 +104,7 @@ class PatientListView extends StatelessWidget {
               data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
                 tilePadding: EdgeInsets.zero,
+                showTrailingIcon: false,
                 childrenPadding: const EdgeInsets.only(left: 44, right: 8, bottom: 8),
                 title: Row(
                   children: [
@@ -135,27 +139,48 @@ class PatientListView extends StatelessWidget {
                             style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w600),
                           ),
                           const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${l10n.patientHeaderAge}: $age',
+                                  style: TextStyle(
+                                    color: scheme.onSurfaceVariant.withValues(alpha: 0.75),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              if (pickerMode) ...[
+                                _InkIcon(
+                                  icon: FontAwesomeIcons.circleCheck,
+                                  color: scheme.primary,
+                                  tooltip: l10n.continueCta,
+                                  onTap: () => onSelect?.call(item),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                              _InkIcon(
+                                icon: FontAwesomeIcons.penToSquare,
+                                color: scheme.primary,
+                                tooltip: l10n.patientActionUpdate,
+                                onTap: () => onUpdate(item),
+                              ),
+                              const SizedBox(width: 8),
+                              _InkIcon(
+                                icon: FontAwesomeIcons.trashCan,
+                                color: scheme.error,
+                                tooltip: l10n.patientActionDelete,
+                                onTap: () => onDelete(item),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
                           _InfoWrap(items: primaryItems, scheme: scheme),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _InkIcon(
-                      icon: FontAwesomeIcons.penToSquare,
-                      color: scheme.primary,
-                      tooltip: l10n.patientActionUpdate,
-                      onTap: () => onUpdate(item),
-                    ),
-                    const SizedBox(width: 8),
-                    _InkIcon(
-                      icon: FontAwesomeIcons.trashCan,
-                      color: scheme.error,
-                      tooltip: l10n.patientActionDelete,
-                      onTap: () => onDelete(item),
                     ),
                   ],
                 ),

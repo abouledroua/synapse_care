@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../core/config/api_config.dart';
+import '../services/appointment_service.dart';
 import '../services/patient_service.dart';
 import 'auth_controller.dart';
 
 class HomeController extends ChangeNotifier {
-  HomeController({PatientService? patientService})
-      : _patientService = patientService ?? PatientService();
+  HomeController({PatientService? patientService, AppointmentService? appointmentService})
+    : _patientService = patientService ?? PatientService(),
+      _appointmentService = appointmentService ?? AppointmentService();
 
   final PatientService _patientService;
+  final AppointmentService _appointmentService;
   bool menuOpen = false;
   Timer? _clockTimer;
   Timer? _patientCountTimer;
@@ -22,6 +25,8 @@ class HomeController extends ChangeNotifier {
   String? searchError;
   List<Map<String, dynamic>> searchResults = [];
   int? patientCount;
+  int? todayAppointmentCount;
+  Map<String, dynamic>? nextTodayAppointment;
 
   DateTime get now => _now;
 
@@ -33,8 +38,10 @@ class HomeController extends ChangeNotifier {
     });
     _patientCountTimer?.cancel();
     loadPatientCount();
-    _patientCountTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+    loadTodayAppointmentCount();
+    _patientCountTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       loadPatientCount();
+      loadTodayAppointmentCount();
     });
   }
 
@@ -123,6 +130,81 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loadTodayAppointmentCount() async {
+    try {
+      final cabinetId = _cabinetId();
+      final userId = _userId();
+      if (cabinetId == null || userId == null) {
+        todayAppointmentCount = null;
+        nextTodayAppointment = null;
+      } else {
+        final rows = await _appointmentService.fetchAppointments(cabinetId: cabinetId, userId: userId);
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final count = rows.where((item) {
+          final etat = int.tryParse('${item['etat_rdv'] ?? ''}');
+          if (etat != 0 && etat != 1) return false;
+          final date = _parseDateOnly(item['date_rdv']);
+          if (date == null) return false;
+          return date.year == today.year && date.month == today.month && date.day == today.day;
+        }).length;
+        todayAppointmentCount = count;
+
+        final todayRows = rows.where((item) {
+          final etat = int.tryParse('${item['etat_rdv'] ?? ''}');
+          if (etat != 0 && etat != 1) return false;
+          final num = int.tryParse('${item['num_rdv'] ?? ''}') ?? 0;
+          if (num <= 0) return false;
+          final date = _parseDateOnly(item['date_rdv']);
+          if (date == null) return false;
+          return date.year == today.year && date.month == today.month && date.day == today.day;
+        }).toList();
+        if (todayRows.isEmpty) {
+          nextTodayAppointment = null;
+        } else {
+          todayRows.sort((a, b) {
+            final na = int.tryParse('${a['num_rdv'] ?? ''}') ?? 0;
+            final nb = int.tryParse('${b['num_rdv'] ?? ''}') ?? 0;
+            return na.compareTo(nb);
+          });
+          nextTodayAppointment = Map<String, dynamic>.from(todayRows.first);
+        }
+      }
+    } catch (_) {
+      todayAppointmentCount = null;
+      nextTodayAppointment = null;
+    }
+    notifyListeners();
+  }
+
+  void clearDashboardData() {
+    patientCount = null;
+    todayAppointmentCount = null;
+    nextTodayAppointment = null;
+    notifyListeners();
+  }
+
+  Future<void> refreshDashboardDataNow() async {
+    await loadPatientCount();
+    await loadTodayAppointmentCount();
+  }
+
+  DateTime? _parseDateOnly(dynamic raw) {
+    if (raw == null) return null;
+    final text = '$raw'.trim();
+    if (text.length >= 10) {
+      final y = int.tryParse(text.substring(0, 4));
+      final m = int.tryParse(text.substring(5, 7));
+      final d = int.tryParse(text.substring(8, 10));
+      if (y != null && m != null && d != null) {
+        return DateTime(y, m, d);
+      }
+    }
+    final parsed = DateTime.tryParse(text);
+    if (parsed == null) return null;
+    return DateTime(parsed.year, parsed.month, parsed.day);
+  }
+
   void searchPatients(String value) {
     _searchDebounce?.cancel();
     final query = value.trim();
@@ -147,11 +229,7 @@ class HomeController extends ChangeNotifier {
       searchError = null;
       notifyListeners();
       try {
-        searchResults = await _patientService.searchPatients(
-          query: query,
-          cabinetId: cabinetId,
-          userId: userId,
-        );
+        searchResults = await _patientService.searchPatients(query: query, cabinetId: cabinetId, userId: userId);
       } catch (_) {
         searchError = 'error';
         searchResults = [];

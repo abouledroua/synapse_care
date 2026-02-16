@@ -22,6 +22,7 @@ class HomeTopBar extends StatelessWidget {
     required this.userPhotoUrl,
     required this.isPlatformAdmin,
     this.searchBar,
+    this.onChangeClinic,
   });
 
   final String dateText;
@@ -34,6 +35,7 @@ class HomeTopBar extends StatelessWidget {
   final String? userPhotoUrl;
   final bool isPlatformAdmin;
   final Widget? searchBar;
+  final Future<void> Function()? onChangeClinic;
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +139,12 @@ class HomeTopBar extends StatelessWidget {
                     context.push('/profile');
                     break;
                   case _ProfileAction.changeClinic:
-                    context.push('/cabinet/select');
+                    if (onChangeClinic != null) {
+                      await onChangeClinic!();
+                    } else {
+                      if (!context.mounted) return;
+                      context.push('/cabinet/select');
+                    }
                     break;
                   case _ProfileAction.adminPanel:
                     context.push('/admin/clinics');

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../core/network/api_request_exception.dart';
 import '../services/cabinet_service.dart';
 import 'auth_controller.dart';
 
@@ -36,8 +37,10 @@ class CabinetSearchController extends ChangeNotifier {
       notifyListeners();
       try {
         results = await _service.searchCabinets(query);
+      } on ApiRequestException catch (e) {
+        errorCode = e.code;
       } catch (_) {
-        errorCode = 'network';
+        errorCode = 'request_failed';
       } finally {
         isLoading = false;
         notifyListeners();
@@ -46,6 +49,17 @@ class CabinetSearchController extends ChangeNotifier {
   }
 
   String? cabinetImageUrl(String photoFile) => _service.cabinetPhotoUrl(photoFile);
+
+  Future<String?> verifyCabinetDatabase(int cabinetId) async {
+    try {
+      await _service.ensureCabinetDatabaseReady(cabinetId);
+      return null;
+    } on ApiRequestException catch (e) {
+      return e.code;
+    } catch (_) {
+      return 'request_failed';
+    }
+  }
 
   Future<CabinetAssignResult> assignCabinet(int cabinetId) async {
     final userId = AuthController.globalUserId;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/network/api_request_exception.dart';
 import '../services/cabinet_service.dart';
 import 'auth_controller.dart';
 
@@ -8,6 +9,7 @@ class CabinetSelectController extends ChangeNotifier {
 
   final CabinetService _service;
   bool isLoading = false;
+  bool isConnecting = false;
   String? errorCode;
   List<Map<String, dynamic>> cabinets = [];
 
@@ -24,8 +26,10 @@ class CabinetSelectController extends ChangeNotifier {
     notifyListeners();
     try {
       cabinets = await _service.fetchCabinetsForUser(userId);
+    } on ApiRequestException catch (e) {
+      errorCode = e.code;
     } catch (_) {
-      errorCode = 'network';
+      errorCode = 'request_failed';
     } finally {
       isLoading = false;
       notifyListeners();
@@ -33,6 +37,22 @@ class CabinetSelectController extends ChangeNotifier {
   }
 
   String? cabinetImageUrl(String photoFile) => _service.cabinetPhotoUrl(photoFile);
+
+  Future<String?> verifyCabinetDatabase(int cabinetId) async {
+    isConnecting = true;
+    notifyListeners();
+    try {
+      await _service.ensureCabinetDatabaseReady(cabinetId);
+      return null;
+    } on ApiRequestException catch (e) {
+      return e.code;
+    } catch (_) {
+      return 'request_failed';
+    } finally {
+      isConnecting = false;
+      notifyListeners();
+    }
+  }
 
   void selectCabinet(Map<String, dynamic> item) {
     AuthController.globalClinic = {

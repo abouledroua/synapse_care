@@ -12,6 +12,8 @@ import 'auth_controller.dart';
 import '../l10n/app_localizations.dart';
 import '../services/patient_service.dart';
 
+enum PatientSubmitResult { success, patientExists, noClinic, failed }
+
 class PatientCreateController extends ChangeNotifier {
   PatientCreateController({PatientService? service}) : _service = service ?? PatientService();
 
@@ -54,8 +56,19 @@ class PatientCreateController extends ChangeNotifier {
   String? lastError;
   bool lastCreateLinked = false;
   int? existingPatientId;
+  Map<String, dynamic>? existingPatientData;
+  bool _identityCheckRunning = false;
+  String _lastIdentityFingerprint = '';
 
   bool get isEditing => patientId != null;
+
+  void initialize({Map<String, dynamic>? patient}) {
+    if (patient != null) {
+      loadFromPatient(patient);
+      return;
+    }
+    _applyDefaultNationalityForCreate();
+  }
 
   @override
   void dispose() {
@@ -227,8 +240,12 @@ class PatientCreateController extends ChangeNotifier {
     if (picked == null) return;
     final bytes = kIsWeb ? await picked.readAsBytes() : null;
     photo = picked;
-    photoBytes = bytes;
+    photoBytes = (bytes != null && bytes.isNotEmpty) ? bytes : null;
     photoExtension = _extensionFromPath(picked.path);
+    if (photo != null) {
+      // Ensure local preview takes precedence over previously stored server image.
+      existingPhotoFile = null;
+    }
     notifyListeners();
   }
 
@@ -241,8 +258,11 @@ class PatientCreateController extends ChangeNotifier {
 
   ImageProvider? photoProvider() {
     if (photo != null) {
-      if (kIsWeb && photoBytes != null) {
-        return MemoryImage(photoBytes!);
+      if (kIsWeb) {
+        if (photoBytes != null && photoBytes!.isNotEmpty) {
+          return MemoryImage(photoBytes!);
+        }
+        return null;
       }
       return FileImage(File(photo!.path));
     }
@@ -328,6 +348,7 @@ class PatientCreateController extends ChangeNotifier {
     lastError = null;
     lastCreateLinked = false;
     existingPatientId = null;
+    existingPatientData = null;
     notifyListeners();
     try {
       final cabinetId = AuthController.globalClinic?['id_cabinet'];
@@ -382,6 +403,7 @@ class PatientCreateController extends ChangeNotifier {
             existingPatientId = patient['id_patient'] is num
                 ? (patient['id_patient'] as num).toInt()
                 : int.tryParse('${patient['id_patient']}');
+            existingPatientData = Map<String, dynamic>.from(patient);
           }
           return false;
         }
@@ -394,6 +416,7 @@ class PatientCreateController extends ChangeNotifier {
             existingPatientId = patient['id_patient'] is num
                 ? (patient['id_patient'] as num).toInt()
                 : int.tryParse('${patient['id_patient']}');
+            existingPatientData = Map<String, dynamic>.from(patient);
           }
           return false;
         }
@@ -407,6 +430,14 @@ class PatientCreateController extends ChangeNotifier {
       saving = false;
       notifyListeners();
     }
+  }
+
+  Future<PatientSubmitResult> submitWithResult() async {
+    final ok = await submit();
+    if (ok) return PatientSubmitResult.success;
+    if (lastError == 'patient_exists') return PatientSubmitResult.patientExists;
+    if (lastError == 'no_clinic') return PatientSubmitResult.noClinic;
+    return PatientSubmitResult.failed;
   }
 
   Future<bool> linkExistingPatient() async {
@@ -424,9 +455,64 @@ class PatientCreateController extends ChangeNotifier {
     }
   }
 
+  Future<String> checkExistingIdentityInClinic() async {
+    if (isEditing) return 'none';
+    if (_identityCheckRunning) return 'none';
+    final cabinetId = AuthController.globalClinic?['id_cabinet'];
+    final userId = AuthController.globalUserId;
+    final nationality = nationalityCode;
+    final safeNin = nin.text.trim();
+    final safeNss = nss.text.trim();
+    final parsedCabinetId = cabinetId is num ? cabinetId.toInt() : int.tryParse('$cabinetId');
+    if (parsedCabinetId == null || userId == null || nationality == null) return 'none';
+    if (safeNin.isEmpty && safeNss.isEmpty) return 'none';
+
+    final fingerprint = '$nationality|$safeNin|$safeNss';
+    if (fingerprint == _lastIdentityFingerprint) return 'none';
+    _identityCheckRunning = true;
+    try {
+      final result = await _service.checkExistingByIdentity(
+        cabinetId: parsedCabinetId,
+        userId: userId,
+        nationality: nationality,
+        nin: safeNin,
+        nss: safeNss,
+      );
+      _lastIdentityFingerprint = fingerprint;
+      final exists = result['exists'] == true;
+      if (!exists) return 'none';
+      final patient = result['patient'];
+      if (patient is Map && patient['id_patient'] != null) {
+        existingPatientId = patient['id_patient'] is num
+            ? (patient['id_patient'] as num).toInt()
+            : int.tryParse('${patient['id_patient']}');
+        existingPatientData = Map<String, dynamic>.from(patient);
+      }
+      if (result['already_linked'] == true) return 'already_linked';
+      return 'exists';
+    } catch (_) {
+      return 'error';
+    } finally {
+      _identityCheckRunning = false;
+    }
+  }
+
+  String? existingPatientPhotoUrl() {
+    final file = '${existingPatientData?['photo_url'] ?? ''}'.trim();
+    if (file.isEmpty) return null;
+    return _service.patientPhotoUrl(file);
+  }
+
   String _extensionFromPath(String path) {
     final dot = path.lastIndexOf('.');
     if (dot == -1 || dot == path.length - 1) return 'jpg';
     return path.substring(dot + 1).toLowerCase();
+  }
+
+  void _applyDefaultNationalityForCreate() {
+    if (isEditing || nationalite.text.trim().isNotEmpty) return;
+    final clinicDefault = AuthController.globalClinic?['nationalite_patient_defaut'];
+    final phoneCode = clinicDefault is num ? clinicDefault.toInt().toString() : '$clinicDefault';
+    setNationaliteFromPhoneCode(phoneCode.trim().isEmpty ? '213' : phoneCode.trim());
   }
 }

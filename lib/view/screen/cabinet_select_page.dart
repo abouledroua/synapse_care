@@ -46,187 +46,230 @@ class _CabinetSelectPageState extends State<CabinetSelectPage> {
           return etat != 2 && status != 2;
         }).toList();
         return PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {},
-        child: Scaffold(
-          body: Stack(
-            children: [
-              const AppBackground(),
-              SafeArea(
-                child: Center(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 560),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            l10n.cabinetSelectTitle,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: isWide ? 26 : 22,
-                              fontWeight: FontWeight.w600,
-                              color: scheme.onSurfaceVariant,
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {},
+          child: Scaffold(
+            body: Stack(
+              children: [
+                const AppBackground(),
+                SafeArea(
+                  child: Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 560),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              l10n.cabinetSelectTitle,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: isWide ? 26 : 22,
+                                fontWeight: FontWeight.w600,
+                                color: scheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            l10n.cabinetSelectBody,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: FilledButton.icon(
-                                  onPressed: () async {
-                                    final refreshed = await context.push<bool>('/cabinet/search');
-                                    if (refreshed == true) {
-                                      await _controller.load();
-                                    }
-                                  },
-                                  icon: const Icon(Icons.search_rounded),
-                                  label: Text(l10n.cabinetSelectFind),
-                                  style: FilledButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                            const SizedBox(height: 10),
+                            Text(
+                              l10n.cabinetSelectBody,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
+                            ),
+                            const SizedBox(height: 20),
+                            if (_controller.isConnecting)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 48),
+                                child: const CircularProgressIndicator(),
+                              )
+                            else ...[
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: FilledButton.icon(
+                                      onPressed: () async {
+                                        final refreshed = await context.push<bool>('/cabinet/search');
+                                        if (!mounted) return;
+                                        if (refreshed == true) {
+                                          await _controller.load();
+                                        }
+                                      },
+                                      icon: const Icon(Icons.search_rounded),
+                                      label: Text(l10n.cabinetSelectFind),
+                                      style: FilledButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(width: 10),
+                                  OutlinedButton.icon(
+                                    onPressed: _controller.isLoading ? null : _controller.load,
+                                    icon: const Icon(Icons.refresh),
+                                    label: Text(l10n.patientListRefresh),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                                      side: BorderSide(color: scheme.primary.withValues(alpha: 0.6)),
+                                      foregroundColor: scheme.primary,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 10),
-                              OutlinedButton.icon(
-                                onPressed: _controller.isLoading ? null : _controller.load,
-                                icon: const Icon(Icons.refresh),
-                                label: Text(l10n.patientListRefresh),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-                                  side: BorderSide(color: scheme.primary.withValues(alpha: 0.6)),
-                                  foregroundColor: scheme.primary,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Divider(color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
-                          const SizedBox(height: 10),
-                          if (_controller.isLoading)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 24),
-                              child: CircularProgressIndicator(),
-                            )
-                          else if (_controller.errorCode != null)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: Text(
-                                l10n.loginNetworkError,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: scheme.error),
-                              ),
-                            )
-                          else if (filteredCabinets.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: Text(
-                                l10n.cabinetSelectEmpty,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
-                              ),
-                            )
-                          else
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: filteredCabinets.length,
-                              separatorBuilder: (_, _) => const SizedBox(height: 12),
-                              itemBuilder: (context, index) {
-                                final item = filteredCabinets[index];
-                                final name = (item['nom_cabinet'] ?? '').toString();
-                                final specialty = (item['specialite_cabinet'] ?? '').toString();
-                                final photoFile = (item['photo_url'] ?? '').toString();
-                                final imageUrl = _controller.cabinetImageUrl(photoFile);
-                                final cabinetId = int.tryParse('${item['id_cabinet'] ?? ''}');
-                                final rawStatus = item['status'];
-                                final status = rawStatus is num ? rawStatus.toInt() : int.tryParse('$rawStatus') ?? 0;
-                                final rawEtat = item['etat'];
-                                final etat = rawEtat is num ? rawEtat.toInt() : int.tryParse('$rawEtat') ?? 0;
-                                final clinicValidated = etat == 1;
-                                final isApproved = status == 1 && clinicValidated;
-                                final statusText = etat == 2
-                                    ? l10n.cabinetStatusRejected
-                                    : (!clinicValidated || status == 0
-                                        ? l10n.cabinetStatusPending
-                                        : (status == 2 ? l10n.cabinetStatusRejected : null));
-                                return _CabinetCard(
-                                  name: name.isEmpty ? l10n.cabinetSelectUnnamed : name,
-                                  specialty: specialty.isEmpty ? l10n.cabinetSelectSampleSpecialty : specialty,
-                                  imageUrl: imageUrl,
-                                  statusText: statusText,
-                                  onTap: () {
-                                    if (!isApproved) {
-                                      final message = etat == 2 || status == 2
-                                          ? l10n.cabinetSelectRejectedToast
-                                          : l10n.cabinetSelectPendingToast;
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-                                      return;
-                                    }
-                                    _controller.selectCabinet(item);
-                                    context.go('/home');
-                                  },
-                                  onRemove: cabinetId == null
-                                      ? null
-                                      : () async {
-                                          final confirmed = await showDialog<bool>(
-                                            context: context,
-                                            builder: (dialogContext) => AlertDialog(
-                                              title: Text(l10n.cabinetRemoveConfirmTitle),
-                                              content: Text(l10n.cabinetRemoveConfirmBody),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () => Navigator.of(dialogContext).pop(false),
-                                                  child: Text(l10n.cabinetRemoveCancel),
+                              const SizedBox(height: 10),
+                              Divider(color: scheme.onSurfaceVariant.withValues(alpha: 0.2)),
+                              const SizedBox(height: 10),
+                              if (_controller.isLoading)
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 24),
+                                  child: CircularProgressIndicator(),
+                                )
+                              else if (_controller.errorCode != null)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  child: Text(
+                                    _errorText(context, l10n, _controller.errorCode),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: scheme.error),
+                                  ),
+                                )
+                              else if (filteredCabinets.isEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  child: Text(
+                                    l10n.cabinetSelectEmpty,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7)),
+                                  ),
+                                )
+                              else
+                                ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: filteredCabinets.length,
+                                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                                  itemBuilder: (context, index) {
+                                    final item = filteredCabinets[index];
+                                    final name = (item['nom_cabinet'] ?? '').toString();
+                                    final specialty = (item['specialite_cabinet'] ?? '').toString();
+                                    final photoFile = (item['photo_url'] ?? '').toString();
+                                    final imageUrl = _controller.cabinetImageUrl(photoFile);
+                                    final cabinetId = int.tryParse('${item['id_cabinet'] ?? ''}');
+                                    final rawStatus = item['status'];
+                                    final status = rawStatus is num
+                                        ? rawStatus.toInt()
+                                        : int.tryParse('$rawStatus') ?? 0;
+                                    final rawEtat = item['etat'];
+                                    final etat = rawEtat is num ? rawEtat.toInt() : int.tryParse('$rawEtat') ?? 0;
+                                    final clinicValidated = etat == 1;
+                                    final isApproved = status == 1 && clinicValidated;
+                                    final statusText = etat == 2
+                                        ? l10n.cabinetStatusRejected
+                                        : (!clinicValidated || status == 0
+                                              ? l10n.cabinetStatusPending
+                                              : (status == 2 ? l10n.cabinetStatusRejected : null));
+                                    return _CabinetCard(
+                                      name: name.isEmpty ? l10n.cabinetSelectUnnamed : name,
+                                      specialty: specialty.isEmpty ? l10n.cabinetSelectSampleSpecialty : specialty,
+                                      imageUrl: imageUrl,
+                                      statusText: statusText,
+                                      onTap: () async {
+                                        if (!isApproved) {
+                                          final message = etat == 2 || status == 2
+                                              ? l10n.cabinetSelectRejectedToast
+                                              : l10n.cabinetSelectPendingToast;
+                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                                          return;
+                                        }
+                                        if (cabinetId == null) return;
+                                        final messenger = ScaffoldMessenger.of(this.context);
+                                        final dbError = await _controller.verifyCabinetDatabase(cabinetId);
+                                        if (!mounted) return;
+                                        if (dbError != null) {
+                                          final message = _errorText(this.context, l10n, dbError);
+                                          messenger.showSnackBar(SnackBar(content: Text(message)));
+                                          return;
+                                        }
+                                        _controller.selectCabinet(item);
+                                        GoRouter.of(this.context).go('/home');
+                                      },
+                                      onRemove: cabinetId == null
+                                          ? null
+                                          : () async {
+                                              final messenger = ScaffoldMessenger.of(this.context);
+                                              final confirmed = await showDialog<bool>(
+                                                context: context,
+                                                builder: (dialogContext) => AlertDialog(
+                                                  title: Text(l10n.cabinetRemoveConfirmTitle),
+                                                  content: Text(l10n.cabinetRemoveConfirmBody),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Navigator.of(dialogContext).pop(false),
+                                                      child: Text(l10n.cabinetRemoveCancel),
+                                                    ),
+                                                    FilledButton(
+                                                      onPressed: () => Navigator.of(dialogContext).pop(true),
+                                                      child: Text(l10n.cabinetRemoveConfirm),
+                                                    ),
+                                                  ],
                                                 ),
-                                                FilledButton(
-                                                  onPressed: () => Navigator.of(dialogContext).pop(true),
-                                                  child: Text(l10n.cabinetRemoveConfirm),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                          if (confirmed != true) return;
+                                              );
+                                              if (confirmed != true) return;
 
-                                          final result = await _controller.removeCabinet(cabinetId);
-                                          if (!context.mounted) return;
-                                          final messenger = ScaffoldMessenger.of(context);
-                                          if (result == CabinetRemoveResult.success) {
-                                            messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetRemoveSuccess)));
-                                          } else if (result == CabinetRemoveResult.lastAdmin) {
-                                            messenger.showSnackBar(
-                                              SnackBar(content: Text(l10n.cabinetRemoveLastAdminError)),
-                                            );
-                                          } else if (result == CabinetRemoveResult.network) {
-                                            messenger.showSnackBar(SnackBar(content: Text(l10n.loginNetworkError)));
-                                          } else {
-                                            messenger.showSnackBar(SnackBar(content: Text(l10n.cabinetRemoveFailed)));
-                                          }
-                                        },
-                                );
-                              },
-                            ),
-                        ],
+                                              final result = await _controller.removeCabinet(cabinetId);
+                                              if (!mounted) return;
+                                              if (result == CabinetRemoveResult.success) {
+                                                messenger.showSnackBar(
+                                                  SnackBar(content: Text(l10n.cabinetRemoveSuccess)),
+                                                );
+                                              } else if (result == CabinetRemoveResult.lastAdmin) {
+                                                messenger.showSnackBar(
+                                                  SnackBar(content: Text(l10n.cabinetRemoveLastAdminError)),
+                                                );
+                                              } else if (result == CabinetRemoveResult.network) {
+                                                messenger.showSnackBar(SnackBar(content: Text(l10n.loginNetworkError)));
+                                              } else {
+                                                messenger.showSnackBar(
+                                                  SnackBar(content: Text(l10n.cabinetRemoveFailed)),
+                                                );
+                                              }
+                                            },
+                                    );
+                                  },
+                                ),
+                            ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
+        );
       },
     );
+  }
+
+  String _errorText(BuildContext context, AppLocalizations l10n, String? code) {
+    final lang = Localizations.localeOf(context).languageCode.toLowerCase();
+    switch (code) {
+      case 'db_not_found':
+        if (lang == 'fr') return 'Base de donnees du cabinet introuvable.';
+        if (lang == 'ar') return 'قاعدة بيانات العيادة غير موجودة.';
+        return 'Clinic database not found.';
+      case 'db_unavailable':
+        if (lang == 'fr') return 'Base de donnees du cabinet indisponible.';
+        if (lang == 'ar') return 'قاعدة بيانات العيادة غير متاحة.';
+        return 'Clinic database unavailable.';
+      case 'server_unreachable':
+      case 'internet_unavailable':
+      case 'network':
+        return l10n.loginNetworkError;
+      default:
+        return l10n.cabinetRequestFailed;
+    }
   }
 }
 

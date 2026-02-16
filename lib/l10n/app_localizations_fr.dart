@@ -41,6 +41,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get patientListTitle => 'Liste des patients';
 
   @override
+  String get appointmentListTitle => 'Liste des rendez-vous';
+
+  @override
+  String get appointmentListAddNew => 'Ajouter un rendez-vous';
+
+  @override
+  String get appointmentListRefresh => 'Actualiser';
+
+  @override
+  String get appointmentListEmpty => 'Aucun rendez-vous trouvé.';
+
+  @override
   String get patientListAddNew => 'Ajouter un patient';
 
   @override
@@ -170,6 +182,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get patientLinkFailed => 'Impossible de lier le patient.';
+
+  @override
+  String get patientIdentityExistsInClinic =>
+      'Ce numéro d\'identification existe déjà dans ce cabinet.';
 
   @override
   String get patientCreateFailed => 'Impossible de créer le patient.';
@@ -632,6 +648,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeDashNextSubtitle => '09:30 • Amina B. • Consultation';
 
   @override
+  String get homeDashNoMoreAppointments => 'Plus de rendez-vous';
+
+  @override
   String get homePatientSearchEmpty => 'Aucun patient trouvé.';
 
   @override
@@ -787,4 +806,86 @@ class AppLocalizationsFr extends AppLocalizations {
   String otpValidDemo(Object phone) {
     return 'Ce $phone est valide pour la démonstration.';
   }
+
+  @override
+  String get footerContactTitle => 'Contactez-nous sur :';
+
+  @override
+  String get footerContactEmail => 'Email : amor.bouledroua@gmail.com';
+
+  @override
+  String get footerContactPhone => 'Téléphone : (+213) 778 750 333';
+
+  @override
+  String get appointmentFilterLabel => 'Filtre';
+
+  @override
+  String get appointmentFilterDate => 'Date';
+
+  @override
+  String get appointmentFilterPeriod => 'Période';
+
+  @override
+  String get appointmentFilterAll => 'Tout';
+
+  @override
+  String get appointmentFilterFrom => 'De';
+
+  @override
+  String get appointmentFilterTo => 'À';
+
+  @override
+  String get appointmentReasonLabel => 'Motif';
+
+  @override
+  String appointmentActiveExistsMessage(Object date) {
+    return 'Ce patient a déjà un rendez-vous actif le $date.';
+  }
+
+  @override
+  String get appointmentCreateSuccess => 'Rendez-vous enregistré.';
+
+  @override
+  String get appointmentCreateFailed =>
+      'Impossible d\'enregistrer le rendez-vous.';
+
+  @override
+  String get appointmentPatientRequired => 'Veuillez sélectionner un patient.';
+
+  @override
+  String get appointmentTimeRequired =>
+      'Veuillez sélectionner l\'heure du rendez-vous.';
+
+  @override
+  String get appointmentStatusPresent => 'Présent';
+
+  @override
+  String get appointmentStatusAbsent => 'Absent';
+
+  @override
+  String get settingsThemeTitle => 'Thème';
+
+  @override
+  String get settingsThemeBlue => 'Bleu';
+
+  @override
+  String get settingsThemeRose => 'Rose';
+
+  @override
+  String get settingsThemeGreen => 'Vert';
+
+  @override
+  String get settingsThemePurple => 'Violet';
+
+  @override
+  String get settingsGroupGlobal => 'Global';
+
+  @override
+  String get settingsGroupAppointment => 'Rendez-vous';
+
+  @override
+  String get settingsGroupConsultation => 'Consultation';
+
+  @override
+  String get settingsComingSoon => 'Bientôt disponible';
 }

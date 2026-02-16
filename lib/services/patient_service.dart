@@ -129,6 +129,36 @@ class PatientService {
     }
   }
 
+  Future<Map<String, dynamic>> checkExistingByIdentity({
+    required int cabinetId,
+    required int userId,
+    required int nationality,
+    String nin = '',
+    String nss = '',
+  }) async {
+    final uri = Uri.parse('$_baseUrl/patients/check-existing');
+    final response = await _client.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'id_cabinet': cabinetId,
+        'id_user': userId,
+        'nationality': nationality,
+        'nin': nin,
+        'nss': nss,
+      }),
+    );
+    debugPrint('Check existing patient response: ${response.statusCode} ${response.body}');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to check patient existence');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is Map) {
+      return Map<String, dynamic>.from(decoded);
+    }
+    return {'exists': false};
+  }
+
   String? patientPhotoUrl(String photoFile) {
     if (photoFile.isEmpty) return null;
     return '$_baseUrl/IMAGES/PATIENT/$photoFile';

@@ -17,6 +17,7 @@ class InputCard extends StatelessWidget {
     this.autofillHints,
     this.maxLines = 1,
     this.minLines,
+    this.enabled = true,
   });
 
   final IconData icon;
@@ -33,6 +34,7 @@ class InputCard extends StatelessWidget {
   final List<String>? autofillHints;
   final int? maxLines;
   final int? minLines;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,7 @@ class InputCard extends StatelessWidget {
         boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
       ),
       child: TextField(
+        enabled: enabled,
         obscureText: obscureText,
         keyboardType: keyboardType,
         controller: controller,

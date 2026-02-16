@@ -4,11 +4,20 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../l10n/app_localizations.dart';
 
 class HomeQuickActions extends StatelessWidget {
-  const HomeQuickActions({super.key, required this.l10n, required this.scheme, this.onPatientsTap});
+  const HomeQuickActions({
+    super.key,
+    required this.l10n,
+    required this.scheme,
+    this.onPatientsTap,
+    this.onRdvTap,
+    this.onSettingsTap,
+  });
 
   final AppLocalizations l10n;
   final ColorScheme scheme;
   final VoidCallback? onPatientsTap;
+  final VoidCallback? onRdvTap;
+  final VoidCallback? onSettingsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +45,7 @@ class HomeQuickActions extends StatelessWidget {
             icon: FontAwesomeIcons.calendarCheck,
             color: const Color(0xFFE39B27),
             scheme: scheme,
+            onTap: onRdvTap,
           ),
           _QuickActionChip(
             label: l10n.homeMenuCaisse,
@@ -48,6 +58,7 @@ class HomeQuickActions extends StatelessWidget {
             icon: FontAwesomeIcons.gear,
             color: const Color(0xFF8E3B46),
             scheme: scheme,
+            onTap: onSettingsTap,
           ),
         ],
       ),

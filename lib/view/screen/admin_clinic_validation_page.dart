@@ -178,8 +178,10 @@ class _AdminClinicValidationPageState extends State<AdminClinicValidationPage> {
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final isWide = MediaQuery.of(context).size.width >= LayoutConstants.wideBreakpoint;
-    return Scaffold(
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
         title: Text(_titleForState(l10n)),
         centerTitle: true,
         actions: [
@@ -209,7 +211,7 @@ class _AdminClinicValidationPageState extends State<AdminClinicValidationPage> {
             ),
         ],
       ),
-      body: Stack(
+        body: Stack(
         children: [
           const AppBackground(),
           if (_loading)
@@ -515,6 +517,7 @@ class _AdminClinicValidationPageState extends State<AdminClinicValidationPage> {
               ),
             ),
         ],
+        ),
       ),
     );
   }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({super.key, required this.label, this.onPressed});
+  const PrimaryButton({super.key, required this.label, this.onPressed, this.isLoading = false});
 
   final String label;
   final VoidCallback? onPressed;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +30,22 @@ class PrimaryButton extends StatelessWidget {
           ],
         ),
         child: TextButton(
-          onPressed: onPressed,
+          onPressed: isLoading ? null : onPressed,
           style: TextButton.styleFrom(
             foregroundColor: scheme.onPrimary,
             textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
           ),
-          child: Text(label),
+          child: isLoading
+              ? SizedBox(
+                  height: 22,
+                  width: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(scheme.onPrimary),
+                  ),
+                )
+              : Text(label),
         ),
       ),
     );

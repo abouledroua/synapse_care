@@ -39,6 +39,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get patientListTitle => 'قائمة المرضى';
 
   @override
+  String get appointmentListTitle => 'قائمة المواعيد';
+
+  @override
+  String get appointmentListAddNew => 'إضافة موعد جديد';
+
+  @override
+  String get appointmentListRefresh => 'تحديث';
+
+  @override
+  String get appointmentListEmpty => 'لا توجد مواعيد.';
+
+  @override
   String get patientListAddNew => 'إضافة مريض جديد';
 
   @override
@@ -168,6 +180,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get patientLinkFailed => 'تعذر ربط المريض.';
+
+  @override
+  String get patientIdentityExistsInClinic =>
+      'رقم التعريف هذا موجود بالفعل في هذه العيادة.';
 
   @override
   String get patientCreateFailed => 'تعذر إنشاء المريض.';
@@ -620,6 +636,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeDashNextSubtitle => '09:30 • أمينة ب. • استشارة';
 
   @override
+  String get homeDashNoMoreAppointments => 'لا توجد مواعيد أخرى';
+
+  @override
   String get homePatientSearchEmpty => 'لم يتم العثور على مرضى.';
 
   @override
@@ -686,7 +705,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get adminClinicsTitle => 'العيادات في انتظار التحقق';
 
   @override
-  String get adminClinicsTitlePending => 'العيادات المعلقة';
+  String get adminClinicsTitlePending => 'العيادات في انتظار التحقق';
 
   @override
   String get adminClinicsTitleApproved => 'العيادات المقبولة';
@@ -772,4 +791,85 @@ class AppLocalizationsAr extends AppLocalizations {
   String otpValidDemo(Object phone) {
     return 'هذا الرقم $phone صالح للتجربة.';
   }
+
+  @override
+  String get footerContactTitle => 'تواصل معنا عبر :';
+
+  @override
+  String get footerContactEmail =>
+      'البريد الإلكتروني : amor.bouledroua@gmail.com';
+
+  @override
+  String get footerContactPhone => 'الهاتف : (+213) 778 750 333';
+
+  @override
+  String get appointmentFilterLabel => 'تصفية';
+
+  @override
+  String get appointmentFilterDate => 'التاريخ';
+
+  @override
+  String get appointmentFilterPeriod => 'الفترة';
+
+  @override
+  String get appointmentFilterAll => 'الكل';
+
+  @override
+  String get appointmentFilterFrom => 'من';
+
+  @override
+  String get appointmentFilterTo => 'إلى';
+
+  @override
+  String get appointmentReasonLabel => 'سبب الموعد';
+
+  @override
+  String appointmentActiveExistsMessage(Object date) {
+    return 'يوجد موعد نشط لهذا المريض بتاريخ $date.';
+  }
+
+  @override
+  String get appointmentCreateSuccess => 'تم حفظ الموعد.';
+
+  @override
+  String get appointmentCreateFailed => 'تعذر حفظ الموعد.';
+
+  @override
+  String get appointmentPatientRequired => 'يرجى اختيار المريض.';
+
+  @override
+  String get appointmentTimeRequired => 'يرجى اختيار وقت الموعد.';
+
+  @override
+  String get appointmentStatusPresent => 'حاضر';
+
+  @override
+  String get appointmentStatusAbsent => 'غائب';
+
+  @override
+  String get settingsThemeTitle => 'الثيم';
+
+  @override
+  String get settingsThemeBlue => 'أزرق';
+
+  @override
+  String get settingsThemeRose => 'وردي';
+
+  @override
+  String get settingsThemeGreen => 'أخضر';
+
+  @override
+  String get settingsThemePurple => 'بنفسجي';
+
+  @override
+  String get settingsGroupGlobal => 'العامة';
+
+  @override
+  String get settingsGroupAppointment => 'المواعيد';
+
+  @override
+  String get settingsGroupConsultation => 'الاستشارة';
+
+  @override
+  String get settingsComingSoon => 'قريبا';
 }

@@ -38,6 +38,7 @@ class CabinetCreateForm extends StatefulWidget {
     required this.l10n,
     required this.scheme,
     required this.onSubmit,
+    this.isSubmitting = false,
     this.nameErrorText,
     this.onNameChanged,
   });
@@ -45,6 +46,7 @@ class CabinetCreateForm extends StatefulWidget {
   final AppLocalizations l10n;
   final ColorScheme scheme;
   final ValueChanged<CabinetCreatePayload> onSubmit;
+  final bool isSubmitting;
   final String? nameErrorText;
   final ValueChanged<String>? onNameChanged;
 
@@ -192,13 +194,15 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
       _defaultPatientNationality = widget.l10n.patientNationalityAlgeria;
       _nationalityCode ??= 213;
     }
-    return Column(
+    return IgnorePointer(
+      ignoring: widget.isSubmitting,
+      child: Column(
       children: [
         Stack(
           alignment: Alignment.bottomRight,
           children: [
             GestureDetector(
-              onTap: _pickPhoto,
+              onTap: widget.isSubmitting ? null : _pickPhoto,
               child: CircleAvatar(
                 radius: 45,
                 backgroundColor: widget.scheme.primary.withValues(alpha: 0.15),
@@ -210,7 +214,7 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
             ),
             if (_photo != null)
               GestureDetector(
-                onTap: _clearPhoto,
+                onTap: widget.isSubmitting ? null : _clearPhoto,
                 child: Container(
                   height: 22,
                   width: 22,
@@ -237,6 +241,7 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
             widget.onNameChanged?.call(value);
           },
           errorText: _nameError ?? widget.nameErrorText,
+          enabled: !widget.isSubmitting,
         ),
         const SizedBox(height: 16),
         InputCard(
@@ -249,6 +254,7 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
           maxLines: 3,
           minLines: 1,
           onSubmitted: (_) => _addressFocus.requestFocus(),
+          enabled: !widget.isSubmitting,
         ),
         const SizedBox(height: 16),
         InputCard(
@@ -261,6 +267,7 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
           maxLines: 3,
           minLines: 1,
           onSubmitted: (_) => _phoneFocus.requestFocus(),
+          enabled: !widget.isSubmitting,
         ),
         const SizedBox(height: 16),
         Row(
@@ -268,7 +275,9 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
             Expanded(
               flex: 11,
               child: InkWell(
-                onTap: () => showCountryPicker(
+                onTap: widget.isSubmitting
+                    ? null
+                    : () => showCountryPicker(
                   context: context,
                   showPhoneCode: false,
                   onSelect: (country) => setState(() {
@@ -311,7 +320,9 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
             Expanded(
               flex: 7,
               child: InkWell(
-                onTap: () => showCurrencyPicker(
+                onTap: widget.isSubmitting
+                    ? null
+                    : () => showCurrencyPicker(
                   context: context,
                   showFlag: true,
                   showCurrencyName: true,
@@ -360,6 +371,7 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
               boxShadow: const [BoxShadow(color: Color(0x22000000), blurRadius: 18, offset: Offset(0, 10))],
             ),
             child: IntlPhoneField(
+              enabled: !widget.isSubmitting,
               focusNode: _phoneFocus,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -379,8 +391,13 @@ class _CabinetCreateFormState extends State<CabinetCreateForm> {
           ),
         ),
         const SizedBox(height: 12),
-        PrimaryButton(label: widget.l10n.cabinetCreateSubmit, onPressed: _submit),
+        PrimaryButton(
+          label: widget.l10n.cabinetCreateSubmit,
+          onPressed: _submit,
+          isLoading: widget.isSubmitting,
+        ),
       ],
+    ),
     );
   }
 }

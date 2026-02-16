@@ -5,6 +5,7 @@ import path from "path";
 import { pool } from "../db.js";
 import { ensureCabinetAdmin, ensurePlatformAdmin } from "../middleware/authorization.js";
 import { provisionClinicDatabase } from "../services/clinic_db_service.js";
+import { sendServerError } from "../utils/api_error.js";
 
 const router = Router();
 
@@ -42,7 +43,7 @@ router.get("/by-user/:id", async (req, res) => {
     return res.json(result.rows);
   } catch (err) {
     console.error("Cabinet create failed:", err);
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -70,7 +71,44 @@ router.get("/search", async (req, res) => {
     }
     return res.json(result.rows);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
+  }
+});
+
+router.get("/:id_cabinet/db-ready", async (req, res) => {
+  try {
+    const cabinetId = Number(req.params.id_cabinet);
+    if (!Number.isInteger(cabinetId)) {
+      return res.status(400).json({ error: "Invalid clinic id." });
+    }
+
+    const result = await pool.query(
+      `SELECT db_name
+       FROM cabinet
+       WHERE id_cabinet = $1
+       LIMIT 1`,
+      [cabinetId],
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Clinic not found." });
+    }
+
+    const dbName = `${result.rows[0].db_name ?? ""}`.trim();
+    if (!dbName) {
+      return res.status(503).json({ error: "Clinic database is not configured.", code: "DB_NOT_FOUND" });
+    }
+
+    const dbCheck = await pool.query(
+      "SELECT 1 FROM pg_database WHERE datname = $1 LIMIT 1",
+      [dbName],
+    );
+    if (dbCheck.rowCount === 0) {
+      return res.status(503).json({ error: "Clinic database not found.", code: "DB_NOT_FOUND" });
+    }
+
+    return res.status(200).json({ ok: true, db_name: dbName });
+  } catch (err) {
+    return sendServerError(res, err);
   }
 });
 
@@ -114,7 +152,7 @@ router.get("/pending-platform/:id_admin", async (req, res) => {
 
     return res.status(200).json(result.rows);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -174,7 +212,7 @@ router.get("/platform-list/:id_admin", async (req, res) => {
 
     return res.status(200).json(result.rows);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -216,7 +254,7 @@ router.post("/assign", async (req, res) => {
     if (err && err.code === "23505") {
       return res.status(409).json({ error: "Already assigned." });
     }
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -257,7 +295,7 @@ router.post("/approve", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -298,7 +336,7 @@ router.post("/reject", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -350,7 +388,7 @@ router.post("/unassign", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -421,7 +459,7 @@ router.post("/validate", async (req, res) => {
     try {
       await client.query("ROLLBACK");
     } catch (_) {}
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   } finally {
     client.release();
   }
@@ -454,7 +492,7 @@ router.post("/reject-clinic", async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 
@@ -623,7 +661,7 @@ router.post("/", async (req, res) => {
 
     return res.status(201).json(cabinet);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return sendServerError(res, err);
   }
 });
 

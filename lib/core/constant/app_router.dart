@@ -8,6 +8,8 @@ import '../../view/screen/auth_signup_page.dart';
 import '../../view/screen/forgot_password_page.dart';
 import '../../view/screen/access_denied_page.dart';
 import '../../view/screen/admin_clinic_validation_page.dart';
+import '../../view/screen/appointment_create_page.dart';
+import '../../view/screen/appointment_list_page_v2.dart';
 import '../../view/screen/cabinet_create_page.dart';
 import '../../view/screen/cabinet_search_page.dart';
 import '../../view/screen/cabinet_select_page.dart';
@@ -18,6 +20,7 @@ import '../../view/screen/landing_page.dart';
 import '../../view/screen/language_picker_page.dart';
 import '../../view/screen/not_found_page.dart';
 import '../../view/screen/profile_page.dart';
+import '../../view/screen/settings_page.dart';
 import '../../view/screen/timeout_page.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -32,9 +35,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final isAuthed = AuthController.globalUserId != null;
       final isAuthRoute = state.matchedLocation.startsWith('/auth');
-      final isProtected = state.matchedLocation.startsWith('/home') ||
+      final isProtected =
+          state.matchedLocation.startsWith('/home') ||
           state.matchedLocation.startsWith('/cabinet') ||
           state.matchedLocation.startsWith('/patients') ||
+          state.matchedLocation.startsWith('/appointments') ||
+          state.matchedLocation.startsWith('/settings') ||
           state.matchedLocation.startsWith('/admin');
       if (!isAuthed && isProtected) return '/auth/login';
       if (isAuthed && isAuthRoute) {
@@ -83,7 +89,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/patients/list',
-        pageBuilder: (context, state) => const NoTransitionPage(child: PatientListPage()),
+        pageBuilder: (context, state) {
+          final pickerMode = state.uri.queryParameters['picker'] == '1';
+          return NoTransitionPage(child: PatientListPage(pickerMode: pickerMode));
+        },
       ),
       GoRoute(
         path: '/patients/create',
@@ -97,12 +106,29 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/appointments/list',
+        pageBuilder: (context, state) => const NoTransitionPage(child: AppointmentListPageV2()),
+      ),
+      GoRoute(
+        path: '/appointments/create',
+        pageBuilder: (context, state) {
+          final patient = state.extra as Map<String, dynamic>?;
+          return NoTransitionPage(
+            child: AppointmentCreatePage(initialPatient: patient),
+          );
+        },
+      ),
+      GoRoute(
         path: '/home',
         pageBuilder: (context, state) => const NoTransitionPage(child: HomePage()),
       ),
       GoRoute(
         path: '/profile',
         pageBuilder: (context, state) => const NoTransitionPage(child: ProfilePage()),
+      ),
+      GoRoute(
+        path: '/settings',
+        pageBuilder: (context, state) => const NoTransitionPage(child: SettingsPage()),
       ),
       GoRoute(
         path: '/admin/clinics',

@@ -6,12 +6,22 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../l10n/app_localizations.dart';
 
 class HomeDashboard extends StatelessWidget {
-  const HomeDashboard({super.key, required this.scheme, required this.isWide, required this.l10n, this.patientCount});
+  const HomeDashboard({
+    super.key,
+    required this.scheme,
+    required this.isWide,
+    required this.l10n,
+    this.patientCount,
+    this.todayAppointmentCount,
+    this.nextTodayAppointment,
+  });
 
   final ColorScheme scheme;
   final bool isWide;
   final AppLocalizations l10n;
   final int? patientCount;
+  final int? todayAppointmentCount;
+  final Map<String, dynamic>? nextTodayAppointment;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -76,7 +86,7 @@ class HomeDashboard extends StatelessWidget {
                           width: cardWidth,
                           scheme: scheme,
                           title: l10n.homeDashAppointments,
-                          value: '12',
+                          value: todayAppointmentCount?.toString() ?? '—',
                           icon: FontAwesomeIcons.calendarCheck,
                           accent: scheme.primary,
                         ),
@@ -126,6 +136,8 @@ class HomeDashboard extends StatelessWidget {
                           title: l10n.homeDashNextTitle,
                           subtitle: l10n.homeDashNextSubtitle,
                           icon: FontAwesomeIcons.clock,
+                          nextAppointment: nextTodayAppointment,
+                          l10n: l10n,
                         ),
                       ],
                     ),
@@ -200,6 +212,8 @@ class _DashWideCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.nextAppointment,
+    required this.l10n,
   });
 
   final double width;
@@ -207,9 +221,18 @@ class _DashWideCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
+  final Map<String, dynamic>? nextAppointment;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
+    final next = nextAppointment;
+    final nom = '${next?['nom'] ?? ''}'.trim();
+    final prenom = '${next?['prenom'] ?? ''}'.trim();
+    final fullName = '$prenom $nom'.trim();
+    final queueNumber = int.tryParse('${next?['num_rdv'] ?? ''}') ?? 0;
+    final motif = '${next?['motif_rdv'] ?? ''}'.trim();
+    final hasNext = next != null;
     return Container(
       width: width,
       padding: const EdgeInsets.all(18),
@@ -234,16 +257,42 @@ class _DashWideCard extends StatelessWidget {
             child: Center(child: FaIcon(icon, size: 28, color: scheme.primary)),
           ),
           const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 6),
-              Text(subtitle, style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 13)),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 6),
+                if (!hasNext)
+                  Text(
+                    l10n.homeDashNoMoreAppointments,
+                    style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 13),
+                  )
+                else ...[
+                  Text(
+                    '${queueNumber > 0 ? '#$queueNumber - ' : ''}${fullName.isEmpty ? l10n.homePatientSearchUnnamed : fullName}',
+                    style: TextStyle(
+                      color: scheme.onSurfaceVariant,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    motif.isEmpty ? '—' : motif,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       ),

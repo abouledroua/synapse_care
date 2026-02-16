@@ -22,7 +22,7 @@ class LanguagePickerPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          const AppBackground(),
+          const AppBackground(showFooter: false),
           SafeArea(
             child: Center(
               child: ConstrainedBox(

@@ -160,6 +160,30 @@ abstract class AppLocalizations {
   /// **'List of Patients'**
   String get patientListTitle;
 
+  /// No description provided for @appointmentListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'List of Appointments'**
+  String get appointmentListTitle;
+
+  /// No description provided for @appointmentListAddNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Appointment'**
+  String get appointmentListAddNew;
+
+  /// No description provided for @appointmentListRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get appointmentListRefresh;
+
+  /// No description provided for @appointmentListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No appointments found.'**
+  String get appointmentListEmpty;
+
   /// No description provided for @patientListAddNew.
   ///
   /// In en, this message translates to:
@@ -417,6 +441,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not link patient.'**
   String get patientLinkFailed;
+
+  /// No description provided for @patientIdentityExistsInClinic.
+  ///
+  /// In en, this message translates to:
+  /// **'This identification number already exists in this clinic.'**
+  String get patientIdentityExistsInClinic;
 
   /// No description provided for @patientCreateFailed.
   ///
@@ -1306,6 +1336,12 @@ abstract class AppLocalizations {
   /// **'09:30 • Amina B. • Consultation'**
   String get homeDashNextSubtitle;
 
+  /// No description provided for @homeDashNoMoreAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'No more appointments'**
+  String get homeDashNoMoreAppointments;
+
   /// No description provided for @homePatientSearchEmpty.
   ///
   /// In en, this message translates to:
@@ -1599,6 +1635,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This {phone} is valid for the demo.'**
   String otpValidDemo(Object phone);
+
+  /// No description provided for @footerContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us on :'**
+  String get footerContactTitle;
+
+  /// No description provided for @footerContactEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email : amor.bouledroua@gmail.com'**
+  String get footerContactEmail;
+
+  /// No description provided for @footerContactPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone : (+213) 778 750 333'**
+  String get footerContactPhone;
+
+  /// No description provided for @appointmentFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get appointmentFilterLabel;
+
+  /// No description provided for @appointmentFilterDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get appointmentFilterDate;
+
+  /// No description provided for @appointmentFilterPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get appointmentFilterPeriod;
+
+  /// No description provided for @appointmentFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get appointmentFilterAll;
+
+  /// No description provided for @appointmentFilterFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get appointmentFilterFrom;
+
+  /// No description provided for @appointmentFilterTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get appointmentFilterTo;
+
+  /// No description provided for @appointmentReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get appointmentReasonLabel;
+
+  /// No description provided for @appointmentActiveExistsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This patient already has an active appointment on {date}.'**
+  String appointmentActiveExistsMessage(Object date);
+
+  /// No description provided for @appointmentCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment saved.'**
+  String get appointmentCreateSuccess;
+
+  /// No description provided for @appointmentCreateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save appointment.'**
+  String get appointmentCreateFailed;
+
+  /// No description provided for @appointmentPatientRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a patient.'**
+  String get appointmentPatientRequired;
+
+  /// No description provided for @appointmentTimeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select appointment time.'**
+  String get appointmentTimeRequired;
+
+  /// No description provided for @appointmentStatusPresent.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get appointmentStatusPresent;
+
+  /// No description provided for @appointmentStatusAbsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Absent'**
+  String get appointmentStatusAbsent;
+
+  /// No description provided for @settingsThemeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get settingsThemeTitle;
+
+  /// No description provided for @settingsThemeBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get settingsThemeBlue;
+
+  /// No description provided for @settingsThemeRose.
+  ///
+  /// In en, this message translates to:
+  /// **'Pink'**
+  String get settingsThemeRose;
+
+  /// No description provided for @settingsThemeGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get settingsThemeGreen;
+
+  /// No description provided for @settingsThemePurple.
+  ///
+  /// In en, this message translates to:
+  /// **'Purple'**
+  String get settingsThemePurple;
+
+  /// No description provided for @settingsGroupGlobal.
+  ///
+  /// In en, this message translates to:
+  /// **'Global'**
+  String get settingsGroupGlobal;
+
+  /// No description provided for @settingsGroupAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment'**
+  String get settingsGroupAppointment;
+
+  /// No description provided for @settingsGroupConsultation.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultation'**
+  String get settingsGroupConsultation;
+
+  /// No description provided for @settingsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get settingsComingSoon;
 }
 
 class _AppLocalizationsDelegate

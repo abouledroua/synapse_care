@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/constant/layout_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../widget/app_background.dart';
 import '../widget/primary_button.dart';
@@ -11,13 +12,13 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isWide = size.width >= 700;
+    final isWide = size.width >= LayoutConstants.wideBreakpoint;
     final scheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Stack(
         children: [
-          const AppBackground(),
+          AppBackground(showFooter: false),
           SafeArea(
             child: Center(
               child: ConstrainedBox(

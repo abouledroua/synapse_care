@@ -110,7 +110,7 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
                         if (_controller.isLoading)
                           const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: CircularProgressIndicator())
                         else if (_controller.errorCode != null)
-                          Text(l10n.loginNetworkError, style: TextStyle(color: scheme.error))
+                          Text(_errorText(context, l10n, _controller.errorCode), style: TextStyle(color: scheme.error))
                         else if (visibleResults.isEmpty)
                           Text(
                             l10n.cabinetSearchEmpty,
@@ -150,6 +150,14 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
                                               : l10n.cabinetSelectPendingToast;
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(content: Text(message)),
+                                          );
+                                          return;
+                                        }
+                                        final dbError = await _controller.verifyCabinetDatabase(cabinetId);
+                                        if (!context.mounted) return;
+                                        if (dbError != null) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text(_errorText(context, l10n, dbError))),
                                           );
                                           return;
                                         }
@@ -275,5 +283,25 @@ class _CabinetSearchPageState extends State<CabinetSearchPage> {
         );
       },
     );
+  }
+
+  String _errorText(BuildContext context, AppLocalizations l10n, String? code) {
+    final lang = Localizations.localeOf(context).languageCode.toLowerCase();
+    switch (code) {
+      case 'db_not_found':
+        if (lang == 'fr') return 'Base de donnees du cabinet introuvable.';
+        if (lang == 'ar') return 'قاعدة بيانات العيادة غير موجودة.';
+        return 'Clinic database not found.';
+      case 'db_unavailable':
+        if (lang == 'fr') return 'Base de donnees du cabinet indisponible.';
+        if (lang == 'ar') return 'قاعدة بيانات العيادة غير متاحة.';
+        return 'Clinic database unavailable.';
+      case 'server_unreachable':
+      case 'internet_unavailable':
+      case 'network':
+        return l10n.loginNetworkError;
+      default:
+        return l10n.cabinetRequestFailed;
+    }
   }
 }

@@ -13,6 +13,7 @@ import '../widget/home_dashboard.dart';
 import '../widget/home_quick_actions.dart';
 import '../widget/home_top_bar.dart';
 import '../widget/app_background.dart';
+import '../widget/app_footer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,6 +46,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _controller.loadPatientCount();
+      _controller.loadTodayAppointmentCount();
     }
   }
 
@@ -72,9 +74,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {},
         child: Scaffold(
+          bottomNavigationBar: const AppFooter(),
           body: Stack(
             children: [
-              const AppBackground(),
+              const AppBackground(showFooter: false),
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -94,6 +97,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 userPhotoUrl: _controller.userPhotoUrl(),
                                 isPlatformAdmin: AuthController.isPlatformAdmin,
                                 searchBar: isCompact ? null : searchBar,
+                                onChangeClinic: _handleChangeClinic,
                               ),
                             if (isCompact) ...comptactWidget(searchBar, l10n, context, scheme),
                             (isWide)
@@ -101,6 +105,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     l10n: l10n,
                                     scheme: scheme,
                                     onPatientsTap: () => context.push('/patients/list'),
+                                    onRdvTap: () => context.push('/appointments/list'),
+                                    onSettingsTap: () => context.push('/settings'),
                                   )
                                 : const SizedBox(height: 8),
                             Expanded(
@@ -116,6 +122,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                           isWide: isWide,
                                           l10n: l10n,
                                           patientCount: _controller.patientCount,
+                                          todayAppointmentCount:
+                                              _controller.todayAppointmentCount,
+                                          nextTodayAppointment:
+                                              _controller.nextTodayAppointment,
                                         ),
                                         if (_controller.searchController.text.trim().isNotEmpty)
                                           Positioned(
@@ -216,13 +226,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               switch (value) {
                 case _QuickActionKey.patients:
                   context.push('/patients/list');
+                  break;
                 case _QuickActionKey.consultations:
                   break;
                 case _QuickActionKey.rdv:
+                  context.push('/appointments/list');
                   break;
                 case _QuickActionKey.caisse:
                   break;
                 case _QuickActionKey.settings:
+                  context.push('/settings');
                   break;
               }
             },
@@ -261,6 +274,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (rect == null) return 0;
     final desired = rect.center.dx - panelWidth / 2;
     return desired.clamp(0.0, screenWidth - panelWidth);
+  }
+
+  Future<void> _handleChangeClinic() async {
+    _controller.clearDashboardData();
+    if (!mounted) return;
+    await context.push('/cabinet/select');
+    if (!mounted) return;
+    _controller.refreshDashboardDataNow();
   }
 }
 

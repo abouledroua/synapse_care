@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+
+import 'app_footer.dart';
 class AppBackground extends StatefulWidget {
-  const AppBackground({super.key});
+  const AppBackground({super.key, this.showFooter = true});
+
+  final bool showFooter;
 
   @override
   State<AppBackground> createState() => _AppBackgroundState();
@@ -42,6 +46,11 @@ class _AppBackgroundState extends State<AppBackground> with TickerProviderStateM
                 ),
               ),
             ),
+            if (widget.showFooter)
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: AppFooter(),
+              ),
           ],
         );
       },

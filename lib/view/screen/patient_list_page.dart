@@ -9,7 +9,9 @@ import '../widget/patient_list_view.dart';
 import '../widget/app_background.dart';
 
 class PatientListPage extends StatefulWidget {
-  const PatientListPage({super.key});
+  const PatientListPage({super.key, this.pickerMode = false});
+
+  final bool pickerMode;
 
   @override
   State<PatientListPage> createState() => _PatientListPageState();
@@ -21,7 +23,6 @@ class _PatientListPageState extends State<PatientListPage> {
   @override
   void initState() {
     super.initState();
-    // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     _controller.loadPatients();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -208,6 +209,8 @@ class _PatientListPageState extends State<PatientListPage> {
                                   patients: _controller.patients,
                                   scheme: scheme,
                                   l10n: l10n,
+                                  pickerMode: widget.pickerMode,
+                                  onSelect: widget.pickerMode ? (patient) => context.pop(patient) : null,
                                   onUpdate: _handleUpdate,
                                   onDelete: _handleDelete,
                                 ),

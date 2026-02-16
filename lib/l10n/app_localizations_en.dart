@@ -41,6 +41,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get patientListTitle => 'List of Patients';
 
   @override
+  String get appointmentListTitle => 'List of Appointments';
+
+  @override
+  String get appointmentListAddNew => 'Add New Appointment';
+
+  @override
+  String get appointmentListRefresh => 'Refresh';
+
+  @override
+  String get appointmentListEmpty => 'No appointments found.';
+
+  @override
   String get patientListAddNew => 'Add New Patient';
 
   @override
@@ -171,6 +183,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get patientLinkFailed => 'Could not link patient.';
+
+  @override
+  String get patientIdentityExistsInClinic =>
+      'This identification number already exists in this clinic.';
 
   @override
   String get patientCreateFailed => 'Could not create patient.';
@@ -626,6 +642,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeDashNextSubtitle => '09:30 • Amina B. • Consultation';
 
   @override
+  String get homeDashNoMoreAppointments => 'No more appointments';
+
+  @override
   String get homePatientSearchEmpty => 'No patients found.';
 
   @override
@@ -778,4 +797,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String otpValidDemo(Object phone) {
     return 'This $phone is valid for the demo.';
   }
+
+  @override
+  String get footerContactTitle => 'Contact us on :';
+
+  @override
+  String get footerContactEmail => 'Email : amor.bouledroua@gmail.com';
+
+  @override
+  String get footerContactPhone => 'Phone : (+213) 778 750 333';
+
+  @override
+  String get appointmentFilterLabel => 'Filter';
+
+  @override
+  String get appointmentFilterDate => 'Date';
+
+  @override
+  String get appointmentFilterPeriod => 'Period';
+
+  @override
+  String get appointmentFilterAll => 'All';
+
+  @override
+  String get appointmentFilterFrom => 'From';
+
+  @override
+  String get appointmentFilterTo => 'To';
+
+  @override
+  String get appointmentReasonLabel => 'Reason';
+
+  @override
+  String appointmentActiveExistsMessage(Object date) {
+    return 'This patient already has an active appointment on $date.';
+  }
+
+  @override
+  String get appointmentCreateSuccess => 'Appointment saved.';
+
+  @override
+  String get appointmentCreateFailed => 'Could not save appointment.';
+
+  @override
+  String get appointmentPatientRequired => 'Please select a patient.';
+
+  @override
+  String get appointmentTimeRequired => 'Please select appointment time.';
+
+  @override
+  String get appointmentStatusPresent => 'Present';
+
+  @override
+  String get appointmentStatusAbsent => 'Absent';
+
+  @override
+  String get settingsThemeTitle => 'Theme';
+
+  @override
+  String get settingsThemeBlue => 'Blue';
+
+  @override
+  String get settingsThemeRose => 'Pink';
+
+  @override
+  String get settingsThemeGreen => 'Green';
+
+  @override
+  String get settingsThemePurple => 'Purple';
+
+  @override
+  String get settingsGroupGlobal => 'Global';
+
+  @override
+  String get settingsGroupAppointment => 'Appointment';
+
+  @override
+  String get settingsGroupConsultation => 'Consultation';
+
+  @override
+  String get settingsComingSoon => 'Coming soon';
 }
