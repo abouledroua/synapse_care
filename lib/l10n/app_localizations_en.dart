@@ -657,7 +657,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeMenuPatientsList => 'Patients';
 
   @override
-  String get homeMenuHistory => 'History';
+  String get homeMenuHistory => 'Log';
 
   @override
   String get homeMenuCaisse => 'Caisse';
@@ -876,5 +876,187 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsGroupConsultation => 'Consultation';
 
   @override
+  String get settingsGroupPrinting => 'Printing';
+
+  @override
+  String get settingsGroupUsers => 'Users';
+
+  @override
+  String get settingsAppointmentWorkingDaysTitle => 'Clinic working days';
+
+  @override
+  String get settingsAppointmentOpen => 'Open';
+
+  @override
+  String get settingsAppointmentClosed => 'Closed';
+
+  @override
+  String get settingsAppointmentMonday => 'Monday';
+
+  @override
+  String get settingsAppointmentTuesday => 'Tuesday';
+
+  @override
+  String get settingsAppointmentWednesday => 'Wednesday';
+
+  @override
+  String get settingsAppointmentThursday => 'Thursday';
+
+  @override
+  String get settingsAppointmentFriday => 'Friday';
+
+  @override
+  String get settingsAppointmentSaturday => 'Saturday';
+
+  @override
+  String get settingsAppointmentSunday => 'Sunday';
+
+  @override
+  String get settingsUsersSearchHint => 'Search user...';
+
+  @override
+  String get settingsUsersFilterWaiting => 'Waiting for approval';
+
+  @override
+  String get settingsUsersFilterApproved => 'Approved';
+
+  @override
+  String get settingsUsersFilterAll => 'All';
+
+  @override
+  String get settingsUsersAdminBadge => 'Admin';
+
+  @override
+  String get settingsUsersApprove => 'Approve';
+
+  @override
+  String get settingsUsersCancelApproval => 'Cancel approval';
+
+  @override
+  String get settingsUsersMakeAdmin => 'Make admin';
+
+  @override
+  String get settingsUsersUnmakeAdmin => 'Unmake admin';
+
+  @override
+  String get settingsUsersRoleLabel => 'Role';
+
+  @override
+  String get settingsUsersStatusLabel => 'Status';
+
+  @override
+  String get settingsUsersUnauthorized =>
+      'You are not authorized to manage users in this clinic.';
+
+  @override
+  String get settingsUsersLoadFailed => 'Could not load clinic users.';
+
+  @override
+  String get settingsUsersEmpty => 'No users found.';
+
+  @override
+  String get settingsUsersActionSuccess => 'Action completed.';
+
+  @override
+  String get settingsUsersActionFailed => 'Could not complete action.';
+
+  @override
+  String get settingsUsersApproveConfirmTitle => 'Approve user';
+
+  @override
+  String get settingsUsersApproveConfirmBody =>
+      'Are you sure you want to approve this user?';
+
+  @override
+  String get settingsUsersCancelConfirmTitle => 'Cancel approval';
+
+  @override
+  String get settingsUsersCancelConfirmBody =>
+      'Are you sure you want to cancel this user\'s approval?';
+
+  @override
+  String get settingsConsultationTogglesTitle => 'Consultation sections';
+
+  @override
+  String get settingsConsultationPrescriptionGroupTitle =>
+      'Prescription management';
+
+  @override
+  String get settingsConsultationPrescriptionModeLabel => 'Prescription mode';
+
+  @override
+  String get settingsConsultationPrescriptionModeSelectMedicaments =>
+      'Select medications';
+
+  @override
+  String get settingsConsultationPrescriptionModeManual =>
+      'Manual prescription entry';
+
+  @override
   String get settingsComingSoon => 'Coming soon';
+
+  @override
+  String get consultationReportsMedical => 'Medical reports';
+
+  @override
+  String get consultationSectionLastConsultation => 'Last consultation';
+
+  @override
+  String get consultationSectionGeneralInfo => 'General info';
+
+  @override
+  String get consultationSectionPrescriptions => 'Prescriptions';
+
+  @override
+  String get consultationSectionMedicalCertificate => 'Medical certificate';
+
+  @override
+  String get consultationSectionSickLeave => 'Sick leave';
+
+  @override
+  String get consultationSectionMedicalCertificates => 'Medical certificates';
+
+  @override
+  String get consultationSectionLabs => 'Lab tests';
+
+  @override
+  String get consultationSectionOrientationLetter => 'Orientation letter';
+
+  @override
+  String get consultationSectionNextAppointment => 'Next appointment';
+
+  @override
+  String get consultationSectionLastConsultationDesc =>
+      'Summary of the patient\'s last consultation.';
+
+  @override
+  String get consultationSectionGeneralInfoDesc =>
+      'General consultation information.';
+
+  @override
+  String get consultationSectionPrescriptionsDesc =>
+      'Add medication and instructions.';
+
+  @override
+  String get consultationSectionSickLeaveDesc =>
+      'Manage sick leave certificates.';
+
+  @override
+  String get consultationSectionMedicalCertificatesDesc =>
+      'Create and manage medical certificates.';
+
+  @override
+  String get consultationSectionLabsDesc => 'Lab tests and exams requests.';
+
+  @override
+  String get consultationSectionOrientationLetterDesc =>
+      'Create and manage referral letters.';
+
+  @override
+  String get consultationSectionReportsDesc =>
+      'Medical notes and report details.';
+
+  @override
+  String get consultationSectionNextAppointmentDesc =>
+      'Prepare the next appointment.';
 }

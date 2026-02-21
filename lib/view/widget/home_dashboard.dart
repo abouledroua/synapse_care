@@ -82,6 +82,15 @@ class HomeDashboard extends StatelessWidget {
                       spacing: spacing,
                       runSpacing: spacing,
                       children: [
+                        _DashWideCard(
+                          width: available,
+                          scheme: scheme,
+                          title: l10n.homeDashNextTitle,
+                          subtitle: l10n.homeDashNextSubtitle,
+                          icon: FontAwesomeIcons.clock,
+                          nextAppointment: nextTodayAppointment,
+                          l10n: l10n,
+                        ),
                         _DashCard(
                           width: cardWidth,
                           scheme: scheme,
@@ -129,15 +138,6 @@ class HomeDashboard extends StatelessWidget {
                           value: '128',
                           icon: FontAwesomeIcons.chartLine,
                           accent: scheme.secondary,
-                        ),
-                        _DashWideCard(
-                          width: available,
-                          scheme: scheme,
-                          title: l10n.homeDashNextTitle,
-                          subtitle: l10n.homeDashNextSubtitle,
-                          icon: FontAwesomeIcons.clock,
-                          nextAppointment: nextTodayAppointment,
-                          l10n: l10n,
                         ),
                       ],
                     ),
@@ -274,21 +274,14 @@ class _DashWideCard extends StatelessWidget {
                 else ...[
                   Text(
                     '${queueNumber > 0 ? '#$queueNumber - ' : ''}${fullName.isEmpty ? l10n.homePatientSearchUnnamed : fullName}',
-                    style: TextStyle(
-                      color: scheme.onSurfaceVariant,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     motif.isEmpty ? '—' : motif,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: scheme.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 12),
                   ),
                 ],
               ],

@@ -11,6 +11,7 @@ import '../widget/auth_sms_section.dart';
 import '../widget/brand_header.dart';
 import '../widget/role_selector.dart';
 import '../widget/app_background.dart';
+import '../widget/app_footer.dart';
 
 class AuthLoginPage extends StatefulWidget {
   const AuthLoginPage({super.key});
@@ -40,13 +41,12 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
       animation: _controller,
       builder: (context, child) => PopScope(
         canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          // Block system back on login.
-        },
+        onPopInvokedWithResult: (didPop, result) {},
         child: Scaffold(
+          bottomNavigationBar: const AppFooter(),
           body: Stack(
             children: [
-              const AppBackground(),
+              const AppBackground(showFooter: false),
               SafeArea(
                 child: Center(
                   child: AbsorbPointer(
@@ -67,7 +67,7 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               BrandHeader(isWide: isWide),
-                              const SizedBox(height: 22),
+                              const SizedBox(height: 10),
                               if (_controller.isBusy)
                                 const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 40),
@@ -75,7 +75,7 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                                 )
                               else ...[
                                 RoleSelector(role: _controller.role, onChanged: _controller.setRole),
-                                const SizedBox(height: 24),
+                                const SizedBox(height: 16),
                                 if (_controller.isPatient) ...[
                                   AuthSmsSection(
                                     controller: _controller,
@@ -83,9 +83,7 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                                     scheme: scheme,
                                     onContinue: () async {
                                       ThemeController.instance.setIndex(3);
-
                                       if (!_controller.canContinue) return;
-
                                       _controller.setBusy(true);
                                       try {
                                         final messenger = ScaffoldMessenger.of(context);
@@ -95,10 +93,8 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                                             duration: const Duration(milliseconds: 1300),
                                           ),
                                         );
-
                                         await first.closed;
                                         await Future.delayed(const Duration(seconds: 1));
-
                                         if (!context.mounted) return;
                                         messenger.showSnackBar(
                                           SnackBar(
@@ -118,36 +114,21 @@ class _AuthLoginPageState extends State<AuthLoginPage> {
                                     l10n: l10n,
                                     scheme: scheme,
                                     onSubmit: () async {
-                                      final isValid = _controller.validateDoctorLogin(
+                                      final result = await _controller.submitDoctorLogin(
                                         emailEmptyMessage: l10n.emailEmptyError,
                                         emailInvalidMessage: l10n.emailInvalidError,
                                         passwordEmptyMessage: l10n.passwordEmptyError,
+                                        invalidMessage: l10n.loginInvalid,
+                                        genericMessage: l10n.loginFailed,
+                                        networkMessage: l10n.loginNetworkError,
                                       );
-                                      if (!isValid) return;
-
-                                      _controller.setBusy(true);
-                                      try {
-                                        final error = await _controller.loginDoctor(
-                                          email: _controller.emailController.text.trim(),
-                                          password: _controller.passwordController.text,
-                                          invalidMessage: l10n.loginInvalid,
-                                          genericMessage: l10n.loginFailed,
-                                          networkMessage: l10n.loginNetworkError,
-                                        );
-                                        if (!context.mounted) return;
-
-                                        final messenger = ScaffoldMessenger.of(context);
-                                        if (error != null) {
-                                          return;
-                                        }
-                                        messenger.showSnackBar(SnackBar(content: Text(l10n.loginSuccess)));
-                                        if (AuthController.isPlatformAdmin) {
-                                          context.go('/admin/clinics');
-                                        } else {
-                                          context.go('/cabinet/select');
-                                        }
-                                      } finally {
-                                        _controller.setBusy(false);
+                                      if (!context.mounted || !result.success) return;
+                                      final messenger = ScaffoldMessenger.of(context);
+                                      messenger.showSnackBar(SnackBar(content: Text(l10n.loginSuccess)));
+                                      if (result.target == AuthLoginTarget.platformAdmin) {
+                                        context.go('/admin/clinics');
+                                      } else {
+                                        context.go('/cabinet/select');
                                       }
                                     },
                                     onFooterTap: () => context.go('/auth/signup'),

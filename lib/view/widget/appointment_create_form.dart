@@ -10,6 +10,7 @@ class AppointmentCreateForm extends StatelessWidget {
     required this.onPickPatient,
     required this.onPickDate,
     required this.onPickTime,
+    required this.onCancel,
     required this.onSave,
   });
 
@@ -17,6 +18,7 @@ class AppointmentCreateForm extends StatelessWidget {
   final Future<void> Function() onPickPatient;
   final Future<void> Function() onPickDate;
   final Future<void> Function() onPickTime;
+  final VoidCallback onCancel;
   final Future<void> Function() onSave;
 
   @override
@@ -24,6 +26,7 @@ class AppointmentCreateForm extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final photoUrl = controller.selectedPatientPhotoUrl();
     final activeText = controller.activeAppointmentBannerText(l10n);
+    final hasPatient = controller.selectedPatientId != null;
     return AbsorbPointer(
       absorbing: controller.saving,
       child: Column(
@@ -65,7 +68,7 @@ class AppointmentCreateForm extends StatelessWidget {
               child: Text(activeText),
             ),
           ],
-          if (!controller.checkingActiveAppointment) ...[
+          if (hasPatient && !controller.checkingActiveAppointment) ...[
             const SizedBox(height: 12),
             Row(
               children: [
@@ -94,19 +97,32 @@ class AppointmentCreateForm extends StatelessWidget {
               decoration: InputDecoration(labelText: l10n.appointmentReasonLabel, border: const OutlineInputBorder()),
             ),
           ],
-          if (!controller.checkingActiveAppointment) ...[
+          if (hasPatient && !controller.checkingActiveAppointment) ...[
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: controller.saving ? null : onSave,
-                icon: controller.saving
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.save),
-                label: Text(controller.saving ? l10n.patientCreateSaving : l10n.patientCreateSubmit),
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  OutlinedButton.icon(
+                    style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16)),
+                    onPressed: controller.saving ? null : onCancel,
+                    icon: const Icon(Icons.close),
+                    label: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                  ),
+                  const SizedBox(width: 12),
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16)),
+                    onPressed: controller.saving ? null : onSave,
+                    icon: controller.saving
+                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.save),
+                    label: Text(controller.saving ? l10n.patientCreateSaving : l10n.patientCreateSubmit),
+                  ),
+                ],
               ),
             ),
           ],
+          if (hasPatient && !controller.checkingActiveAppointment) ...[const SizedBox(height: 8)],
         ],
       ),
     );

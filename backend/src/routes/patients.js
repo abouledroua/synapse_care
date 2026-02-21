@@ -6,6 +6,7 @@ import path from "path";
 import { pool } from "../db.js";
 import { ensureAffiliatedUser, ensureCabinetStaff } from "../middleware/authorization.js";
 import { sendServerError } from "../utils/api_error.js";
+import { logClinicAction } from "../utils/clinic_log.js";
 
 const router = Router();
 const { Client } = pg;
@@ -355,6 +356,17 @@ router.post("/", async (req, res) => {
       [cabinetId, patient.id_patient],
     );
     await syncPatientToClinicDb(cabinetId, patient.id_patient);
+    await logClinicAction({
+      cabinetId,
+      userId,
+      actionType: "insert",
+      tableName: "patient",
+      rowId: patient.id_patient,
+      details: {
+        nom: patient.nom,
+        prenom: patient.prenom,
+      },
+    });
 
     return res.status(201).json(patient);
   } catch (err) {
@@ -552,6 +564,17 @@ router.put("/:id", async (req, res) => {
     }
 
     await syncPatientToClinicDb(cabinetId, id);
+    await logClinicAction({
+      cabinetId,
+      userId,
+      actionType: "update",
+      tableName: "patient",
+      rowId: id,
+      details: {
+        nom: patient.nom,
+        prenom: patient.prenom,
+      },
+    });
 
     return res.status(200).json(patient);
   } catch (err) {
@@ -583,6 +606,14 @@ router.post("/link", async (req, res) => {
        ON CONFLICT (id_cabinet, id_patient) DO NOTHING`,
       [cabinetId, patientId],
     );
+    await logClinicAction({
+      cabinetId,
+      userId,
+      actionType: "insert",
+      tableName: "cabinet_patient",
+      rowId: patientId,
+      details: { id_patient: patientId },
+    });
     return res.status(201).json({ ok: true });
   } catch (err) {
     return sendServerError(res, err);
@@ -677,6 +708,14 @@ router.delete("/:id", async (req, res) => {
     if (result.rowCount === 0) {
       return res.status(404).json({ error: "Patient not found." });
     }
+    await logClinicAction({
+      cabinetId,
+      userId,
+      actionType: "delete",
+      tableName: "patient",
+      rowId: id,
+      details: { id_patient: id },
+    });
     return res.status(200).json({ ok: true });
   } catch (err) {
     return sendServerError(res, err);

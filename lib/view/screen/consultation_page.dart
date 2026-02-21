@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../controller/appointment_create_controller.dart';
+import '../../controller/consultation_controller.dart';
 import '../../controller/patient_list_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/patient_service.dart';
 import '../widget/app_background.dart';
 import '../widget/app_footer.dart';
-import '../widget/appointment_create_form.dart';
+import '../widget/consultation_patient_selector.dart';
+import '../widget/consultation_section_body.dart';
+import '../widget/consultation_section_selector.dart';
 import '../widget/patient_list_view.dart';
 
-class AppointmentCreatePage extends StatefulWidget {
-  const AppointmentCreatePage({super.key, this.initialPatient});
+class ConsultationPage extends StatefulWidget {
+  const ConsultationPage({super.key, this.initialPatient});
 
   final Map<String, dynamic>? initialPatient;
 
   @override
-  State<AppointmentCreatePage> createState() => _AppointmentCreatePageState();
+  State<ConsultationPage> createState() => _ConsultationPageState();
 }
 
-class _AppointmentCreatePageState extends State<AppointmentCreatePage> {
-  final AppointmentCreateController _controller = AppointmentCreateController();
+class _ConsultationPageState extends State<ConsultationPage> {
+  final ConsultationController _controller = ConsultationController();
+  final PatientService _patientService = PatientService();
   PatientListController? _pickerController;
   bool _pickerDialogOpen = false;
 
@@ -27,6 +31,7 @@ class _AppointmentCreatePageState extends State<AppointmentCreatePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _controller.loadConsultationSettings();
       final l10n = AppLocalizations.of(context)!;
       final initial = widget.initialPatient;
       if (initial != null) {
@@ -166,134 +171,9 @@ class _AppointmentCreatePageState extends State<AppointmentCreatePage> {
     return picked;
   }
 
-  Future<void> _pickDate() async {
-    await _controller.ensureClinicOpenDaysLoaded();
-    if (!mounted) return;
-    final initialDate = _controller.nearestOpenDate(_controller.selectedDate);
-    final picked = await showDatePicker(
-      context: context,
-      barrierDismissible: false,
-      initialDate: initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      selectableDayPredicate: (day) => _controller.isClinicOpenOn(day),
-      builder: (context, child) {
-        final theme = Theme.of(context);
-        final datePickerTheme = theme.datePickerTheme.copyWith(
-          dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.disabled)) {
-              return Colors.red.withValues(alpha: 0.16);
-            }
-            return null;
-          }),
-          dayForegroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.disabled)) {
-              return Colors.red.shade700;
-            }
-            return null;
-          }),
-        );
-        return Theme(
-          data: theme.copyWith(datePickerTheme: datePickerTheme),
-          child: child!,
-        );
-      },
-    );
-    if (picked == null || !mounted) return;
-    _controller.setDate(picked);
-  }
-
-  Future<void> _pickTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: _controller.selectedTime ?? TimeOfDay.now(),
-    );
-    if (picked == null || !mounted) return;
-    _controller.setTime(picked);
-  }
-
-  Future<void> _save() async {
-    final ok = await _controller.save();
-    if (!mounted) return;
+  void _onValidate() {
     final l10n = AppLocalizations.of(context)!;
-    if (ok) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.appointmentCreateSuccess)));
-      context.pop(true);
-      return;
-    }
-    String message = l10n.appointmentCreateFailed;
-    if (_controller.lastError == 'missing_patient') {
-      message = l10n.appointmentPatientRequired;
-    } else if (_controller.lastError == 'missing_time') {
-      message = l10n.appointmentTimeRequired;
-    } else if ((_controller.lastError ?? '').isNotEmpty) {
-      message = (_controller.lastError ?? '')
-          .replaceFirst('Exception: ', '')
-          .trim();
-    }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  void _cancel() {
-    if (!mounted) return;
-    context.pop(false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) => Scaffold(
-        bottomNavigationBar: const AppFooter(),
-        body: Stack(
-          children: [
-            const AppBackground(showFooter: false),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    IconButton(
-                      onPressed: _controller.saving ? null : () => context.pop(),
-                      icon: const Icon(Icons.arrow_back),
-                      color: scheme.primary,
-                    ),
-                    const SizedBox(height: 6),
-                    Center(
-                      child: Text(
-                        l10n.homeMenuRdvTake,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: scheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: AppointmentCreateForm(
-                          controller: _controller,
-                          onPickPatient: _pickPatient,
-                          onPickDate: _pickDate,
-                          onPickTime: _pickTime,
-                          onCancel: _cancel,
-                          onSave: _save,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.settingsComingSoon)));
   }
 
   @override
@@ -301,5 +181,99 @@ class _AppointmentCreatePageState extends State<AppointmentCreatePage> {
     _pickerController?.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final photoUrl = _controller.selectedPatientPhotoUrl(_patientService.patientPhotoUrl);
+        return Scaffold(
+          extendBodyBehindAppBar: true,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          bottomNavigationBar: const AppFooter(),
+          appBar: AppBar(
+            title: Text(l10n.homeMenuConsultation),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+          ),
+          body: Stack(
+            children: [
+              const AppBackground(showFooter: false),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ConsultationPatientSelector(
+                        controller: _controller,
+                        photoUrl: photoUrl,
+                        enabled: _controller.selectedPatientId == null,
+                        onPickPatient: _pickPatient,
+                        onClearPatient: _controller.clearSelectedPatient,
+                      ),
+                      if (_controller.selectedPatientId != null) ...[
+                        const SizedBox(height: 20),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ConsultationSectionSelector(
+                                  selectedSection: _controller.selectedSection,
+                                  onSectionSelected: _controller.setSection,
+                                  showLastConsultation: _controller.showLastConsultationSection,
+                                  showSickLeave: _controller.arretTravailEnabled,
+                                  showMedicalCertificates: _controller.certificatMedicalEnabled,
+                                  showLabs: _controller.bilansEnabled,
+                                  showOrientationLetter: _controller.lettreOrientationEnabled,
+                                  showReports: _controller.rapportsMedicauxEnabled,
+                                ),
+                                const SizedBox(height: 14),
+                                ConsultationSectionBody(section: _controller.selectedSection),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          OutlinedButton(
+                            onPressed: () => context.pop(),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          FilledButton(
+                            onPressed: _controller.selectedPatientId == null ? null : _onValidate,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(MaterialLocalizations.of(context).okButtonLabel),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

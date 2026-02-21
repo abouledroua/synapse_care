@@ -13,6 +13,9 @@ enum CabinetCreateResult { success, exists, failed, network }
 enum CabinetRemoveResult { success, lastAdmin, failed, network }
 
 enum CabinetReviewResult { success, failed, network, unauthorized }
+enum CabinetMemberActionResult { success, failed, network, unauthorized, lastAdmin }
+enum CabinetOpenDayUpdateResult { success, failed, network, unauthorized }
+enum ConsultationParamUpdateResult { success, failed, network, unauthorized }
 
 class CabinetCreateResponse {
   const CabinetCreateResponse(this.result, {this.message});
@@ -93,6 +96,8 @@ class CabinetService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'id_user': userId, 'id_cabinet': cabinetId, 'type_access': typeAccess, 'etat': etat}),
       );
+      // ignore: avoid_print
+      print('Assign cabinet response: ${response.statusCode} ${response.body}');
       if (response.statusCode == 201) return CabinetAssignResult.success;
       if (response.statusCode == 409) return CabinetAssignResult.exists;
       if (response.statusCode == 403) return CabinetAssignResult.clinicNotValidated;
@@ -251,6 +256,273 @@ class CabinetService {
       return CabinetReviewResult.failed;
     } catch (_) {
       return CabinetReviewResult.network;
+    }
+  }
+
+  Future<(bool isCurrentUserAdmin, List<Map<String, dynamic>> items)> fetchCabinetUsers({
+    required int requesterUserId,
+    required int cabinetId,
+    required String state,
+    String query = '',
+  }) async {
+    final normalizedState = state.trim().isEmpty ? 'all' : state.trim().toLowerCase();
+    final uri = Uri.parse(
+      '$_baseUrl/cabinet/users'
+      '?id_cabinet=$cabinetId'
+      '&id_user=$requesterUserId'
+      '&state=${Uri.encodeQueryComponent(normalizedState)}'
+      '&q=${Uri.encodeQueryComponent(query)}',
+    );
+    final response = await _client.get(uri);
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      throw Exception('unauthorized');
+    }
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load clinic users');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map) {
+      return (false, const <Map<String, dynamic>>[]);
+    }
+    final rawItems = decoded['items'];
+    final items = rawItems is List
+        ? rawItems.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList()
+        : const <Map<String, dynamic>>[];
+    final isCurrentUserAdmin = decoded['current_user_is_admin'] == true;
+    return (isCurrentUserAdmin, items);
+  }
+
+  Future<CabinetMemberActionResult> approveCabinetUser({
+    required int adminUserId,
+    required int targetUserId,
+    required int cabinetId,
+  }) async {
+    return _reviewCabinetMember(
+      path: '/cabinet/approve',
+      payload: {'id_admin': adminUserId, 'id_user': targetUserId, 'id_cabinet': cabinetId},
+    );
+  }
+
+  Future<CabinetMemberActionResult> rejectCabinetUser({
+    required int adminUserId,
+    required int targetUserId,
+    required int cabinetId,
+  }) async {
+    return _reviewCabinetMember(
+      path: '/cabinet/reject',
+      payload: {'id_admin': adminUserId, 'id_user': targetUserId, 'id_cabinet': cabinetId},
+    );
+  }
+
+  Future<CabinetMemberActionResult> grantCabinetAdmin({
+    required int adminUserId,
+    required int targetUserId,
+    required int cabinetId,
+  }) async {
+    return _reviewCabinetMember(
+      path: '/cabinet/admin/grant',
+      payload: {'id_admin': adminUserId, 'id_user': targetUserId, 'id_cabinet': cabinetId},
+    );
+  }
+
+  Future<CabinetMemberActionResult> revokeCabinetAdmin({
+    required int adminUserId,
+    required int targetUserId,
+    required int cabinetId,
+  }) async {
+    return _reviewCabinetMember(
+      path: '/cabinet/admin/revoke',
+      payload: {'id_admin': adminUserId, 'id_user': targetUserId, 'id_cabinet': cabinetId},
+    );
+  }
+
+  Future<CabinetMemberActionResult> _reviewCabinetMember({
+    required String path,
+    required Map<String, dynamic> payload,
+  }) async {
+    final uri = Uri.parse('$_baseUrl$path');
+    try {
+      final response = await _client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(payload),
+      );
+      if (response.statusCode == 200) return CabinetMemberActionResult.success;
+      if (response.statusCode == 403) return CabinetMemberActionResult.unauthorized;
+      if (response.statusCode == 409) {
+        try {
+          final decoded = jsonDecode(response.body);
+          if (decoded is Map && decoded['code'] == 'LAST_ADMIN') {
+            return CabinetMemberActionResult.lastAdmin;
+          }
+        } catch (_) {}
+      }
+      return CabinetMemberActionResult.failed;
+    } catch (_) {
+      return CabinetMemberActionResult.network;
+    }
+  }
+
+  Future<Map<int, bool>> fetchCabinetOpenDays({
+    required int requesterUserId,
+    required int cabinetId,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/cabinet/open-days?id_cabinet=$cabinetId&id_user=$requesterUserId');
+    try {
+      final response = await _client.get(uri);
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        throw const ApiRequestException(code: 'unauthorized', statusCode: 403);
+      }
+      if (response.statusCode != 200) {
+        throw _httpFailureFrom(response, fallbackCode: 'request_failed');
+      }
+      final decoded = jsonDecode(response.body);
+      if (decoded is! List) return {};
+      final map = <int, bool>{};
+      for (final raw in decoded) {
+        if (raw is! Map) continue;
+        final item = Map<String, dynamic>.from(raw);
+        final day = item['day_of_week'] is num
+            ? (item['day_of_week'] as num).toInt()
+            : int.tryParse('${item['day_of_week']}');
+        if (day == null || day < 1 || day > 7) continue;
+        final isOpen = item['is_open'] == true || '${item['is_open']}'.toLowerCase() == 'true';
+        map[day] = isOpen;
+      }
+      return map;
+    } catch (error) {
+      if (error is ApiRequestException) rethrow;
+      throw ApiRequestException(code: _transportFailureCode(error), message: error.toString());
+    }
+  }
+
+  Future<CabinetOpenDayUpdateResult> updateCabinetOpenDay({
+    required int requesterUserId,
+    required int cabinetId,
+    required int dayOfWeek,
+    required bool isOpen,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/cabinet/open-days/update');
+    try {
+      final response = await _client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'id_cabinet': cabinetId,
+          'id_user': requesterUserId,
+          'day_of_week': dayOfWeek,
+          'is_open': isOpen,
+        }),
+      );
+      if (response.statusCode == 200) return CabinetOpenDayUpdateResult.success;
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        return CabinetOpenDayUpdateResult.unauthorized;
+      }
+      return CabinetOpenDayUpdateResult.failed;
+    } catch (_) {
+      return CabinetOpenDayUpdateResult.network;
+    }
+  }
+
+  Future<bool> isClinicAdmin({
+    required int requesterUserId,
+    required int cabinetId,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/cabinet/is-admin?id_cabinet=$cabinetId&id_user=$requesterUserId');
+    try {
+      final response = await _client.get(uri);
+      if (response.statusCode != 200) return false;
+      final decoded = jsonDecode(response.body);
+      if (decoded is! Map) return false;
+      return decoded['is_admin'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchClinicLogs({
+    required int requesterUserId,
+    required int cabinetId,
+    required String mode,
+    String? date,
+    String? from,
+    String? to,
+  }) async {
+    final query = <String, String>{
+      'id_cabinet': '$cabinetId',
+      'id_user': '$requesterUserId',
+      'mode': mode,
+      if (date != null && date.isNotEmpty) 'date': date,
+      if (from != null && from.isNotEmpty) 'from': from,
+      if (to != null && to.isNotEmpty) 'to': to,
+    };
+    final uri = Uri.parse('$_baseUrl/cabinet/logs').replace(queryParameters: query);
+    final response = await _client.get(uri);
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      throw Exception('unauthorized');
+    }
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load logs');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! List) return [];
+    return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+  }
+
+  Future<Map<String, dynamic>> fetchConsultationParams({
+    required int requesterUserId,
+    required int cabinetId,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/cabinet/consultation-params?id_cabinet=$cabinetId&id_user=$requesterUserId');
+    try {
+      final response = await _client.get(uri);
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        throw const ApiRequestException(code: 'unauthorized', statusCode: 403);
+      }
+      if (response.statusCode != 200) {
+        throw _httpFailureFrom(response, fallbackCode: 'request_failed');
+      }
+      final decoded = jsonDecode(response.body);
+      if (decoded is! Map) return {};
+      final map = <String, dynamic>{};
+      for (final entry in decoded.entries) {
+        final key = '${entry.key}';
+        map[key] = entry.value;
+      }
+      return map;
+    } catch (error) {
+      if (error is ApiRequestException) rethrow;
+      throw ApiRequestException(code: _transportFailureCode(error), message: error.toString());
+    }
+  }
+
+  Future<ConsultationParamUpdateResult> updateConsultationParam({
+    required int requesterUserId,
+    required int cabinetId,
+    required String key,
+    bool? enabled,
+    String? value,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/cabinet/consultation-params/update');
+    try {
+      final response = await _client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'id_cabinet': cabinetId,
+          'id_user': requesterUserId,
+          'key': key,
+          if (enabled != null) 'enabled': enabled,
+          if (value != null) 'value': value,
+        }),
+      );
+      if (response.statusCode == 200) return ConsultationParamUpdateResult.success;
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        return ConsultationParamUpdateResult.unauthorized;
+      }
+      return ConsultationParamUpdateResult.failed;
+    } catch (_) {
+      return ConsultationParamUpdateResult.network;
     }
   }
 

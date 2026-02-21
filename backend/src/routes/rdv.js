@@ -4,6 +4,7 @@ import pg from "pg";
 import { pool } from "../db.js";
 import { ensureCabinetStaff } from "../middleware/authorization.js";
 import { sendServerError } from "../utils/api_error.js";
+import { logClinicAction } from "../utils/clinic_log.js";
 
 const router = Router();
 const { Client } = pg;
@@ -208,6 +209,18 @@ router.post("/", async (req, res) => {
          RETURNING id_rdv, id_patient_global AS id_patient, date_rdv::text AS date_rdv, heure_rdv, heure_arrivee, num_rdv, motif_rdv, etat_rdv, created_at`,
         [patientId, date_rdv, heure_rdv, motif_rdv],
       );
+      await logClinicAction({
+        cabinetId,
+        userId,
+        actionType: "insert",
+        tableName: "rdv",
+        rowId: created.rows[0]?.id_rdv,
+        details: {
+          id_patient: patientId,
+          date_rdv,
+          etat_rdv: created.rows[0]?.etat_rdv,
+        },
+      });
       return res.status(201).json(created.rows[0]);
     } finally {
       await client.end();
@@ -289,6 +302,18 @@ router.put("/:id_rdv", async (req, res) => {
       if (updated.rowCount === 0) {
         return res.status(404).json({ error: "Appointment not found." });
       }
+      await logClinicAction({
+        cabinetId,
+        userId,
+        actionType: "update",
+        tableName: "rdv",
+        rowId: idRdv,
+        details: {
+          id_patient: patientId,
+          date_rdv,
+          etat_rdv: updated.rows[0]?.etat_rdv,
+        },
+      });
       return res.json(updated.rows[0]);
     } finally {
       await client.end();

@@ -6,6 +6,7 @@ import '../controller/auth_controller.dart';
 import '../core/utils/patient_formatters.dart';
 import '../l10n/app_localizations.dart';
 import '../services/appointment_service.dart';
+import '../services/cabinet_service.dart';
 import '../services/patient_service.dart';
 
 class AppointmentCreateController extends ChangeNotifier {
@@ -19,6 +20,7 @@ class AppointmentCreateController extends ChangeNotifier {
 
   final AppointmentService _service;
   final PatientService _patientService = PatientService();
+  final CabinetService _cabinetService = CabinetService();
   final TextEditingController patientSearchController = TextEditingController();
   final FocusNode patientSearchFocusNode = FocusNode();
   final TextEditingController motifController = TextEditingController();
@@ -36,6 +38,16 @@ class AppointmentCreateController extends ChangeNotifier {
   bool checkingActiveAppointment = false;
   List<Map<String, dynamic>> patientSearchResults = <Map<String, dynamic>>[];
   bool _settingPatientText = false;
+  bool _openDaysLoaded = false;
+  final Map<int, bool> _clinicOpenDays = <int, bool>{
+    1: true,
+    2: true,
+    3: true,
+    4: true,
+    5: true,
+    6: true,
+    7: true,
+  };
 
   int? get cabinetId {
     final raw = AuthController.globalClinic?['id_cabinet'];
@@ -46,6 +58,42 @@ class AppointmentCreateController extends ChangeNotifier {
   }
 
   int? get userId => AuthController.globalUserId;
+
+  bool isClinicOpenOn(DateTime date) => _clinicOpenDays[date.weekday] ?? true;
+
+  DateTime nearestOpenDate(DateTime from) {
+    final start = DateTime(from.year, from.month, from.day);
+    for (var i = 0; i < 14; i++) {
+      final candidate = start.add(Duration(days: i));
+      if (isClinicOpenOn(candidate)) return candidate;
+    }
+    return start;
+  }
+
+  Future<void> ensureClinicOpenDaysLoaded() async {
+    if (_openDaysLoaded) return;
+    final cId = cabinetId;
+    final uId = userId;
+    if (cId == null || uId == null) {
+      _openDaysLoaded = true;
+      return;
+    }
+    try {
+      final remote = await _cabinetService.fetchCabinetOpenDays(
+        requesterUserId: uId,
+        cabinetId: cId,
+      );
+      if (remote.isNotEmpty) {
+        for (final day in _clinicOpenDays.keys) {
+          _clinicOpenDays[day] = remote[day] ?? true;
+        }
+      }
+    } catch (_) {
+      // Keep all days open if loading fails.
+    } finally {
+      _openDaysLoaded = true;
+    }
+  }
 
   String patientLabel(
     Map<String, dynamic> patient, {

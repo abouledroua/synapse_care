@@ -9,7 +9,10 @@ import '../widget/patient_list_view.dart';
 import '../widget/app_background.dart';
 
 class PatientListPage extends StatefulWidget {
-  const PatientListPage({super.key, this.pickerMode = false});
+  const PatientListPage({
+    super.key,
+    this.pickerMode = false,
+  });
 
   final bool pickerMode;
 

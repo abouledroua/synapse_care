@@ -105,6 +105,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     l10n: l10n,
                                     scheme: scheme,
                                     onPatientsTap: () => context.push('/patients/list'),
+                                    onConsultationTap: () => context.push('/consultations'),
                                     onRdvTap: () => context.push('/appointments/list'),
                                     onSettingsTap: () => context.push('/settings'),
                                   )
@@ -228,6 +229,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   context.push('/patients/list');
                   break;
                 case _QuickActionKey.consultations:
+                  context.push('/consultations');
                   break;
                 case _QuickActionKey.rdv:
                   context.push('/appointments/list');

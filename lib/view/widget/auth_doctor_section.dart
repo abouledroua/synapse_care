@@ -30,7 +30,7 @@ class AuthDoctorSection extends StatelessWidget {
       isLogin
           ? AuthLoginForm(controller: controller, l10n: l10n, scheme: scheme, onSubmit: onSubmit)
           : AuthSignupForm(controller: controller, l10n: l10n, scheme: scheme, onSubmit: onSubmit),
-      const SizedBox(height: 18),
+      // const SizedBox(height: 18),
       FooterLink(isLogin: isLogin, onTap: onFooterTap),
     ],
   );

@@ -9,6 +9,7 @@ class HomeQuickActions extends StatelessWidget {
     required this.l10n,
     required this.scheme,
     this.onPatientsTap,
+    this.onConsultationTap,
     this.onRdvTap,
     this.onSettingsTap,
   });
@@ -16,6 +17,7 @@ class HomeQuickActions extends StatelessWidget {
   final AppLocalizations l10n;
   final ColorScheme scheme;
   final VoidCallback? onPatientsTap;
+  final VoidCallback? onConsultationTap;
   final VoidCallback? onRdvTap;
   final VoidCallback? onSettingsTap;
 
@@ -39,6 +41,7 @@ class HomeQuickActions extends StatelessWidget {
             icon: FontAwesomeIcons.stethoscope,
             color: const Color(0xFF3F6BB6),
             scheme: scheme,
+            onTap: onConsultationTap,
           ),
           _QuickActionChip(
             label: l10n.homeMenuRdvList,

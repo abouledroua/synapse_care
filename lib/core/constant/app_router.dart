@@ -13,6 +13,8 @@ import '../../view/screen/appointment_list_page_v2.dart';
 import '../../view/screen/cabinet_create_page.dart';
 import '../../view/screen/cabinet_search_page.dart';
 import '../../view/screen/cabinet_select_page.dart';
+import '../../view/screen/consultation_page.dart';
+import '../../view/screen/clinic_log_page.dart';
 import '../../view/screen/home_page.dart';
 import '../../view/screen/patient_list_page.dart';
 import '../../view/screen/patient_create_page.dart';
@@ -40,6 +42,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           state.matchedLocation.startsWith('/cabinet') ||
           state.matchedLocation.startsWith('/patients') ||
           state.matchedLocation.startsWith('/appointments') ||
+          state.matchedLocation.startsWith('/consultations') ||
+          state.matchedLocation.startsWith('/logs') ||
           state.matchedLocation.startsWith('/settings') ||
           state.matchedLocation.startsWith('/admin');
       if (!isAuthed && isProtected) return '/auth/login';
@@ -91,7 +95,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/patients/list',
         pageBuilder: (context, state) {
           final pickerMode = state.uri.queryParameters['picker'] == '1';
-          return NoTransitionPage(child: PatientListPage(pickerMode: pickerMode));
+          return NoTransitionPage(
+            child: PatientListPage(pickerMode: pickerMode),
+          );
         },
       ),
       GoRoute(
@@ -113,10 +119,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/appointments/create',
         pageBuilder: (context, state) {
           final patient = state.extra as Map<String, dynamic>?;
-          return NoTransitionPage(
-            child: AppointmentCreatePage(initialPatient: patient),
-          );
+          return NoTransitionPage(child: AppointmentCreatePage(initialPatient: patient));
         },
+      ),
+      GoRoute(
+        path: '/consultations',
+        pageBuilder: (context, state) {
+          final patient = state.extra as Map<String, dynamic>?;
+          return NoTransitionPage(child: ConsultationPage(initialPatient: patient));
+        },
+      ),
+      GoRoute(
+        path: '/logs/clinic',
+        pageBuilder: (context, state) => const NoTransitionPage(child: ClinicLogPage()),
       ),
       GoRoute(
         path: '/home',

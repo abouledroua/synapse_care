@@ -9,6 +9,19 @@ import '../core/config/api_config.dart';
 import '../services/session_storage.dart';
 
 enum AuthRole { patient, doctor, assistant }
+enum AuthLoginTarget { clinicSelect, platformAdmin }
+
+class AuthLoginSubmitResult {
+  const AuthLoginSubmitResult({
+    required this.success,
+    this.errorMessage,
+    this.target,
+  });
+
+  final bool success;
+  final String? errorMessage;
+  final AuthLoginTarget? target;
+}
 
 class AuthController extends ChangeNotifier {
   static int? globalUserId;
@@ -516,6 +529,44 @@ class AuthController extends ChangeNotifier {
   }
 
   bool get canContinue => phoneNumber.isNotEmpty;
+
+  Future<AuthLoginSubmitResult> submitDoctorLogin({
+    required String emailEmptyMessage,
+    required String emailInvalidMessage,
+    required String passwordEmptyMessage,
+    required String invalidMessage,
+    required String genericMessage,
+    required String networkMessage,
+  }) async {
+    final isValid = validateDoctorLogin(
+      emailEmptyMessage: emailEmptyMessage,
+      emailInvalidMessage: emailInvalidMessage,
+      passwordEmptyMessage: passwordEmptyMessage,
+    );
+    if (!isValid) {
+      return AuthLoginSubmitResult(success: false, errorMessage: loginSubmitError);
+    }
+
+    setBusy(true);
+    try {
+      final error = await loginDoctor(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+        invalidMessage: invalidMessage,
+        genericMessage: genericMessage,
+        networkMessage: networkMessage,
+      );
+      if (error != null) {
+        return AuthLoginSubmitResult(success: false, errorMessage: error);
+      }
+      return AuthLoginSubmitResult(
+        success: true,
+        target: isPlatformAdmin ? AuthLoginTarget.platformAdmin : AuthLoginTarget.clinicSelect,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
 
   static Future<void> restoreGlobals() async {
     final data = await SessionStorage.load();

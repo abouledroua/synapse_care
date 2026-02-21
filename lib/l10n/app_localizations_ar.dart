@@ -871,5 +871,183 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsGroupConsultation => 'الاستشارة';
 
   @override
+  String get settingsGroupPrinting => 'الطباعة';
+
+  @override
+  String get settingsGroupUsers => 'المستخدمون';
+
+  @override
+  String get settingsAppointmentWorkingDaysTitle => 'أيام عمل العيادة';
+
+  @override
+  String get settingsAppointmentOpen => 'مفتوح';
+
+  @override
+  String get settingsAppointmentClosed => 'مغلق';
+
+  @override
+  String get settingsAppointmentMonday => 'الاثنين';
+
+  @override
+  String get settingsAppointmentTuesday => 'الثلاثاء';
+
+  @override
+  String get settingsAppointmentWednesday => 'الأربعاء';
+
+  @override
+  String get settingsAppointmentThursday => 'الخميس';
+
+  @override
+  String get settingsAppointmentFriday => 'الجمعة';
+
+  @override
+  String get settingsAppointmentSaturday => 'السبت';
+
+  @override
+  String get settingsAppointmentSunday => 'الأحد';
+
+  @override
+  String get settingsUsersSearchHint => 'ابحث عن مستخدم...';
+
+  @override
+  String get settingsUsersFilterWaiting => 'بانتظار الموافقة';
+
+  @override
+  String get settingsUsersFilterApproved => 'موافق عليهم';
+
+  @override
+  String get settingsUsersFilterAll => 'الكل';
+
+  @override
+  String get settingsUsersAdminBadge => 'مدير';
+
+  @override
+  String get settingsUsersApprove => 'موافقة';
+
+  @override
+  String get settingsUsersCancelApproval => 'إلغاء الموافقة';
+
+  @override
+  String get settingsUsersMakeAdmin => 'تعيين مدير';
+
+  @override
+  String get settingsUsersUnmakeAdmin => 'إزالة الإدارة';
+
+  @override
+  String get settingsUsersRoleLabel => 'الدور';
+
+  @override
+  String get settingsUsersStatusLabel => 'الحالة';
+
+  @override
+  String get settingsUsersUnauthorized =>
+      'ليست لديك صلاحية إدارة مستخدمي هذه العيادة.';
+
+  @override
+  String get settingsUsersLoadFailed => 'تعذر تحميل المستخدمين.';
+
+  @override
+  String get settingsUsersEmpty => 'لا يوجد مستخدمون.';
+
+  @override
+  String get settingsUsersActionSuccess => 'تم تنفيذ العملية.';
+
+  @override
+  String get settingsUsersActionFailed => 'تعذر تنفيذ العملية.';
+
+  @override
+  String get settingsUsersApproveConfirmTitle => 'الموافقة على المستخدم';
+
+  @override
+  String get settingsUsersApproveConfirmBody =>
+      'هل أنت متأكد أنك تريد الموافقة على هذا المستخدم؟';
+
+  @override
+  String get settingsUsersCancelConfirmTitle => 'إلغاء الموافقة';
+
+  @override
+  String get settingsUsersCancelConfirmBody =>
+      'هل أنت متأكد أنك تريد إلغاء موافقة هذا المستخدم؟';
+
+  @override
+  String get settingsConsultationTogglesTitle => 'أقسام الاستشارة';
+
+  @override
+  String get settingsConsultationPrescriptionGroupTitle =>
+      'إدارة الوصفات الطبية';
+
+  @override
+  String get settingsConsultationPrescriptionModeLabel => 'طريقة الإدارة';
+
+  @override
+  String get settingsConsultationPrescriptionModeSelectMedicaments =>
+      'اختيار الأدوية';
+
+  @override
+  String get settingsConsultationPrescriptionModeManual => 'إدخال وصفة يدويا';
+
+  @override
   String get settingsComingSoon => 'قريبا';
+
+  @override
+  String get consultationReportsMedical => 'التقارير الطبية';
+
+  @override
+  String get consultationSectionLastConsultation => 'الاستشارة الأخيرة';
+
+  @override
+  String get consultationSectionGeneralInfo => 'معلومات عامة';
+
+  @override
+  String get consultationSectionPrescriptions => 'الوصفات الطبية';
+
+  @override
+  String get consultationSectionMedicalCertificate => 'شهادة طبية';
+
+  @override
+  String get consultationSectionSickLeave => 'عطلة مرضية';
+
+  @override
+  String get consultationSectionMedicalCertificates => 'الشهادات الطبية';
+
+  @override
+  String get consultationSectionLabs => 'التحاليل';
+
+  @override
+  String get consultationSectionOrientationLetter => 'رسالة التوجيه';
+
+  @override
+  String get consultationSectionNextAppointment => 'الموعد القادم';
+
+  @override
+  String get consultationSectionLastConsultationDesc =>
+      'ملخص آخر استشارة للمريض.';
+
+  @override
+  String get consultationSectionGeneralInfoDesc =>
+      'معلومات عامة حول الاستشارة.';
+
+  @override
+  String get consultationSectionPrescriptionsDesc =>
+      'إضافة الأدوية والتعليمات.';
+
+  @override
+  String get consultationSectionSickLeaveDesc => 'إدارة شهادات العطلة المرضية.';
+
+  @override
+  String get consultationSectionMedicalCertificatesDesc =>
+      'إنشاء وإدارة الشهادات الطبية.';
+
+  @override
+  String get consultationSectionLabsDesc => 'طلبات التحاليل والفحوصات.';
+
+  @override
+  String get consultationSectionOrientationLetterDesc =>
+      'إنشاء وإدارة رسائل التوجيه.';
+
+  @override
+  String get consultationSectionReportsDesc => 'ملاحظات طبية وتفاصيل التقارير.';
+
+  @override
+  String get consultationSectionNextAppointmentDesc => 'التحضير للموعد القادم.';
 }

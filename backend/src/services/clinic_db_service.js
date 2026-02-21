@@ -84,6 +84,78 @@ async function applyClinicSchema(dbName) {
       )
     `);
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS log (
+        id_log BIGSERIAL PRIMARY KEY,
+        id_user BIGINT NULL,
+        action_type TEXT NOT NULL CHECK (action_type IN ('insert', 'update', 'cancel', 'delete')),
+        table_name TEXT NULL,
+        row_id TEXT NULL,
+        details JSONB NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS clinic_open_days (
+        day_of_week SMALLINT PRIMARY KEY,
+        is_open BOOLEAN NOT NULL DEFAULT TRUE,
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        CHECK (day_of_week BETWEEN 1 AND 7)
+      )
+    `);
+
+    // Seed default open days (1..7) for new and existing clinic databases.
+    await client.query(`
+      INSERT INTO clinic_open_days (day_of_week, is_open)
+      SELECT gs, TRUE
+      FROM generate_series(1, 7) AS gs
+      ON CONFLICT (day_of_week) DO NOTHING
+    `);
+
+    await client.query(`
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1
+          FROM information_schema.tables
+          WHERE table_schema = current_schema()
+            AND table_name = 'parametre_consulation'
+        )
+        AND NOT EXISTS (
+          SELECT 1
+          FROM information_schema.tables
+          WHERE table_schema = current_schema()
+            AND table_name = 'parametre'
+        ) THEN
+          ALTER TABLE parametre_consulation RENAME TO parametre;
+        END IF;
+      END
+      $$;
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS parametre (
+        singleton_id SMALLINT PRIMARY KEY DEFAULT 1 CHECK (singleton_id = 1),
+        certificat_medical_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+        bilans_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+        lettre_orientation_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+        arret_travail_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+        rapports_medicaux_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+        gest_ordonnance TEXT NOT NULL DEFAULT 'selection_medicaments',
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+    await client.query(`
+      ALTER TABLE parametre
+      ADD COLUMN IF NOT EXISTS gest_ordonnance TEXT NOT NULL DEFAULT 'selection_medicaments'
+    `);
+    await client.query(`
+      INSERT INTO parametre (singleton_id)
+      VALUES (1)
+      ON CONFLICT (singleton_id) DO NOTHING
+    `);
+
     await client.query(
       "CREATE INDEX IF NOT EXISTS rdv_patient_idx ON rdv (id_patient_global)",
     );
@@ -92,6 +164,12 @@ async function applyClinicSchema(dbName) {
     );
     await client.query(
       "CREATE INDEX IF NOT EXISTS consultation_patient_idx ON consultation (id_patient_global)",
+    );
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS log_created_at_idx ON log (created_at DESC)",
+    );
+    await client.query(
+      "CREATE INDEX IF NOT EXISTS log_action_type_idx ON log (action_type)",
     );
   } finally {
     await client.end();

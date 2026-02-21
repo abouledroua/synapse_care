@@ -1369,7 +1369,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeMenuHistory.
   ///
   /// In en, this message translates to:
-  /// **'History'**
+  /// **'Log'**
   String get homeMenuHistory;
 
   /// No description provided for @homeMenuCaisse.
@@ -1786,11 +1786,347 @@ abstract class AppLocalizations {
   /// **'Consultation'**
   String get settingsGroupConsultation;
 
+  /// No description provided for @settingsGroupPrinting.
+  ///
+  /// In en, this message translates to:
+  /// **'Printing'**
+  String get settingsGroupPrinting;
+
+  /// No description provided for @settingsGroupUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get settingsGroupUsers;
+
+  /// No description provided for @settingsAppointmentWorkingDaysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic working days'**
+  String get settingsAppointmentWorkingDaysTitle;
+
+  /// No description provided for @settingsAppointmentOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get settingsAppointmentOpen;
+
+  /// No description provided for @settingsAppointmentClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get settingsAppointmentClosed;
+
+  /// No description provided for @settingsAppointmentMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get settingsAppointmentMonday;
+
+  /// No description provided for @settingsAppointmentTuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get settingsAppointmentTuesday;
+
+  /// No description provided for @settingsAppointmentWednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get settingsAppointmentWednesday;
+
+  /// No description provided for @settingsAppointmentThursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get settingsAppointmentThursday;
+
+  /// No description provided for @settingsAppointmentFriday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get settingsAppointmentFriday;
+
+  /// No description provided for @settingsAppointmentSaturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get settingsAppointmentSaturday;
+
+  /// No description provided for @settingsAppointmentSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get settingsAppointmentSunday;
+
+  /// No description provided for @settingsUsersSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search user...'**
+  String get settingsUsersSearchHint;
+
+  /// No description provided for @settingsUsersFilterWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for approval'**
+  String get settingsUsersFilterWaiting;
+
+  /// No description provided for @settingsUsersFilterApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get settingsUsersFilterApproved;
+
+  /// No description provided for @settingsUsersFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get settingsUsersFilterAll;
+
+  /// No description provided for @settingsUsersAdminBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get settingsUsersAdminBadge;
+
+  /// No description provided for @settingsUsersApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get settingsUsersApprove;
+
+  /// No description provided for @settingsUsersCancelApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel approval'**
+  String get settingsUsersCancelApproval;
+
+  /// No description provided for @settingsUsersMakeAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Make admin'**
+  String get settingsUsersMakeAdmin;
+
+  /// No description provided for @settingsUsersUnmakeAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmake admin'**
+  String get settingsUsersUnmakeAdmin;
+
+  /// No description provided for @settingsUsersRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get settingsUsersRoleLabel;
+
+  /// No description provided for @settingsUsersStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get settingsUsersStatusLabel;
+
+  /// No description provided for @settingsUsersUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authorized to manage users in this clinic.'**
+  String get settingsUsersUnauthorized;
+
+  /// No description provided for @settingsUsersLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load clinic users.'**
+  String get settingsUsersLoadFailed;
+
+  /// No description provided for @settingsUsersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found.'**
+  String get settingsUsersEmpty;
+
+  /// No description provided for @settingsUsersActionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Action completed.'**
+  String get settingsUsersActionSuccess;
+
+  /// No description provided for @settingsUsersActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete action.'**
+  String get settingsUsersActionFailed;
+
+  /// No description provided for @settingsUsersApproveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve user'**
+  String get settingsUsersApproveConfirmTitle;
+
+  /// No description provided for @settingsUsersApproveConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to approve this user?'**
+  String get settingsUsersApproveConfirmBody;
+
+  /// No description provided for @settingsUsersCancelConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel approval'**
+  String get settingsUsersCancelConfirmTitle;
+
+  /// No description provided for @settingsUsersCancelConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this user\'s approval?'**
+  String get settingsUsersCancelConfirmBody;
+
+  /// No description provided for @settingsConsultationTogglesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Consultation sections'**
+  String get settingsConsultationTogglesTitle;
+
+  /// No description provided for @settingsConsultationPrescriptionGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescription management'**
+  String get settingsConsultationPrescriptionGroupTitle;
+
+  /// No description provided for @settingsConsultationPrescriptionModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescription mode'**
+  String get settingsConsultationPrescriptionModeLabel;
+
+  /// No description provided for @settingsConsultationPrescriptionModeSelectMedicaments.
+  ///
+  /// In en, this message translates to:
+  /// **'Select medications'**
+  String get settingsConsultationPrescriptionModeSelectMedicaments;
+
+  /// No description provided for @settingsConsultationPrescriptionModeManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual prescription entry'**
+  String get settingsConsultationPrescriptionModeManual;
+
   /// No description provided for @settingsComingSoon.
   ///
   /// In en, this message translates to:
   /// **'Coming soon'**
   String get settingsComingSoon;
+
+  /// No description provided for @consultationReportsMedical.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical reports'**
+  String get consultationReportsMedical;
+
+  /// No description provided for @consultationSectionLastConsultation.
+  ///
+  /// In en, this message translates to:
+  /// **'Last consultation'**
+  String get consultationSectionLastConsultation;
+
+  /// No description provided for @consultationSectionGeneralInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'General info'**
+  String get consultationSectionGeneralInfo;
+
+  /// No description provided for @consultationSectionPrescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescriptions'**
+  String get consultationSectionPrescriptions;
+
+  /// No description provided for @consultationSectionMedicalCertificate.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical certificate'**
+  String get consultationSectionMedicalCertificate;
+
+  /// No description provided for @consultationSectionSickLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Sick leave'**
+  String get consultationSectionSickLeave;
+
+  /// No description provided for @consultationSectionMedicalCertificates.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical certificates'**
+  String get consultationSectionMedicalCertificates;
+
+  /// No description provided for @consultationSectionLabs.
+  ///
+  /// In en, this message translates to:
+  /// **'Lab tests'**
+  String get consultationSectionLabs;
+
+  /// No description provided for @consultationSectionOrientationLetter.
+  ///
+  /// In en, this message translates to:
+  /// **'Orientation letter'**
+  String get consultationSectionOrientationLetter;
+
+  /// No description provided for @consultationSectionNextAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Next appointment'**
+  String get consultationSectionNextAppointment;
+
+  /// No description provided for @consultationSectionLastConsultationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary of the patient\'s last consultation.'**
+  String get consultationSectionLastConsultationDesc;
+
+  /// No description provided for @consultationSectionGeneralInfoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'General consultation information.'**
+  String get consultationSectionGeneralInfoDesc;
+
+  /// No description provided for @consultationSectionPrescriptionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add medication and instructions.'**
+  String get consultationSectionPrescriptionsDesc;
+
+  /// No description provided for @consultationSectionSickLeaveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage sick leave certificates.'**
+  String get consultationSectionSickLeaveDesc;
+
+  /// No description provided for @consultationSectionMedicalCertificatesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and manage medical certificates.'**
+  String get consultationSectionMedicalCertificatesDesc;
+
+  /// No description provided for @consultationSectionLabsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Lab tests and exams requests.'**
+  String get consultationSectionLabsDesc;
+
+  /// No description provided for @consultationSectionOrientationLetterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and manage referral letters.'**
+  String get consultationSectionOrientationLetterDesc;
+
+  /// No description provided for @consultationSectionReportsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical notes and report details.'**
+  String get consultationSectionReportsDesc;
+
+  /// No description provided for @consultationSectionNextAppointmentDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare the next appointment.'**
+  String get consultationSectionNextAppointmentDesc;
 }
 
 class _AppLocalizationsDelegate
